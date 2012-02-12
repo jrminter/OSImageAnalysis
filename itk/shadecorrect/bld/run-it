@@ -1,0 +1,2 @@
+#!/bin/sh
+shadecorrect16 ../../../images/latex.tif latex-shade.tif
