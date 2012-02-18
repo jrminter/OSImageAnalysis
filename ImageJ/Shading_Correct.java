@@ -13,7 +13,7 @@
  * John Minter
  * <jrminter@gmail.com>
  * 
- * Date: 2012/02/16
+ * Date: 2012/02/17 
  * 
  * Compute a shading correction for a grayscale image and
  * apply it, doing a proper normalization. This converts
@@ -79,7 +79,8 @@ public class Shading_Correct implements PlugInFilter {
     if(m_bVerbose){
       IJ.showMessage(String.format("%d", iBitDepth));
     }
-
+    
+    boolean bIsSigned = m_objImp.getCalibration().isSigned16Bit();
 		boolean bIsRoi = m_objImp.getRoi()!=null;
 		m_objImp.killRoi();
     
@@ -94,8 +95,15 @@ public class Shading_Correct implements PlugInFilter {
       if (iBitDepth == 8) {
 				new ImageConverter(m_objImp).convertToGray16();
 			}
+      if(iBitDepth == 16) {
+        if(bIsSigned){
+          // we don't want that....
+          new ImageConverter(m_objImp).convertToGray32();
+          new ImageConverter(m_objImp).convertToGray16();
+        }
+      }
 			// imp.getProcessor().add(32768);
-			if (iBitDepth == 32) {
+			else {
 				new ImageConverter(m_objImp).convertToGray16();
 			}
       ip = m_objImp.getProcessor();
@@ -144,18 +152,23 @@ public class Shading_Correct implements PlugInFilter {
           dVal = Math.floor(dVal);
           if (dVal < 0.) dVal = 0.;
           if (dVal > 65535.) dVal = 65535.;
-          // get rid of the sign bit. Thanks to Werner Bailer
-          iVal = ((int) dVal) & 0xffff;
+          
+          if(bIsSigned){
+            // get rid of the sign bit. Thanks to Werner Bailer
+            iVal = ((int) dVal) & 0xffff;
+          }
+          else {
+            iVal = ((int) dVal);
+          }
           sVal = (short) iVal;
           pix_old[y*iW+x]= sVal;
         }
       }
       ip.setPixels(pix_old); // write the corrected intensity
-      dMin = (double) ip.getMin();
-      dMax = (double) ip.getMax();
-      ip.setMinAndMax(dMin,dMax);
-      // finally, let's adjust the contrast
       ip.resetMinAndMax();
+      // update 
+      m_objImp.updateAndDraw();
+     
       
       if(!m_bVerbose){
         objImpWork.close(); // close the work image
