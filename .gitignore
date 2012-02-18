@@ -10,6 +10,13 @@
 *.aps
 *.suo
 
+# for java 
+*.class
+*.jar
+
+# From Wayne Rasband...
+*~
+
 # Windows stuff
 Thumbs.db
 

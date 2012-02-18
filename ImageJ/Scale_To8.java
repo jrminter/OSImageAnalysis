@@ -61,8 +61,9 @@ public class Scale_To8 implements PlugInFilter {
 			ip = m_objImp.getProcessor();
       int iW = ip.getWidth();
       int iH = ip.getHeight();
+      String strName = m_objImp.getTitle() + "-8b";
       
-      ImagePlus objImpWork = IJ.createImage("My new image",
+      ImagePlus objImpWork = IJ.createImage(strName,
          "8-bit black", iW, iH, 1);  
       objImpWork.show();
       byte[] pix_new = (byte[])objImpWork.getProcessor().getPixels();
