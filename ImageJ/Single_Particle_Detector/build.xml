@@ -1,0 +1,28 @@
+<project name="Single_Particle_Detector" default="" basedir=".">
+	<description>
+		Single_Particle_Detector build file
+	</description>
+	<property name="src" location="src" />
+	<property name="build" location="bin" />
+	<property name="dist"  location="dist" />
+	
+	<property name="pluginsDir"  location="$basedir/../../ImageJ/plugins/" />
+	<property name="user.name" value="John Minter" />
+	
+	<target name="main" depends="compress" description="Main target">
+		<echo>
+			Building the .jar file.
+		</echo>
+	</target>
+	
+	<target name="compress" depends="" description="generate the distribution">
+		<jar jarfile="Single_Particle_Detector.jar">
+			<fileset dir="." includes="plugins.config" />
+			<fileset dir="${build}" includes="**/*.*" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+			</manifest>
+		</jar>
+    <copy file="Single_Particle_Detector.jar" toDir="${pluginsDir}" />
+   </target>
+</project>
