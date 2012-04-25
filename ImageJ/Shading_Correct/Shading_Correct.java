@@ -50,8 +50,9 @@ public class Shading_Correct implements PlugInFilter {
 	// I use the syntax I learned in Visual C++ because it lets one quickly
 	// tell the characteristics of the (member) variables.
 	//
+	private static String strVersion = "Shading Correct v 0.1.100";
 	// Radius for RollingBall
-	private double m_dBallRadius=50.; 
+	private double m_dBallRadius; 
 	// Limit for inverse gain
   private double m_dLimit = 0.05;
   // A debug info variable. Set as appropriate
@@ -75,6 +76,27 @@ public class Shading_Correct implements PlugInFilter {
 	}
 	
 	public void run(ImageProcessor ip) {
+	// 1. Retrieve preferred parameters, if available
+	m_dBallRadius = Prefs.getDouble(".sc.BallRadius", 50.0);
+	double dVerbose = Prefs.getDouble(".sc.Verbose", 1.0);
+	// 2. Prepare the generic dialog
+    GenericDialog gd = new GenericDialog(strVersion);
+    gd.addNumericField("  ballRadius:", m_dBallRadius, 1);
+    gd.addNumericField("     Verbose:", dVerbose, 1);
+    gd.showDialog();
+    if (gd.wasCanceled()) return;
+    
+    // 3. - Retrieve parameters from the dialog
+    //      check, and save the preferences...
+    m_dBallRadius = gd.getNextNumber();
+    dVerbose = gd.getNextNumber();
+    m_bVerbose = false;
+    if(dVerbose != 0.0) m_bVerbose = true;
+    Prefs.set("sc.BallRadius", m_dBallRadius);
+    Prefs.set("sc.Verbose", dVerbose);
+    
+    // 4. Get down to business and do the work...	
+	
     int iBitDepth = m_objImp.getBitDepth();
     if(m_bVerbose){
       IJ.showMessage(String.format("%d", iBitDepth));
