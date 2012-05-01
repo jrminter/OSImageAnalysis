@@ -1,0 +1,204 @@
+% in R, run (twice) with
+% Sweave("/Users/jrminter/work/Sweave/ekRochEmp/R/ekRochEmp.Rnw")
+% tools::texi2dvi("ekRochEmp.tex", pdf=TRUE)
+
+\documentclass[12pt]{article} % use larger type; default would be 10pt
+
+%%% PACKAGES
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% PAGE DIMENSIONS
+\usepackage[margin=0.75in, letterpaper]{geometry}
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+
+\title{A Regression Analysis of Kodak's Rochester Employment}
+\author{John Minter}
+%\date{}
+
+\begin{document}
+
+\bibliographystyle{plain}	 % (uses file "plain.bst")
+
+\maketitle
+
+% supress numbering on pg 1
+\thispagestyle{empty}
+
+\section{Introduction}
+
+Kodak's Rochester Employment has been decreasing for
+many years. I decided to investigate the linearity of
+the decline and the consequences of that linearity.
+
+\section{Data}
+
+Most of the data was published in the Rochester
+Democrat and Chronicle at various times. I found
+other sources for data. All points are attributed
+in the accompanying data file.
+
+\section{Analysis}
+
+The regression analysis was performed using the Open
+Source statistical software package, R. The analysis
+was performed using a ``no-web'' file and the R package
+Sweave processed the the file, analyzing the R code ``chunks''
+and preparing a \LaTeX \ output file which was subsequently
+processed with pdflatex from the \TeX Live 2011 distribution.
+All of this was controlled with a batch file.
+
+\section{Analysis}
+
+The regression produced the parameters shown in
+Table~\ref{tab:reg_sum} below.
+
+
+\begin{center}
+<<echo=FALSE,results=tex>>=
+
+# set up for the plot and
+# make the table. 
+
+rm(list=ls())
+library(xtable)
+
+setwd("/Users/jrminter/git/OSImageAnalysis/ekRochEmp/R")
+strInFile <- "../dat/roc_emp.csv"
+
+raw.data <- read.csv(file=strInFile, head=TRUE, sep=",", as.is=TRUE)
+# print(names(raw.data))
+# let's make a vector of fractional years using
+# R's Date and POSIXlt classes
+lData <- length(raw.data$Date)
+x <- vector(mode="numeric",length=lData)
+for(i in 1:lData)
+{
+   a.dt <- as.Date(raw.data$Date[i], format='%Y-%m-%d')
+   p.dt <- as.POSIXlt(a.dt)
+   y.fr <- (p.dt$yday + 1) / 365
+   yr <- p.dt$year + 1900 + y.fr
+   x[i] <- yr
+}
+y <- raw.data$Rochester.Employment
+
+emp.lr <- lm(y~x)
+# print(summary(emp.lr))
+dummy.x <- seq(1980,2020,1)
+nPts <- length(dummy.x)
+dummy.y <- vector(mode='numeric',length=nPts)
+dummy.y[1:5] <- -1000.
+dummy.y[6:nPts] <- max(y)
+
+conf.frame <- data.frame(x=dummy.x)
+emp.conf <- predict(emp.lr, interval="conf", newdata = conf.frame)
+emp.pred <- predict(emp.lr, interval="pred", newdata = conf.frame)
+
+b <- emp.lr$coefficients[1]
+m <- emp.lr$coefficients[2]
+x.int <- -b/m
+
+zero.yr <- trunc(x.int, 0)
+zero.mo <- 12*(x.int-zero.yr)
+zero.day <- 30*(zero.mo - trunc(zero.mo, 0))
+zero.mo <- trunc(zero.mo, 0)
+zero.day <- trunc(zero.day, 0)
+
+str.zero <- sprintf("%d-%d-%d", zero.mo, zero.day, zero.yr)
+
+s <- summary(emp.lr)
+adj.r.sq <- s$adj.r.squared
+str.adj.r.sq <- sprintf("%.4f", round(adj.r.sq, 4))
+
+xtable(summary(emp.lr),
+caption="Summary statistics for the regression model",
+label="tab:reg_sum")
+
+@
+\end{center}
+
+The regression had an adjusted $R^{2} =$ \Sexpr{str.adj.r.sq}
+and a y-intercept (date of zero employment) of \Sexpr{str.zero}.
+A plot of the regression with the 95 \% confidence intervals
+for the regression is shown in Figure~\ref{fig:regr_plot}
+below.
+
+\begin{figure}[h!]
+\centering
+
+<<plot-reg, eval=TRUE, quiet=TRUE, echo=FALSE, term=FALSE, results=hide, fig=TRUE, include=TRUE, height=6,width=6>>=
+
+# set up constants for the plot
+v.cex  <- 1.2
+a.cex  <- 1.2
+p.cex  <- 1.1
+t.cex  <- 1.2
+st.cex <- 1.1
+l.cex  <- 1
+lw.fit <- 3
+lw.ax  <- 3
+lw.pts <- 2
+# plot the regression
+plot(dummy.x, dummy.y, type="n", xlab="", ylab="", axes=FALSE) # setting up coord. system
+points(x, y, pch=21, lwd=lw.pts, cex=p.cex)   
+matlines(conf.frame$x, emp.conf, lty=c(1,2,2), lwd=lw.fit, col=c("black","red","red"))
+matlines(conf.frame$x, emp.pred, lty=c(1,4,4), lwd=lw.fit, col=c("black","blue","blue"))
+# draw an axis on the bottom
+axis(1, cex.axis=a.cex, lwd=lw.ax)
+# draw an axis on the left
+axis(2, cex.axis=a.cex, lwd=lw.ax)
+# draw a box around the plot
+box(lwd=lw.ax)
+mtext("Year", side=1, line=2, cex=v.cex)
+mtext("Rochester Employment", side=2, line=2, cex=v.cex)
+legend("topright",
+       inset=.02,
+       title="Confidence Intervals",
+       c("line", "fit"),
+       col=c("red", "blue"),
+       lty=c(2,2),
+       lwd=c(lw.fit,lw.fit),
+       xjust=1, yjust=1, cex=a.cex,
+       horiz=FALSE)
+
+@
+
+\caption{Kodak Rochester employment plot. The y-intercept (date of zero employment) is \\
+\Sexpr{str.zero}. The confidence interval for the line is shown in red; the prediction interval in blue.}
+\label{fig:regr_plot}
+\end{figure}
+
+% \bibliography{mybib}     % expects file "mybib.bib"
+
+\end{document}
