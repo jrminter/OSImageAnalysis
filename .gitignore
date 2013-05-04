@@ -1,6 +1,6 @@
 # for Imaging-C
 *.sxu
-*.ini
+#*.ini
 *.aps
 *.mku
 *.scx
