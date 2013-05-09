@@ -31,10 +31,11 @@ import ij.Prefs;
 * Created by John Minter 2013-05-08
 * Revision History
 *    Date       Version    Comments
-* 2013-05-08   0.1.100     Initial prototype. 
+* 2013-05-09   0.1.100     Initial prototype. 
 
 *  TO DO:
-*  1. 
+*  1. Need to refactor, moving elements into functions in order
+*     to minimze repetition (DRY...)
 *    
 */
 
@@ -62,11 +63,11 @@ public class Analyze_Line implements PlugInFilter {
 
 	private ResultsTable m_rt = new ResultsTable();
 	private ImagePlus m_imp;
-	private boolean  m_bDraw; // draw into the overlay
+	private boolean m_bVerbose; // write log messages
 	private int m_nWidth;
 	private int m_nHeight;
 	
-	private String strVersion = "Analyze Line v0.1.100";
+	private String strVersion = "Analyze Line v. dVerbose0.1.100";
 	
 	public int setup(String arg, ImagePlus imp) {
 		// Ask to process stacks.
@@ -113,21 +114,21 @@ public class Analyze_Line implements PlugInFilter {
 		double dHiThrFr = Double.valueOf(strHiThrFr);
 		
 		
-		String strDraw = Prefs.getString(".draw.Line");
-		if(strDraw==null) strDraw="1.0";
-		double dDraw = Double.valueOf(strDraw);
+		String strVerbose = Prefs.getString(".line.verbose");
+		if(strVerbose==null) strVerbose="1.0";
+		double dVerbose = Double.valueOf(strVerbose);
 		
 		// Do the dialog box
 		GenericDialog gd = new GenericDialog(strVersion);
-		gd.addNumericField("   minArea  [sq px]:", dMinAreaPx, 1);
-		gd.addNumericField("   maxArea  [sq px]:", dMaxAreaPx, 1);
-		gd.addNumericField("   gap        [px] :", dGapPx, 1);
-		gd.addNumericField("Lo  Threshold [fr] :", dLoThrFr, 2);
-		gd.addNumericField("Med Threshold [fr] :", dMedThrFr, 2);
-		gd.addNumericField("Hi  Threshold [fr] :", dHiThrFr, 2);
-		gd.addNumericField(" draw into overlay:", dDraw, 1);
-		gd.addStringField ("              path:", strReportDir);
-		gd.addStringField ("            report:", strReportFile);
+		gd.addNumericField("   min Area [sq px]:", dMinAreaPx, 1);
+		gd.addNumericField("   max Area [sq px]:", dMaxAreaPx, 1);
+		gd.addNumericField("top/bottom gap [px]:", dGapPx, 1);
+		gd.addNumericField("  Lo Threshold [fr]:", dLoThrFr, 2);
+		gd.addNumericField(" Med Threshold [fr]:", dMedThrFr, 2);
+		gd.addNumericField("  Hi Threshold [fr]:", dHiThrFr, 2);
+		gd.addNumericField("      log messages :", dVerbose, 1);
+		gd.addStringField ("              path :", strReportDir);
+		gd.addStringField ("            report :", strReportFile);
 		gd.showDialog();
 		if (gd.wasCanceled()) return;
     
@@ -138,12 +139,12 @@ public class Analyze_Line implements PlugInFilter {
     dLoThrFr = gd.getNextNumber();
     dMedThrFr = gd.getNextNumber();
     dHiThrFr = gd.getNextNumber();
-    dDraw = gd.getNextNumber();
+    dVerbose = gd.getNextNumber();
     strReportDir = gd.getNextString();
     strReportFile = gd.getNextString();
         
-    m_bDraw = true;
-    if(dDraw < 1.0 ) m_bDraw = false;
+    m_bVerbose = true;
+    if(dVerbose < 1.0 ) m_bVerbose = false;
         
     strMinAreaPx = String.format("%.1f", dMinAreaPx );
     strMaxAreaPx = String.format("%.1f", dMaxAreaPx );
@@ -152,7 +153,7 @@ public class Analyze_Line implements PlugInFilter {
     strMedThrFr  = String.format("%.2f", dMedThrFr );
     strHiThrFr   = String.format("%.2f", dHiThrFr );
 
-    strDraw = String.format("%.1f", dDraw );
+    strVerbose = String.format("%.1f", dVerbose );
 
     String strReportPath = strReportDir + strReportFile;
     Prefs.set("minArea.px", strMinAreaPx);
@@ -161,7 +162,7 @@ public class Analyze_Line implements PlugInFilter {
 		Prefs.set("loThr.fr", strLoThrFr);
 		Prefs.set("medThr.fr", strMedThrFr);
 		Prefs.set("hiThr.fr", strHiThrFr);
-		Prefs.set("draw.Line", strDraw);   
+		Prefs.set("line.verbose", strVerbose);   
     Prefs.set("rptPath.pth", strReportDir);
 		Prefs.set("rptFile.fil", strReportFile);
 
@@ -203,7 +204,7 @@ public class Analyze_Line implements PlugInFilter {
 		double dGrayMuL = m_rt.getValue("Mean", 0);
 		double dGrayMuR = m_rt.getValue("Mean", 1);
 		double dGrayMuBkg = (dGrayMuL + dGrayMuR)/2.0;
-		IJ.log("mean gray bkg " + dGrayMuBkg);
+		if(m_bVerbose) IJ.log("mean gray bkg " + dGrayMuBkg);
 		m_rt.deleteRow(0);
 		m_rt.deleteRow(0);
 		tImp.close();
@@ -217,7 +218,7 @@ public class Analyze_Line implements PlugInFilter {
 				m_dMinSize, m_dMaxSize);
 		pa.analyze(tImp, tIp);
 		double dGrayMuLine = m_rt.getValue("Mean", 0);
-		IJ.log("mean gray line " + dGrayMuLine);
+		if(m_bVerbose) IJ.log("mean gray line " + dGrayMuLine);
 		m_rt.deleteRow(0);
 		tImp.close();
 
@@ -553,7 +554,7 @@ public class Analyze_Line implements PlugInFilter {
             
 */
 		
-		m_rt.show("analysis of " + iName);
+		// m_rt.show("analysis of " + iName);
 		
 	}
 
