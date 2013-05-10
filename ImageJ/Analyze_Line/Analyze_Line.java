@@ -34,9 +34,11 @@ import ij.Prefs;
 *    Date       Version    Comments
 * 2013-05-08   0.1.100     Initial prototype.
 * 2013-05-09   0.1.200     First refactoring 
+* 2013-05-10   0.1.300     cleaned up windows and variable names
+*                          and did a better job of commenting
 *
 *  TO DO:
-*  1. need to check results and find out how to close some windows
+*  1. need to check results with R
 *    
 */
 
@@ -95,7 +97,11 @@ public class Analyze_Line implements PlugInFilter {
 	}
 
 	public boolean getParameters(){
-			// 1 - Ask for parameters:
+		/*
+		* Recall last parametersfrom preference file, load dialog,
+		* get current parameters, populate member variables,
+		* and save to preferences as new defaults
+		*/
 		String strPrefsDir = Prefs.getPrefsDir();
 		
 		String strReportDir = Prefs.getString(".rptPath.pth");
@@ -187,9 +193,13 @@ public class Analyze_Line implements PlugInFilter {
 	}
 
 	public ParticleAnalyzer setupAnalyzer(){
-		int measurements = Analyzer.getMeasurements(); // defined in Set Measurements dialog
-		Analyzer.setMeasurements(0);
-		// make sure at least area, cennter of mass, and rect are measured		
+		/*
+		 * Create a particle analyzer to make the desired measurements
+		 * (area, center_of_mass, mean value, and the bounding box)
+		 * and return it to do the work...
+		 */
+		int measurements = Analyzer.getMeasurements();
+		Analyzer.setMeasurements(0);	
 		measurements = Analyzer.AREA + 
 				Analyzer.CENTER_OF_MASS + 
 				Analyzer.MEAN + 
@@ -202,19 +212,24 @@ public class Analyze_Line implements PlugInFilter {
 	  return pa;	
 	}
 
-	public void analyzeBoundary(ImagePlus workImp, double dThresh, double space, ResultsTable rtL, ResultsTable rtR ){
+	public void analyzeLineEdges(ImagePlus workImp, double dThresh, double dPxCal, ResultsTable rtL, ResultsTable rtR ){
+		/*
+		 * Detect and measure the points on the left and right edges of the supplied line segment
+		 * using the supplied gray level threshold. Return the coordinates of the left and right
+		 * edges as individual result tables. 
+		 */
 		ImageProcessor tIp = workImp.getProcessor();
 		tIp.setThreshold(0, dThresh,  ImageProcessor.NO_LUT_UPDATE);
 		workImp.updateImage();
 		ParticleAnalyzer pa = setupAnalyzer();
 		pa.analyze(workImp, tIp);
 		// get the centroids in microns and convert to px
-		float fX = (float) m_rt.getValue("XM", 0);
-		fX /= space;
-		float fY = (float) m_rt.getValue("YM", 0);
-		fY /= space;
-		int iX = (int) fX;
-		int iY = (int) fY;
+	  double dX = m_rt.getValue("XM", 0);
+		dX /= dPxCal;
+		double dY = m_rt.getValue("YM", 0);
+		dY /= dPxCal;
+		int iX = (int) dX;
+		int iY = (int) dY;
 		workImp.show();
 		IJ.doWand(iX, iY);
 		m_rt.deleteRow(0);
@@ -254,8 +269,8 @@ public class Analyze_Line implements PlugInFilter {
 				// keep - sep from top
         if (yh[i] < ((double)( m_nHeight)- m_dGapPx)){
         	//keep - sep from bottom
-        	double dXt = (xh[i] - fX)*space;
-        	double dYt = (yh[i] - fY)*space;
+        	double dXt = (xh[i] - dX)*dPxCal;
+        	double dYt = (yh[i] - dY)*dPxCal;
         	if(dXt > 0){
         		// it is a right side
         		rtR.setValue("X", nPtsR, dXt);
@@ -275,7 +290,14 @@ public class Analyze_Line implements PlugInFilter {
 		rtL.updateResults();
 	}
 
-	public void writeResults(){
+	public void writeResultsFile(){
+		/*
+		 * Extract the line edges from the six result tables and
+		 * write them to a comma-delimited text file (.csv) suitable
+		 * for input into R. Nota Bene: these lines may be of different
+		 * lengths, so pad the bottom of short lines with spaces
+		 * that R wil interpret as NA values. 
+		 */
 		String strLoXl, strLoYl, strLoXr, strLoYr;
 		String strMedXl, strMedYl, strMedXr, strMedYr;
 		String strHiXl, strHiYl, strHiXr, strHiYr, strLineOut;
@@ -286,7 +308,8 @@ public class Analyze_Line implements PlugInFilter {
     int nPtsMedR = m_rtMedR.getCounter();
     int nPtsHiL  = m_rtHiL.getCounter();
     int nPtsHiR  = m_rtHiR.getCounter();
-		
+
+		// find the longest line
 		int nGoodPts = Math.max(nPtsLoL, nPtsLoR);
 		nGoodPts = Math.max(nGoodPts, nPtsMedL);
 		nGoodPts = Math.max(nGoodPts, nPtsMedR);
@@ -353,11 +376,14 @@ public class Analyze_Line implements PlugInFilter {
 		catch (IOException e){
 			e.printStackTrace();
 		}
-		
-		
 	}
 
 	public void run(ImageProcessor ip) {
+		/*
+		 * This actually does the heavy lifting... Note that we need to
+		 * generate duplicate image processors for the intermediate
+		 * measurements.
+		 */
 		if (IJ.versionLessThan("1.46i"))
 			return;
 
@@ -375,10 +401,13 @@ public class Analyze_Line implements PlugInFilter {
 		IJ.run("Colors...",
 				"foreground=white background=white selection=yellow");
 		Calibration cal = m_imp.getCalibration();
-		float ps = (float) cal.pixelWidth;
+		double dPixWidth = cal.pixelWidth;
 
-
-		// 4. Now measure background ROIS intensities on a duplicate
+		/*
+		 * Now detect the two background ROIs on a duplicate
+		 * image processor, measure the mean gray level of each,
+		 * and store the average gray level for the background.
+		 */
 		ImagePlus tImp = m_imp.duplicate();
 		ImageProcessor tIp = tImp.getProcessor();
 		IJ.setAutoThreshold(tImp, "Default dark");
@@ -389,11 +418,19 @@ public class Analyze_Line implements PlugInFilter {
 		double dGrayMuR = m_rt.getValue("Mean", 1);
 		double dGrayMuBkg = (dGrayMuL + dGrayMuR)/2.0;
 		if(m_bVerbose) IJ.log("mean gray bkg " + dGrayMuBkg);
+		// clean up
 		m_rt.deleteRow(0);
 		m_rt.deleteRow(0);
 		tImp.close();
 
-		// 5. Now measure line ROI intensity on a duplicate
+		/*
+		 * Now detect the line ROI on a duplicate
+		 * image processor, measure the mean gray,
+		 * and store the average gray level for the line.
+		 * Store the mean difference in gray level between
+		 * line and background for subsequent threshold
+		 * operations.
+		 */
 		tImp = m_imp.duplicate();
 		tIp = tImp.getProcessor();
 		IJ.setAutoThreshold(tImp, "Default");
@@ -403,50 +440,57 @@ public class Analyze_Line implements PlugInFilter {
 		if(m_bVerbose) IJ.log("mean gray line " + dGrayMuLine);
 		m_rt.deleteRow(0);
 		tImp.close();
-
 		double dDeltaGray = dGrayMuBkg - dGrayMuLine;
 
-	  // 6. Analyse the line for the low delta fraction
+	  /*
+		 * Now detect the line ROI on a duplicate image processor
+		 * using the low delta fraction threshold, 
+		 * and measure the coordinates of the two edges, storing
+		 * the results in the appropriate result tables.
+		 */
 
 		double dThr = dGrayMuLine + m_dLoThrFr*dDeltaGray;
 		tImp = m_imp.duplicate();
-		analyzeBoundary(tImp, dThr, ps, m_rtLoL, m_rtLoR );
+		analyzeLineEdges(tImp, dThr, dPixWidth, m_rtLoL, m_rtLoR );
 		if(m_bVerbose) IJ.log("nLoPtsL " + m_rtLoL.getCounter());
 		if(m_bVerbose) IJ.log("nLoPtsR " + m_rtLoR.getCounter());
 		tImp.close();
 		
-	  // 7. Analyse the line for the high delta fraction
+	  /*
+		 * Now detect the line ROI on a duplicate image processor
+		 * using the high delta fraction threshold, 
+		 * and measure the coordinates of the two edges, storing
+		 * the results in the appropriate result tables.
+		 */
 
 		dThr = dGrayMuLine + m_dHiThrFr*dDeltaGray;
 		tImp = m_imp.duplicate();
-		analyzeBoundary(tImp, dThr, ps, m_rtHiL, m_rtHiR );
+		analyzeLineEdges(tImp, dThr, dPixWidth, m_rtHiL, m_rtHiR );
 		if(m_bVerbose) IJ.log("nHiPtsL " + m_rtHiL.getCounter());
 		if(m_bVerbose) IJ.log("nHiPtsR " + m_rtHiR.getCounter());
+		tImp.close();
 
 
-		// 8.  Analyse the line for the medium delta fraction
+	  /*
+		 * Now detect the line ROI on a duplicate image processor
+		 * using the medium delta fraction threshold, 
+		 * and measure the coordinates of the two edges, storing
+		 * the results in the appropriate result tables.
+		 */
 
 		dThr = dGrayMuLine + m_dMedThrFr*dDeltaGray;
 		tImp = m_imp.duplicate();
-		analyzeBoundary(tImp, dThr, ps, m_rtMedL, m_rtMedR );
+		analyzeLineEdges(tImp, dThr, dPixWidth, m_rtMedL, m_rtMedR );
 		if(m_bVerbose) IJ.log("nMedPtsL " + m_rtMedL.getCounter());
 		if(m_bVerbose) IJ.log("nMedPtsR " + m_rtMedR.getCounter());
-		tImp.show();
-		// m_rtMedL.show("L med of " + iName);
 
-		writeResults();
+		writeResultsFile();
 
+    /* 
+     *  Clean up empty results window
+     */
+	  TextWindow win = m_rt.getResultsWindow(); 
+    if (win!=null) win.close(); 
 	
-/*
-      filterImage(m_rt, m_imp,
-				ps, m_dMinAreaPx, m_dMaxAreaPx,
-				dMaxIntPx, strReportPath);
-            
-*/
-		
-		// m_rt.show("analysis of " + iName);
-		
 	}
-
-
 }
