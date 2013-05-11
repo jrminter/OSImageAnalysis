@@ -26,3 +26,4 @@ Thumbs.db
 # For this module
 config
 
+ImageJ/Analyze_Line/*.class
