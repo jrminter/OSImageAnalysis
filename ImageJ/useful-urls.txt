@@ -1,0 +1,4 @@
+Useful ImageJ URLs
+
+data conversion
+http://imagejdocu.tudor.lu/doku.php?id=howto:java:how_to_convert_data_type_x_into_type_y_in_java
