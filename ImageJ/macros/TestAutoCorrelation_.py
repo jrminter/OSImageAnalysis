@@ -1,8 +1,16 @@
 from ij import IJ
 from ij.process import ImageStatistics as IS
 import ij.WindowManager as WM
+import os
 
-strPath="D:/Data/images/cross-grating-img/"
+# N.B. this expects an environment variable with the path
+# to the root image folder containing a folder "std" with
+# standard images. This variable should be terminated with
+# a "/".
+strImgRoot = os.environ['IMG_ROOT']
+
+# note the expected folder structure
+strPath = strImgRoot + "std/cross-grating/"
 strName="cross-grating"
 strExt=".dm3"
 
