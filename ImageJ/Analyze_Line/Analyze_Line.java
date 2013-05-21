@@ -40,8 +40,12 @@ import ij.Prefs;
 *                          Convex hull to get rid of a nasty bug
 *                          where only half the polygon was transferred...
 *                          Also draw final overlay into image.
+*                          
+* 2013-05-20   0.1.500     Right now assume bg id light. need
+*                          to better eccomodate                         
 *  TO DO:
 *  1. need to check results with R. First test is not too bad
+*  Some bkg issues...
 *    
 */
 
@@ -66,7 +70,6 @@ public class Analyze_Line implements PlugInFilter {
   protected static final int INCLUDE_HOLES = 1024;
 
   private boolean m_bVerbose; // write log messages
-  
   private double m_dMinAreaPx = 5.;
   private double m_dMaxAreaPx=9999999.;
   private double m_dGapPx=1.0;
@@ -445,8 +448,11 @@ public class Analyze_Line implements PlugInFilter {
      * and measure the coordinates of the two edges, storing
      * the results in the appropriate result tables.
      */
-
-    double dThr = dGrayMuLine + m_dLoThrFr*dDeltaGray;
+ 
+    /*
+     * be consistent w/ current analySIS version
+     */
+    double dThr = dGrayMuBkg - m_dLoThrFr*dDeltaGray;
     tImp = m_imp.duplicate();
     analyzeLineEdges(tImp, dThr, dPixWidth, m_rtLoL, m_rtLoR );
     if(m_bVerbose) IJ.log("nLoPtsL " + m_rtLoL.getCounter());
@@ -460,7 +466,7 @@ public class Analyze_Line implements PlugInFilter {
      * the results in the appropriate result tables.
      */
 
-    dThr = dGrayMuLine + m_dHiThrFr*dDeltaGray;
+    dThr = dGrayMuBkg - m_dHiThrFr*dDeltaGray;
     tImp = m_imp.duplicate();
     analyzeLineEdges(tImp, dThr, dPixWidth, m_rtHiL, m_rtHiR );
     if(m_bVerbose) IJ.log("nHiPtsL " + m_rtHiL.getCounter());
@@ -475,7 +481,7 @@ public class Analyze_Line implements PlugInFilter {
      * the results in the appropriate result tables.
      */
 
-    dThr = dGrayMuLine + m_dMedThrFr*dDeltaGray;
+    dThr = dGrayMuBkg -  m_dMedThrFr*dDeltaGray;
     tImp = m_imp.duplicate();
     analyzeLineEdges(tImp, dThr, dPixWidth, m_rtMedL, m_rtMedR );
     if(m_bVerbose) IJ.log("nMedPtsL " + m_rtMedL.getCounter());
