@@ -1,14 +1,37 @@
+# AnaBX60IJ_.py
+#
+# Image-J Jython macro to process a series of TIF images recorded from
+# the IAM-1 stage micrometer on the Olympus BX-60 with with a
+# 100X/1.35 NA objective and a 2X transfer lens. Requires the 
+# Analyze_Line plugin.
+#
+# J. R. Minter
+#
+#    Date      By   Comments
+# 2013-05-21  JRM  Initial prototype. Requires Analyse_Line.class 
+#                  v. 0.1.500
+
+
 from ij import IJ
 import ij.util.Tools
 from java.awt import Color
 import os
 import sys
 
+def ensure_dir(f):
+  d = os.path.dirname(f)
+  if not os.path.exists(d):
+    os.makedirs(d)
+
 
 strImgRoot = os.environ['IMG_ROOT']
 # relative path to images
 strRel="/std/line/qm-03860-IAM1-BX60-tif/"
-strRptPath = strImgRoot + "/std/line/rpt/qm-03860-IAM1-BX60-tif/"
+strRptPath = strImgRoot + "/std/line/rpt/qm-03860-IAM1-BX60-50-tif/"
+strPngPath = strRptPath + "png/"
+ensure_dir(strRptPath)
+ensure_dir(strPngPath)
+
 strPath = strImgRoot + strRel
 umPerPx = 0.0368365
 strUmPerPx = str(umPerPx)
@@ -33,4 +56,9 @@ for file in os.listdir(strPath):
   strCmd = "min=10 max=999999 top/bottom=5 lo=0.25 med=0.50 hi=0.75 log=0 path="
   strCmd += strRptPath + " report=" + strRpt
   IJ.run("Analyze Line", strCmd)
-  
+  IJ.selectWindow(imp.getTitle())
+  strImgOut =  strPngPath + Tools.split(imp.getTitle(), ".")[0] + ".png"
+  IJ.saveAs("PNG", strImgOut)
+  IJ.run("Close")
+
+

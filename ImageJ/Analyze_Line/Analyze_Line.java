@@ -41,7 +41,7 @@ import ij.Prefs;
 *                          where only half the polygon was transferred...
 *                          Also draw final overlay into image.
 *                          
-* 2013-05-20   0.1.500     Right now assume bg id light. need
+* 2013-05-20   0.1.500     Right now assume bg is light. need
 *                          to better eccomodate                         
 *  TO DO:
 *  1. need to check results with R. First test is not too bad
@@ -80,7 +80,7 @@ public class Analyze_Line implements PlugInFilter {
   private int m_nWidth;
   private int m_nHeight;
 
-  private String strVersion = "Analyze Line v. 0.1.200";
+  private String strVersion = "Analyze Line v. 0.1.500";
   private String m_strReportPath = "C:\\report.csv";
 
   private ResultsTable m_rt = new ResultsTable();
