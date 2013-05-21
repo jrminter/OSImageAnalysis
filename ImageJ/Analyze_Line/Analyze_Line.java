@@ -398,6 +398,10 @@ public class Analyze_Line implements PlugInFilter {
       IJ.run("Invert LUT");
     }
     String iName = m_imp.getTitle();
+    if(m_bVerbose){
+      IJ.log("");
+      IJ.log("Analyzing image " + iName);
+    }
     IJ.run("Colors...",
         "foreground=white background=white selection=yellow");
     Calibration cal = m_imp.getCalibration();

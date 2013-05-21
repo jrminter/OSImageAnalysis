@@ -1,9 +1,9 @@
-# AnaBX60IJ_.py
+# AnaBX61IJ_.py
 #
 # Image-J Jython macro to process a series of TIF images recorded from
-# the IAM-1 stage micrometer on the Olympus BX-60 with with a
-# 100X/1.35 NA objective and a 2X transfer lens. Requires the 
-# Analyze_Line plugin.
+# the IAM-1 stage micrometer on the Olympus BX-61 with with a
+# 50X/0.85 NA objective and a 2X transfer lens w/ 2X interpolation. 
+# Requires the Analyze_Line plugin.
 #
 # J. R. Minter
 #
@@ -26,14 +26,14 @@ def ensure_dir(f):
 
 strImgRoot = os.environ['IMG_ROOT']
 # relative path to images
-strRel="/std/line/qm-03860-IAM1-BX60-tif/"
-strRptPath = strImgRoot + "/std/line/rpt/qm-03860-IAM1-BX60-50-tif/"
+strRel="/std/line/qm-03859-IAM1-BX61-tif/"
+strRptPath = strImgRoot + "/std/line/rpt/qm-03859-IAM1-BX61-50-tif/"
 strPngPath = strRptPath + "png/"
 ensure_dir(strRptPath)
 ensure_dir(strPngPath)
 
 strPath = strImgRoot + strRel
-umPerPx = 0.0368365
+umPerPx = 0.0369566
 strUmPerPx = str(umPerPx)
 
 strCal = "channels=1 slices=1 frames=1 unit=micron pixel_width="
