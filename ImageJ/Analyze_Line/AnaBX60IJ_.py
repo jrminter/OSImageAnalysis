@@ -26,8 +26,8 @@ def ensure_dir(f):
 
 strImgRoot = os.environ['IMG_ROOT']
 # relative path to images
-strRel="/std/line/qm-03860-IAM1-BX60-tif/"
-strRptPath = strImgRoot + "/std/line/rpt/qm-03860-IAM1-BX60-50-tif/"
+strRel="/std/Cr-line/qm-03860-IAM1-BX60-tif/"
+strRptPath = strImgRoot + "/std/Cr-line/rpt/qm-03860-IAM1-BX60-50-tif/"
 strPngPath = strRptPath + "png/"
 ensure_dir(strRptPath)
 ensure_dir(strPngPath)

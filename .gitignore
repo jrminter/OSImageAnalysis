@@ -27,6 +27,8 @@ Thumbs.db
 config
 magCalD692/.Rhistory
 ImageJ/Analyze_Line/*.class
+ImageJ/Analyze_Line/std/*.csv
+
 
 .Rproj.user
 

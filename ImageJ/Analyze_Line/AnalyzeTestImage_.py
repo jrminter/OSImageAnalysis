@@ -3,14 +3,14 @@ import ij.util.Tools
 from java.awt import Color
 import os
 
-strImgRoot = os.environ['IMG_ROOT']
-strImgDir = "/std/line/"
+strGitHome = os.environ['GIT_HOME']
+strImgDir = "/OSImageAnalysis/ImageJ/Analyze_Line/std/"
 umPerPx = 0.0368365
 
 # should not need to change below here...
-strImage = strImgRoot + strImgDir + "exemplar/line.tif"
+strImage = strGitHome + strImgDir + "line.tif"
 strUmPerPx = str(umPerPx)
-strRptPath = strImgRoot + strImgDir + "rpt/exemplar/"
+strRptPath = strGitHome + strImgDir
 
 strCal = "channels=1 slices=1 frames=1 unit=micron pixel_width="
 strCal += strUmPerPx
@@ -25,7 +25,7 @@ IJ.run("16-bit")
 imp.show()
 
 strRpt = Tools.split(imp.getTitle(), ".")[0] + "-ij.csv"
-strCmd = "min=10 max=999999 top/bottom=5 lo=0.25 med=0.50 hi=0.75 log=0 path="
+strCmd = "min=200 max=999999 top/bottom=5 lo=0.25 med=0.50 hi=0.75 log=0 path="
 strCmd += strRptPath + " report=" + strRpt
 
 IJ.run("Analyze Line", strCmd)
