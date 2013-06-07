@@ -1,0 +1,11 @@
+Package: measureLines
+Type: Package
+Title: Measure line charateristics from edge points
+Version: 1.0.2
+Date: 2013-05-15
+Author: John R. Minter
+Maintainer: John R. Minter <jrminter@gmail.com>
+Description: Analyze line segments for width, raggedness, and sharpness
+License: GPL (>=2) | BSD
+LazyLoad: yes
+Depends: R (>= 2.15.3), jrmmisc

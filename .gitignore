@@ -29,6 +29,20 @@ magCalD692/.Rhistory
 ImageJ/Analyze_Line/*.class
 ImageJ/Analyze_Line/std/*.csv
 
+# don't keep the Rcheck dirs
+jrm-r-pkgs/analab.Rcheck/
+jrm-r-pkgs/edp.Rcheck/
+jrm-r-pkgs/measureLines.Rcheck/
+jrm-r-pkgs/jrmmisc.Rcheck/
+# or the built packages
+jrm-r-pkgs/*.gz
+# or pdf in the test directory
+jrm-r-pkgs/testCode/*.pdf
+
+# want to ignore generated plug-in
+dm-plugins/CM-plugin/*.gtk
+dm-plugins/DMSUG-plugin/*.gtk
+dm-plugins/JRM-plugin/*.gtk
 
 .Rproj.user
 

@@ -1,0 +1,10 @@
+Problem with Peaks
+> require(edp)
+> make.test.ed.data(dir = './')
+> cc <- meas.camera.constant()
+Error in .Call("R_SpectrumBackground", as.vector(y), as.integer(iterations),  : 
+  "R_SpectrumBackground" not available for .Call() for package "Peaks"
+Calls: meas.camera.constant -> SpectrumBackground -> .Call
+Execution halted
+* installing to library ‘/Library/Frameworks/R.framework/Versions/3.0/Resources/library’
+* installing *source* package ‘edp’ ...
