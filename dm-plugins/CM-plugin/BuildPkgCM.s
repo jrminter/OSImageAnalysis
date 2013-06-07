@@ -1,10 +1,10 @@
 // Script file to Build the CM package
 // 2008-05-29 J. R. Minter
-// As written, expects package to be built from network share
+// As written, expects package to built rel to %GIT_ROOT%
 
 String strPkgName  = "CM";
 string strMenuName = "CM"
-String strSrcDir   = "M:\\git\\dm\\CM-plugin\\";
+String strSrcDir   = "%GIT_ROOT%\\OSImageAnalysis\\dm-plugins\\CM-plugin\\";
 String strScript;
 
 strScript = strSrcDir + "CM_Cathode_Tool.s";

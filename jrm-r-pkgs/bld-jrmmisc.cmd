@@ -1,5 +1,3 @@
-cd %GIT_HOME%
-cd "./jrm-r-pkgs"
 R CMD build jrmmisc
 R CMD check jrmmisc
 pause
