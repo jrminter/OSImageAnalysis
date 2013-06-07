@@ -1,0 +1,49 @@
+RE: DTSA2 simulation - reality checkRitchie, Nicholas to:john.r.minter@kodak.com04/01/2013 08:22 AMTry
+ept.WriteSpectrumAsEMSA1_0.write(noisy,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
+ 
+The JavaDoc provides details.
+ 
+ 
+Enum WriteSpectrumAsEMSA1_0.Mode
+*?????????java.lang.Object
+*????????? 
+*?????????java.lang.Enum<WriteSpectrumAsEMSA1_0.Mode>
+*????????? 
+*?????????gov.nist.microanalysis.EPQTools.WriteSpectrumAsEMSA1_0.Mode
+*?????????All Implemented Interfaces:
+java.io.Serializable, java.lang.Comparable<WriteSpectrumAsEMSA1_0.Mode>
+Enclosing class:
+WriteSpectrumAsEMSA1_0
+
+ 
+public static enum WriteSpectrumAsEMSA1_0.Mode
+extends java.lang.Enum<WriteSpectrumAsEMSA1_0.Mode>
+*????????? 
+*?????????Enum Constant Summary
+
+Enum Constants Enum Constant and DescriptionCOMPATIBLE FOR_DTSA FOR_TIA 
+ 
+ 
+=======================================
+Nicholas W. M. Ritchie 
+Physicist, Materials Measurement Science Division
+National Institute of Standards and Technology
+100 Bureau Drive, MS: 8371
+Gaithersburg, MD 20899-8371
+(Work) (301) 975-3929  (Cell) (240) 883-8982
+ 
+From: john.r.minter@kodak.com [mailto:john.r.minter@kodak.com] 
+Sent: Monday, 25 March, 2013 3:20 PM
+To: Ritchie, Nicholas
+Subject: DTSA2 simulation - reality check
+ 
+Dear Dr. Ritchie, 
+
+I have a working simulation using DTSA2. The one problem that I have is that I cannot store the spectra to disk - the WriteSpectrumAsEMSA1_0.write() complains that it doesn't like "0" (from your examples) for the third argument. I tried False and it didn't like that either.... 
+
+I am attaching my script hoping that you might take a quick note and let me know if there is anything I should do differently. I'd like to extend this and look at models of spheroidal particles on C supports to see how quickly an increase in diameter shows up in attenuation of the O peak caused by mass absorption by the Ag. 
+
+Thanks again, 
+Best Regards, 
+John R. Minter 
+|

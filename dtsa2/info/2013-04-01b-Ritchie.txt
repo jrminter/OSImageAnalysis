@@ -1,0 +1,23 @@
+RE: Using DTSA-II to simulate EDS spectra on thin substrates.Ritchie, Nicholas to:john.r.minter@kodak.com04/01/2013 07:38 AM
+The trick is the import module mcSimulate3.py.  There is a function called “multiFilm” that makes simulating films simple.  mcSimulate3 is located in the “Lib\dtsa2” directory in the DTSA-II install directory (usually in “C:\Users\You\AppData\Local\NIST\DTSA-II_Gemini” or some such.)
+ 
+Nicholas
+ 
+=======================================
+Nicholas W. M. Ritchie 
+Physicist, Materials Measurement Science Division
+National Institute of Standards and Technology
+100 Bureau Drive, MS: 8371
+Gaithersburg, MD 20899-8371
+(Work) (301) 975-3929  (Cell) (240) 883-8982
+ 
+From: john.r.minter@kodak.com [mailto:john.r.minter@kodak.com] 
+Sent: Monday, 25 March, 2013 11:02 AM
+To: Ritchie, Nicholas
+Subject: Using DTSA-II to simulate EDS spectra on thin substrates.
+ 
+Thank you for your hard work on DTSA-II. 
+
+I was hoping to used DTSA-II to simulate EDS spectra from films of increasing thickness of Ag2O on top of a 100 nm C film. It seems that one should be able to do this with a script, but I have not yet been able to figure out how. I'd appreciate some pointers... 
+Best Regards, 
+John R. Minter
