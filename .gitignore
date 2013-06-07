@@ -45,4 +45,5 @@ dm-plugins/DMSUG-plugin/*.gtk
 dm-plugins/JRM-plugin/*.gtk
 
 .Rproj.user
+.Rhistory
 
