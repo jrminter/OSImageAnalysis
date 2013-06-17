@@ -239,21 +239,19 @@
     <mChannelCount>4000</mChannelCount>
   </mDetProperties>
   <mCalibration class="SiLiCalibration" id="50">
-    <mActiveDate id="51">2013-06-11 04:00:01.0 UTC</mActiveDate>
+    <mActiveDate id="51">1970-01-01 00:00:00.0 UTC</mActiveDate>
     <mProperties id="52" serialization="custom">
       <SpectrumProperties>
         <null/>
-        <int>6</int>
+        <int>5</int>
         <string>Calibration GUID</string>
-        <string>24633344-9e58-fb9a-df7f-98361f6a694b</string>
-        <string>Energy Quadratic</string>
-        <double>7.143315404484335E-5</double>
+        <string>b4325e1d-c9b0-be7b-b115-98b1be740976</string>
         <string>Energy offset</string>
-        <double>8.497701142335213</double>
+        <double>0.0</double>
         <string>Energy scale</string>
-        <double>9.943149420440582</double>
+        <double>10.0</double>
         <string>Resolution</string>
-        <double>132.0636965093311</double>
+        <double>130.5958251953125</double>
         <string>Resolution measurement energy</string>
         <double>5898.7</double>
       </SpectrumProperties>
@@ -272,16 +270,14 @@
       <mLowEnergyCorrection>1.0</mLowEnergyCorrection>
       <mCoverage>1.0</mCoverage>
     </mContamination>
-    <mLineshape class="gov.nist.microanalysis.EPQLibrary.Detector.FanoSiLiLineshape" id="56">
-      <mFanoFactor>0.12</mFanoFactor>
-      <mNoise>6.551324577155931</mNoise>
-      <mScale>1.0</mScale>
+    <mLineshape class="BasicSiLiLineshape" id="56">
+      <mFWHMatMnKa>130.5958251953125</mFWHMatMnKa>
     </mLineshape>
-    <mName>fano=0.1200, noise=6.55 eV</mName>
+    <mName>130.6 eV</mName>
     <mFudgeFactor>1.0</mFudgeFactor>
     <mFirstLElement>20</mFirstLElement>
     <mFirstKElement>5</mFirstKElement>
     <mFirstMElement>57</mFirstMElement>
-    <mFWHM>132.0636965093311</mFWHM>
+    <mFWHM>130.5958251953125</mFWHM>
   </mCalibration>
 </gov.nist.microanalysis.EPQLibrary.Detector.EDSDetector>
