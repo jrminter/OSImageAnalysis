@@ -12,8 +12,8 @@ Miscellaneous functions in the spirit of DRY...
 \tabular{ll}{
 Package: \tab jrmmisc\cr
 Type: \tab Package\cr
-Version: \tab 1.0.1\cr
-Date: \tab 2015-05-16\cr
+Version: \tab 1.0.2\cr
+Date: \tab 2013-06-17\cr
 License: \tab GPL (>=2) | BSD\cr
 }
 To do \ldots
