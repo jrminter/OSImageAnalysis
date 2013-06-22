@@ -1,6 +1,6 @@
 <gov.nist.microanalysis.EPQLibrary.Detector.EDSDetector id="1">
   <mDetProperties id="2">
-    <mName>CM20UT-EDAX-RTEM</mName>
+    <mName>FEI CM20UT EDAX-RTEM</mName>
     <mProperties id="3" serialization="custom">
       <SpectrumProperties>
         <null/>

@@ -1,6 +1,6 @@
 <gov.nist.microanalysis.EPQLibrary.Detector.EDSDetector id="1">
   <mDetProperties id="2">
-    <mName>Brucker 5 ev/ch</mName>
+    <mName>NIST JXA8500F Brucker-SDD</mName>
     <mProperties id="3" serialization="custom">
       <SpectrumProperties>
         <null/>

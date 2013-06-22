@@ -1,0 +1,66 @@
+DTSA-II Setup
+========================================================
+
+These are John Minter's tips for setting up a consistent
+DTSA-II installation across several computers with
+different operating systems.
+
+Our goal is to get ***consistent*** detectors and
+standards. At the moment, much of this is kludgy.
+DTSA seems to make it hard to change some of the
+defaults. My long term goal is to be able to create
+a reproducible environment from jython scripts that
+set up instruments, detectors, and standards from
+version control.
+
+# Initial setup
+
+## Instrument/Detector setup
+
+1. Start with a ***clean install***. Use Nicholas Ritchie's
+   deleteDetector.py Jython script to
+   ``deleteDetector(d1)`` to get rid of the default
+   detector and ``Probe`` instrument.
+2. Add my instruments and detectors ***in this order
+   with these names:***
+   - ``FEI CM20UT`` (40-200kV) importing 
+      ``1-FEI CM20UT EDAX-RTEM.xdet``.
+   - ``FEI FIB 620`` (5-30kV) importing 
+      ``2-FEI FIB 620 EDAX-RTEM.xdet``.
+   - ``NIST JXA8500F`` (5-30kV) importing 
+      ``3-NIST JXA8500F Brucker-SDD.xdet``.
+
+Note that detectors can be imported from the
+``$GIT_HOME/OSImageAnalysis/dtsa2/detectors``
+directory. This will make strings in scripts much more
+robust.
+
+When you get done, the instruments preferences
+should look like this:
+
+![default image preferences](img/default-detectors.png)
+
+***Note*** I tried to do this from Jython scripts but
+seem to have trouble setting up and deleting instrument
+directly from the scripts.
+
+
+## Convenient environment variables
+
+These are useful for scripts and lets you use
+relative paths that don't break across systems.
+
+1. ``HOME`` (typically already exists on *nix)
+2. ``GIT_HOME`` root directory for repositories from github.
+    You ***do*** use git...
+3. ``IMG_ROOT`` root directory for image storage.
+
+## Consistent materials and standards
+I keep mine in
+``$GIT_HOME/OSImageAnalysis/dtsa2/stds/stds.py``
+
+This is helpful because
+
+1. It is a text based file compatible with version control
+2. One can add comments in the file with the source of the information.
+   

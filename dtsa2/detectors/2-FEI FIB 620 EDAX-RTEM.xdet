@@ -1,6 +1,6 @@
 <gov.nist.microanalysis.EPQLibrary.Detector.EDSDetector id="1">
   <mDetProperties id="2">
-    <mName>FEI620-EDAX-RTEM</mName>
+    <mName>FEI FIB620 EDAX-RTEM</mName>
     <mProperties id="3" serialization="custom">
       <SpectrumProperties>
         <null/>

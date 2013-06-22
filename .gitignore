@@ -44,6 +44,9 @@ dm-plugins/CM-plugin/*.gtk
 dm-plugins/DMSUG-plugin/*.gtk
 dm-plugins/JRM-plugin/*.gtk
 
+dtsa2/index.md
+dtsa2/index.html
+
 .Rproj.user
 .Rhistory
 
