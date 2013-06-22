@@ -1,5 +1,6 @@
 R CMD build jrmmisc
 R CMD check jrmmisc
 pause
-R CMD INSTALL "./jrmmisc_1.0.1.tar.gz"
+R CMD INSTALL "./jrmmisc*.gz"
+del jrmmisc*.gz
 pause
