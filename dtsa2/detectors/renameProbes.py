@@ -8,7 +8,7 @@ import shutil
 from gov.nist.microanalysis.EPQDatabase import Session
 
 # change as needed
-curNames=["FEI CM20UT D692", "NIST JXA-8500F", "FEI Dual Beam 620"]
+curNames=["NIST JXA-8500F", "FEI Dual Beam 620", "FEI CM20UT D692"]
 newNames=["FEICM20UT", "JXA3500F", "FEI620"]
 
 gitHome=os.environ['GIT_HOME']
