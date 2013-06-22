@@ -21,7 +21,8 @@ version control.
    deleteDetector.py Jython script to
    ``deleteDetector(d1)`` to get rid of the default
    detector and ``Probe`` instrument.
-2. Add my instruments and detectors ***in this order
+2. Restart DTSA
+3. Add my instruments and detectors ***in this order
    with these names:***
    - ``FEI CM20UT`` (40-200kV) importing 
       ``1-FEI CM20UT EDAX-RTEM.xdet``.
