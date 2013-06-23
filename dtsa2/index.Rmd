@@ -94,5 +94,6 @@ This is helpful because
 2. One can add comments in the file with the source of the information.
 
 ## Odd, useful information
-1. On MacOSX, the preferences are stored in ``$HOME/Library/Preferences/gov.nist.microanalysis.plist`` Note: editing this file is the easiest way to move the location of the default directories. 
+1. On MacOSX, the preferences are stored in ``$HOME/Library/Preferences/gov.nist.microanalysis.plist`` Note: editing this file is the easiest way to move the location of the default directories.
+2. On Windows, the preferences are srored in the registry. The base key is ``[HKEY_CURRENT_USER\Software\JavaSoft\Prefs\gov]``. Note that the paths tend to use a lot of escapes. Note the Base Path key (``[HKEY_CURRENT_USER\Software\JavaSoft\Prefs\gov\nist\microanalysis\dtsa2]``) that is set to ``"/Base /Path"="/C:///Users//jrminter///My /Documents//work//dtsa"`` on crunch. One can export the whole configuration using ``regedit``
    
