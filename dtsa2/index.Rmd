@@ -68,7 +68,7 @@ Note how the Python dictionaries are listed in alphabetical order, but the indic
 
 ***Note*** I tried to do this from Jython scripts but
 seem to have trouble setting up and deleting instrument
-directly from the scripts.
+directly from the scripts. One ***can*** zip up the documents and database folders and restore...
 
 
 ## Convenient environment variables
@@ -94,5 +94,5 @@ This is helpful because
 2. One can add comments in the file with the source of the information.
 
 ## Odd, useful information
-1. On MacOSX, the preferences are stored in ``$HOME/Library/Preferences/gov.nist.microanalysis.plist``
+1. On MacOSX, the preferences are stored in ``$HOME/Library/Preferences/gov.nist.microanalysis.plist`` Note: editing this file is the easiest way to move the location of the default directories. 
    
