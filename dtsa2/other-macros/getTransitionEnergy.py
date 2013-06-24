@@ -43,12 +43,43 @@ def getLalphaEnergy(elmName):
       return -1.0
   except jl.IllegalArgumentException:
     pass
-    
-en = getKalphaEnergy('Cu')
+
+def getKLenergy(elmName):
+  """getKLenergy(elmName)
+  returns the weighted energy (in keV) for the element's K-alpha and L-alpha lines"""
+  enK = getKalphaEnergy(elmName)
+  enL = getLalphaEnergy(elmName)
+  res = "%s - K-alpha = %.4f, L-alpha = %.4f" % (elmName, enK, enL)
+  return res
+  
+  
+
+en = getKLenergy('Cu')
 print (en)
-en = getKalphaEnergy('Al')
+
+en = getKLenergy('Mo')
 print (en)
-en = getLalphaEnergy('Cu')
+
+en = getKLenergy('Ni')
 print (en)
-en = getLalphaEnergy('Al')
-print (en)
+
+el='Al'
+en = getKalphaEnergy(el)
+res = "%s - K-alpha = %.4f" % (el, en)
+print (res)
+
+el='C'
+en = getKalphaEnergy(el)
+res = "%s - K-alpha = %.4f" % (el, en)
+print (res)
+
+el='O'
+en = getKalphaEnergy(el)
+res = "%s - K-alpha = %.4f" % (el, en)
+print (res)
+
+el='F'
+en = getKalphaEnergy(el)
+res = "%s - K-alpha = %.4f" % (el, en)
+print (res)
+
