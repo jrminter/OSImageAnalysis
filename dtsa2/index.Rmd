@@ -3,7 +3,21 @@ DTSA-II Setup
 
 These are John Minter's tips for setting up a consistent
 DTSA-II installation across several computers with
-different operating systems.
+different operating systems. There are some exemplar 
+macros. The first section in this document I call
+***Alchemy*** because they are useful tips I learned,
+often the hard way...
+
+# Alchemy
+
+## Consistent spectrum display
+
+If you have a series of Scriptable spectrum objects, ``spec[i]`` and you
+display them with ``spec[i].display()`` they will all be displayed with
+the same color. You typically don't want this. If you instead
+``display(spec[i])``, they will have different colors.
+
+# Initial setup
 
 Our goal is to get ***consistent*** detectors and
 standards. At the moment, much of this is kludgy.
@@ -13,7 +27,7 @@ a reproducible environment from Jython scripts that
 set up instruments, detectors, and standards from
 version control.
 
-# Initial setup
+
 
 ## Instrument/Detector setup
 
