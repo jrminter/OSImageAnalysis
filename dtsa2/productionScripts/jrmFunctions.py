@@ -1,12 +1,23 @@
 # jrmFunctions.py
 # John Minter's DTSA-II Jython Script Functions
 # Licenced under the GPL2 | BSD License
+# Version 0.9.1  2013-07-11 - cleans up after loading
 # Version 0.9.0  2013-06-26
 #
 
 import os
 import sys
 import shutil
+
+gitDir=os.environ['GIT_HOME']
+relDir="/OSImageAnalysis/dtsa2/productionScripts"
+pyrDir="./jrmFunctions Results"
+
+curDir=os.getcwd()
+
+wd=gitDir+relDir
+os.chdir(wd)
+
 
 # Define functions
 def clearAllSpectra():
@@ -116,4 +127,7 @@ def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
   fsw=wrap(fs)
   return fsw
 
-
+# clean up cruft
+shutil.rmtree(pyrDir)
+# back where we started
+os.chdir(curDir)
