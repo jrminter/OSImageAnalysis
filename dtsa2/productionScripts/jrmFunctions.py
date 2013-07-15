@@ -109,7 +109,7 @@ def getKLenergy(elmName):
   return res
 
 def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
-  """spcTopHatFilter(spc, det, e0, fw=150, norm=False):
+  """spcTopHatFilter(spc, det, e0, fw=150, norm=False)
   Compute a top hat filter for spectrum spc with the given detector
   the specified kV (e0) with the desired filter width and normalization.
   Loaded from jrmFunctions.py.
@@ -126,6 +126,55 @@ def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
   fs.getProperties().setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, fltName)
   fsw=wrap(fs)
   return fsw
+  
+def simBrehmTEM(det, e0, matl, matlThick, subMat, subThick, nTraj=10000, dose=150, addNoise=True):
+  """simBrehmTEM(det, e0, matl, matlThick, subMat, subThick, nTraj=10000, dose=150, addNoise=True)
+  Simulate the brehmstrahlung continuum spectrum for the detector (det),
+  at the accelerating voltage (e0) keV, for the DTSA material (matl) with
+  thickness (matlThick) in nm on the substrate DTSA material (subMat) with
+  thickness (subThick) in nm by computing nTraj trajectories assuming a dose
+  (dose, in nA) and if desired, (addNoise) simulating a noisy spectrum.
+  
+  An example:
+  det=findDetector("FEI CM20UT EDAX-RTEM")
+  # create materials
+  ago=epq.Material(epq.Composition([epq.Element.Ag, epq.Element.O],[0.930958,0.069042]), epq.ToSI.gPerCC(7.14))
+  c=epq.MaterialFactory.createPureElement(epq.Element.C)
+  brehm = simBrehmTEM(det, 200.0, ago, 200.0, c, 50.0, nTraj=10000, dose=150, addNoise=True)
+  display(brehm)
+  """
+  layTh=matlThick*1.0e-9
+  subTh=subThick*1.0e-9
+  # create a simulator and initialze initialize it.
+  monte=nm.MonteCarloSS()
+  monte.setBeamEnergy(epq.ToSI.keV(e0))
+  # create the film
+  lay=nm.MultiPlaneShape.createFilm([0.0, 0.0, -1.0],[0.0, 0.0, 0.0], layTh)
+  # create the substrate
+  sub=nm.MultiPlaneShape.createFilm([0.0, 0.0, -1.0],[0.0, 0.0,layTh], subTh)
+  monte.addSubRegion(monte.getChamber(),matl,lay)
+  monte.addSubRegion(monte.getChamber(),subMat,sub)
+  # add event listener to model bremsstrahlung
+  brem=nm.BremsstrahlungEventListener(monte,det)
+  monte.addActionListener(brem)
+  # reset the detector and run the trajectories
+  det.reset()
+  monte.runMultipleTrajectories(nTraj)
+  spec=det.getSpectrum(dose*1.0e-9 / (nTraj * epq.PhysicalConstants.ElectronCharge))
+  props=spec.getProperties()
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName,"Computed brehmstrahlung (%g nm matl, %g nm sub)" % (matlThick, subThick))
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, dose)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
+  if(addNoise==True):
+    noisy=epq.SpectrumUtils.addNoiseToSpectrum(spec,1.0)
+    noisy.getProperties().setTextProperty(epq.SpectrumProperties.SpectrumDisplayName,"Computed noisy brehmstrahlung (%g nm matl, %g nm sub)" % (matlThick, subThick))
+    return wrap(noisy)
+  else:
+    return wrap(spec)
+
+  
+  
 
 # clean up cruft
 shutil.rmtree(pyrDir)
