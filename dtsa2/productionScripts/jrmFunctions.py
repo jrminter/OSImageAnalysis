@@ -108,6 +108,14 @@ def getKLenergy(elmName):
   res = {"K-alpha" : enK, "L-alpha" : enL}
   return res
 
+def renameSpec(spc, newName):
+  """renameSpec(spc, newName)
+  change the name of a current spectrum to newName
+  """
+  spc.getProperties().setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, newName)
+  spc=wrap(spc)
+  return spc
+
 def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
   """spcTopHatFilter(spc, det, e0, fw=150, norm=False)
   Compute a top hat filter for spectrum spc with the given detector
