@@ -20,6 +20,40 @@ os.chdir(wd)
 
 
 # Define functions
+
+def anaNiCuKR(unSpec, niSpec, cuSpec, det, e0):
+  """anaNiCuKR(unSpec, niSpec, cuSpec, det, e0)
+  analyze the K-Ratios for Ni and Cu from unknown (unSpec) spectrum using
+  standard spectra niSpec and cuSpec recorded from the detector identified
+  by the string (det) at an accelerating voltage (e0) kV. Returns a list
+  with the unknown name ('name') and the K-Ratios ('Ni' and 'Cu'). 
+  
+  Example:
+  theKR = anaNiCuKR(unSpc, niSpc, cuSpc, "FEI FIB620 EDAX-RTEM", 15.0)
+  """
+  # first, prepare the spectra
+  sw=wrap(unSpec)
+  unSpec=sw
+  sw=wrap(niSpec)
+  niSpec = sw
+  sw=wrap(cuSpec)
+  cuSpec = sw
+  # Now set up the calc
+  xrtsNi = epq.XRayTransitionSet(epq.Element.Ni, epq.XRayTransitionSet.K_FAMILY)
+  xrtsCu = epq.XRayTransitionSet(epq.Element.Cu, epq.XRayTransitionSet.K_FAMILY)
+  qa = epq.CompositionFromKRatios()
+  det = Database.findDetector(det)
+  ff=epq.FilterFit(det,epq.ToSI.keV(e0))
+  ff.addReference(element("Ni"),niSpec)
+  ff.addReference(element("Cu"),cuSpec)
+  # get the k-ratios from the unknown
+  krs=ff.getKRatios(unSpec)
+  krNi=krs.getKRatio(xrtsNi)
+  krCu=krs.getKRatio(xrtsCu)
+  name=unSpec.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
+  return {'name': name, 'Ni': krNi, 'Cu': krCu}
+
+
 def clearAllSpectra():
   """clearAllSpectra()
   Clear all spectra from the data manager. Loaded from jrmFunctions.py."""
