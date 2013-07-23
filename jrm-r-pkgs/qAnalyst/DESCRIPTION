@@ -1,0 +1,15 @@
+Package: qAnalyst
+Type: Package
+Title: Control Charts, Capability and Distribution Identification
+Version: 0.6.5
+Date: 2013-07-23
+URL: www.quantide.com
+Author: Andrea Spano'
+Maintainer: Andrea Spano' <andrea.spano@quantide.com>
+Description: qAnalyst performs: control charts for variables and
+        attributes according to Douglas C. Montgomery Introduction to
+        Statistical Quality Control book, Capability analysis for
+        normal and non - normal distributions and Distributions
+        Identification. Patched by J. R. Minter for R-3.0.1
+License: GPL (>= 2)
+Depends: lattice, MASS, car, SuppDists
