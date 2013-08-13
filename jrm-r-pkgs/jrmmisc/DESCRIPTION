@@ -1,8 +1,8 @@
 Package: jrmmisc
 Type: Package
 Title: John Minter's miscellaneous functions
-Version: 1.0.2
-Date: 2013-06-17
+Version: 1.0.3
+Date: 2013-08-13
 Author: John R. Minter
 Maintainer: John R. Minter <jrminter@gmail.com>
 Description: Miscellaneous functions in the spirit of DRY...
