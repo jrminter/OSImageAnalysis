@@ -12,8 +12,8 @@ Miscellaneous functions in the spirit of DRY...
 \tabular{ll}{
 Package: \tab jrmmisc\cr
 Type: \tab Package\cr
-Version: \tab 1.0.3\cr
-Date: \tab 2013-08-13\cr
+Version: \tab 1.0.4\cr
+Date: \tab 2013-08-15\cr
 License: \tab GPL (>=2) | BSD\cr
 }
 To do \ldots
@@ -34,9 +34,15 @@ v.ucl <- v.u.cl(x)
 v.lcl <- v.l.cl(x)
 
 # For Zn from Pouchou, Mickrochim Acta, 138, 2002 p. 135. Note the table has 2 typos
-thick1 <- t.nm.from.ug.sq.cm(25.0, 7.14)
+thick1 <- thickNmFromUgPerSqCm(25.0, 7.14)
 
 # For Ni from ICP data
-thick2 <- t.nm.from.mg.sq.ft(16.0, 8.90)
+thick2 <- thickNmFromMgPerSqFt(16.0, 8.90)
+
+# For Zn from Pouchou 2002a for Zn 36 nm -> 26 ug/sq.cm
+laydown <- laydownUgPerSqCmtFromThickNm(36, 7.14)
+
+# For Ni from ICP data
+laydown <- laydownMgPerSqFtFromThickNm (112.6, 8.90)
 
 }

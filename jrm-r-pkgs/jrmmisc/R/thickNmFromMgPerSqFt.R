@@ -1,4 +1,4 @@
-t.nm.from.mg.sq.ft <- function(mg.sq.ft, density){
+thickNmFromMgPerSqFt <- function(mg.sq.ft, density){
   # compute thickness in nm from laydown in mg/sq ft and
   # density in g/cm3
   g.sq.cm <- mg.sq.ft / 9.29e5
