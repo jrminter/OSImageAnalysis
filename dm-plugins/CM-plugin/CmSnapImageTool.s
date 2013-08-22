@@ -165,6 +165,15 @@ class CmSnapImageTool : uiframe
     g_nImgNum +=1
     SetPersistentNumberNote("SnapIt:nImgNum", g_nImgNum)
     ImgNum.DLGValue(g_nImgNum)
+	
+    number fMag
+    number bOK = GetPersistentNumberNote("Microscope Info:Indicated Magnification", fMag)
+    // result("Starting Indicated Mag: " + fMag + "\n")
+
+
+    number nMag = EMGetMagnification()
+    // result("Set Indicated Mag to: " + nMag + "\n")
+    SetPersistentNumberNote("Microscope Info:Indicated Magnification", nMag)
     
     // TagGroup tg = self.LookUpElement("ImgNumField")
     // If (tg.TagGroupIsValid()) tg.DLGValue(g_nImgNum)
