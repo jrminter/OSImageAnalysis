@@ -1,8 +1,9 @@
 # jrmFunctions.py
 # John Minter's DTSA-II Jython Script Functions
-# Licenced under the GPL2 | BSD License
+# Licensed under the GPL2 | BSD License
+# Version 0.9.2  2013-08-23 - added function anaNiCuKRimpW
 # Version 0.9.1  2013-07-11 - cleans up after loading
-# Version 0.9.0  2013-06-26
+# Version 0.9.0  2013-06-26 - initial release
 #
 
 import os
@@ -53,6 +54,42 @@ def anaNiCuKR(unSpec, niSpec, cuSpec, det, e0):
   name=unSpec.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
   return {'name': name, 'Ni': krNi, 'Cu': krCu}
 
+def anaNiCuKRimpW(unSpec, niSpec, cuSpec, wSpec, det, e0):
+  """anaNiCuKRimpW(unSpec, niSpec, cuSpec, wSpec, det, e0)
+  analyze the K-Ratios for Ni and Cu from unknown (unSpec) spectrum in the
+  presence of W impurity using standard spectra niSpec, cuSpec, and wSpec
+  recorded from the detector identified by the string (det) at an accelerating
+  voltage (e0) kV. Returns a list with the unknown name ('name') and the
+  K-Ratios ('Ni' and 'Cu'). 
+  
+  Example:
+  theKR = anaNiCuKRimpW(unSpc, niSpc, cuSpc, wSpec, "FEI FIB620 EDAX-RTEM", 15.0)
+  """
+  # first, prepare the spectra
+  sw=wrap(unSpec)
+  unSpec=sw
+  sw=wrap(niSpec)
+  niSpec = sw
+  sw=wrap(cuSpec)
+  cuSpec = sw
+  sw=wrap(wSpec)
+  wSpec = sw
+  # Now set up the calc
+  xrtsNi = epq.XRayTransitionSet(epq.Element.Ni, epq.XRayTransitionSet.K_FAMILY)
+  xrtsCu = epq.XRayTransitionSet(epq.Element.Cu, epq.XRayTransitionSet.K_FAMILY)
+  qa = epq.CompositionFromKRatios()
+  det = Database.findDetector(det)
+  ff=epq.FilterFit(det,epq.ToSI.keV(e0))
+  ff.addReference(element("Ni"),niSpec)
+  ff.addReference(element("Cu"),cuSpec)
+  ff.addReference(element("W"),wSpec)
+  # get the k-ratios from the unknown
+  krs=ff.getKRatios(unSpec)
+  krNi=krs.getKRatio(xrtsNi)
+  krCu=krs.getKRatio(xrtsCu)
+  name=unSpec.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
+  return {'name': name, 'Ni': krNi, 'Cu': krCu}
+
 
 def clearAllSpectra():
   """clearAllSpectra()
@@ -89,7 +126,7 @@ def ensureDir(d):
 
 def getKalphaEnergy(elmName):
   """getKalphaEnergy("Cu")
-  Returns the transion energy (in keV) for the element's K-alpha
+  Returns the transition energy (in keV) for the element's K-alpha
   line as the weighted sum of Ka1 and Ka2. Loaded from jrmFunctions.py."""
   elm = element(elmName)
   xrt = epq.XRayTransition.KA1
@@ -112,7 +149,7 @@ def getKalphaEnergy(elmName):
 
 def getLalphaEnergy(elmName):
   """getLalphaEnergy("Cu")
-  Returns the transion energy (in keV) for the element's L-alpha line as
+  Returns the transition energy (in keV) for the element's L-alpha line as
   the weighted sum of La1 and La2. Loaded from jrmFunctions.py."""
   elm = element(elmName)
   xrt = epq.XRayTransition.LA1
@@ -136,7 +173,7 @@ def getLalphaEnergy(elmName):
 def getKLenergy(elmName):
   """getKLenergy(elmName)
   returns the weighted energy (in keV) for the element's K-alpha and
-  L-alpha lines as a dictonary. Loaded from jrmFunctions.py."""
+  L-alpha lines as a dictionary. Loaded from jrmFunctions.py."""
   enK = getKalphaEnergy(elmName)
   enL = getLalphaEnergy(elmName)
   res = {"K-alpha" : enK, "L-alpha" : enL}
@@ -171,7 +208,7 @@ def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
   
 def simBrehmTEM(det, e0, matl, matlThick, subMat, subThick, nTraj=10000, dose=150, addNoise=True):
   """simBrehmTEM(det, e0, matl, matlThick, subMat, subThick, nTraj=10000, dose=150, addNoise=True)
-  Simulate the brehmstrahlung continuum spectrum for the detector (det),
+  Simulate the bremsstrahlung continuum spectrum for the detector (det),
   at the accelerating voltage (e0) keV, for the DTSA material (matl) with
   thickness (matlThick) in nm on the substrate DTSA material (subMat) with
   thickness (subThick) in nm by computing nTraj trajectories assuming a dose

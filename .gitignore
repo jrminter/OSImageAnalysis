@@ -34,6 +34,7 @@ jrm-r-pkgs/analab.Rcheck/
 jrm-r-pkgs/edp.Rcheck/
 jrm-r-pkgs/measureLines.Rcheck/
 jrm-r-pkgs/jrmmisc.Rcheck/
+jrm-r-pkgs/tikzDevice.Rcheck/
 # or the built packages
 jrm-r-pkgs/*.gz
 # or pdf in the test directory
