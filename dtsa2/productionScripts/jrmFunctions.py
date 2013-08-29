@@ -1,6 +1,7 @@
 # jrmFunctions.py
 # John Minter's DTSA-II Jython Script Functions
 # Licensed under the GPL2 | BSD License
+# Version 0.9.3  2013-08-29 - added function compPhiRhoZ
 # Version 0.9.2  2013-08-23 - added function anaNiCuKRimpW
 # Version 0.9.1  2013-07-11 - cleans up after loading
 # Version 0.9.0  2013-06-26 - initial release
@@ -21,6 +22,49 @@ os.chdir(wd)
 
 
 # Define functions
+
+def compPhiRhoZ(comp, det, e0, nSteps=100, simple=True, outdir="./"):
+  """compPhiRhoZ(comp, det, e0, nSteps=100, simple=True, outdir="./")
+  Computes the ionization  as a function of dept for the composition
+  (comp) with the specified detector (det) with the specified number
+  of steps (nSteps). If simple is true, the XPP1991 algorithm is
+  used, otherwise the full PAP1991 algorithm is used. The results
+  are written to a .csv file in the output directory (outdir)
+  Example:
+  e0     =  25
+  nSteps = 200
+  cu     = material("Cu", density=8.96)
+  det    = findDetector("FEI FIB620 EDAX-RTEM")
+  compPhiRhoZ(cu, det, e0, nSteps, simple=True, outdir="c:/temp/")
+  """
+  sName = comp.getName()
+  if(simple == True):
+    alg = epq.XPP1991()
+    sFile = "%s-xpp-prz-%g-kv" % (sName, e0)
+  else:
+    alg = epq.PAP1991()
+    sFile = "%s-pap-prz-%g-kv" % (sName, e0)
+  print "Computing " + sFile
+  fName = outdir + sFile + ".csv"
+  fi = open(fName,'w')
+  sp = epq.SpectrumProperties(det.getProperties())
+  sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  xrts = majorTransitions(comp, e0)
+  rhoZmax = epq.ElectronRange.KanayaAndOkayama1972.compute(comp, epq.ToSI.keV(e0))
+  res = "Idx,rhoz(mg/cm^2)"
+  for xrt in xrts:
+    res = "%s,G(%s),E(%s)" % (res, xrt, xrt)
+  res = res + "\n"
+  fi.write(res)
+  for step in range(0, nSteps):
+    rz = step * rhoZmax / nSteps
+    res = "%d,%g" % (step, 100.0 * rz) # in mg/cm^2
+    for xrt in xrts:
+      alg.initialize(comp, xrt.getDestination(), sp)
+      res = "%s,%g,%g" % (res, alg.computeCurve(rz), alg.computeAbsorbedCurve(xrt, rz))
+    res=res+"\n"
+    fi.write(res)
+  fi.close()
 
 def anaNiCuKR(unSpec, niSpec, cuSpec, det, e0):
   """anaNiCuKR(unSpec, niSpec, cuSpec, det, e0)
