@@ -1,6 +1,8 @@
 # jrmFunctions.py
 # John Minter's DTSA-II Jython Script Functions
 # Licensed under the GPL2 | BSD License
+#
+# Version 0.9.4  2013-09-03 - added function anaNiCuKRwKandL
 # Version 0.9.3  2013-08-29 - added function compPhiRhoZ
 # Version 0.9.2  2013-08-23 - added function anaNiCuKRimpW
 # Version 0.9.1  2013-07-11 - cleans up after loading
@@ -97,6 +99,61 @@ def anaNiCuKR(unSpec, niSpec, cuSpec, det, e0):
   krCu=krs.getKRatio(xrtsCu)
   name=unSpec.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
   return {'name': name, 'Ni': krNi, 'Cu': krCu}
+
+def anaNiCuKRwKandL(unSpec, niSpec, cuSpec, oSpec, cSpec, det, e0, digits=6, verbose=False, dispRes=False):
+  """anaNiCuKRwKandL(unSpec, niSpec, cuSpec, oSpec, cSpec, det, e0, digits=6, verbose=False)
+  analyze the K-Ratios for Ni and Cu from unknown (unSpec) spectrum using
+  standard spectra niSpec and cuSpec recorded from the detector identified
+  by the string (det) at an accelerating voltage (e0) kV. The MLLSQ fit corrects
+  for contributions from C (overcoat and/or PET substrate) and O (PET substrate)
+  Returns a list with the unknown name ('name') and the K-Ratios with their
+  uncertainty estimates for Ni and Cu, rounded appropriately. Graphite and B2O3
+  are reasonable choices for the C and O reference spectra.
+  
+  Example:
+  theKR = anaNiCuKR(unSpc, niSpc, cuSpc, oSpc, cSpc, "FEI FIB620 EDAX-RTEM", 15.0)
+  """
+  # first, prepare the spectra
+  sw=wrap(unSpec)
+  unSpec=sw
+  sw=wrap(niSpec)
+  niSpec = sw
+  sw=wrap(cuSpec)
+  cuSpec = sw
+  sw=wrap(cSpec)
+  cSpec = sw
+  sw=wrap(oSpec)
+  oSpec = sw
+  # Now set up the calc
+  qa = epq.CompositionFromKRatios()
+  det = Database.findDetector(det)
+  ff=epq.FilterFit(det,epq.ToSI.keV(e0))
+  ff.addReference(element("Ni"),niSpec)
+  ff.addReference(element("Cu"),cuSpec)
+  ff.addReference(element("C"),cSpec)
+  ff.addReference(element("O"),oSpec)
+  # get the k-ratios from the unknown
+  krs=ff.getKRatios(unSpec)
+  res=ff.getResidualSpectrum(unSpec)
+  res=wrap(res)
+  if(dispRes):
+    display(res)
+  if(verbose):
+    print krs
+  
+  krNiK=round(krs.getKRatio(epq.XRayTransitionSet(epq.Element.Ni, epq.XRayTransitionSet.K_FAMILY)), digits)
+  krNiKU=round(krs.getError(epq.XRayTransitionSet(epq.Element.Ni, epq.XRayTransitionSet.K_FAMILY)), digits)
+  krNiL=round(krs.getKRatio(epq.XRayTransitionSet(epq.Element.Ni, epq.XRayTransitionSet.L_FAMILY)), digits)
+  krNiLU=round(krs.getError(epq.XRayTransitionSet(epq.Element.Ni, epq.XRayTransitionSet.L_FAMILY)), digits)
+  krCuK=round(krs.getKRatio(epq.XRayTransitionSet(epq.Element.Cu, epq.XRayTransitionSet.K_FAMILY)), digits)
+  krCuKU=round(krs.getError(epq.XRayTransitionSet(epq.Element.Cu, epq.XRayTransitionSet.K_FAMILY)), digits)
+  krCuL=round(krs.getKRatio(epq.XRayTransitionSet(epq.Element.Cu, epq.XRayTransitionSet.L_FAMILY)), digits)
+  krCuLU=round(krs.getError(epq.XRayTransitionSet(epq.Element.Cu, epq.XRayTransitionSet.L_FAMILY)), digits)
+  
+  name=unSpec.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
+  return {'name': name, 'NiL': krNiL, 'NiK': krNiK, 'CuL': krCuL, 'CuK': krCuK, 'uNiL': krNiLU, 'uNiK': krNiKU, 'uCuL': krCuLU, 'uCuK': krCuKU}
+
+
 
 def anaNiCuKRimpW(unSpec, niSpec, cuSpec, wSpec, det, e0):
   """anaNiCuKRimpW(unSpec, niSpec, cuSpec, wSpec, det, e0)
