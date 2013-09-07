@@ -4,6 +4,7 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6  2013-09-06 - addes function cropSpec
 # Version 0.9.5  2013-09-05 - added function anaNiCuKratiosKandL designed
 #                             to handle variable impurities as a dictionary.
 #                             removed functions anaNiCuKRwKandL and
@@ -30,6 +31,36 @@ os.chdir(wd)
 
 
 # Define functions
+
+def cropSpec(spc, start=0, length=2048):
+  """cropSpec(spc, start=0, length=2048)
+  crop the spectrum (spc) starting with a starting channel and a length.
+  This transfers the channel width, zero offset, and probe current
+  required for microanalysis.
+  
+  Example:
+  niSpc = ept.SpectrumFile.open(niFile)[0]
+  niSpc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
+  ws = wrap(niSpc)
+  niSpc = cropSpec(ws, length=maxCh)
+  """
+  display(spc)
+  nm = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
+  clear()
+  cw = spc.getChannelWidth()
+  zo = spc.getZeroOffset()
+  lt = spc.liveTime()
+  pc = spc.probeCurrent()
+  cr = epq.SpectrumUtils.slice(spc, start, length)
+  sp = epq.SpectrumUtils.toSpectrum(cw, zo, length, cr)
+  sp = wrap(sp)
+  sp.getProperties().setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, nm)
+  display(sp)
+  sp.setProbeCurrent(pc)
+  sp.setLiveTime(lt)
+  DataManager.removeSpectrum(spc)
+  return sp
+
 
 def anaNiCuKratiosKandL(unSpec, niSpec, cuSpec, det, e0, impure={}, digits=6, verbose=False, dispRes=False):
   """anaNiCuKratiosKandL(unSpec, niSpec, cuSpec, det, e0, impure={}, digits=6, verbose=False, dispRes=False)
