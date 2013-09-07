@@ -1,3 +1,4 @@
+
 DTSA-II Setup
 ========================================================
 
@@ -110,4 +111,26 @@ This is helpful because
 ## Odd, useful information
 1. On MacOSX, the preferences are stored in ``$HOME/Library/Preferences/gov.nist.microanalysis.plist`` Note: editing this file is the easiest way to move the location of the default directories.
 2. On Windows, the preferences are srored in the registry. The base key is ``[HKEY_CURRENT_USER\Software\JavaSoft\Prefs\gov]``. Note that the paths tend to use a lot of escapes. Note the Base Path key (``[HKEY_CURRENT_USER\Software\JavaSoft\Prefs\gov\nist\microanalysis\dtsa2]``) that is set to ``"/Base /Path"="/C:///Users//jrminter///My /Documents//work//dtsa"`` on crunch. One can export the whole configuration using ``regedit``
-   
+
+# Some other fun
+
+## Specimen props
+
+```
+sp = epq.SpectrumProperties()
+sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+sp.setNumericProperty(epq.SpectrumProperties.TakeOffAngle, toa)
+sp.setDetector(det)
+```
+
+## PhiRhoZ
+
+Note: one needs a lot of steps
+to see the low energy lines...
+
+```
+e0  = 15
+det = findDetector("FEI FIB620 EDAX-RTEM")
+cu  = material("Cu", density=8.96)
+phirhoz(cu, det, e0, nSteps=1000, alg=epq.PAP1991())
+```

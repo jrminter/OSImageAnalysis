@@ -4,16 +4,17 @@
 #
 # Licensed under the GPL2 | BSD License
 #
-# Version 0.9.6  2013-09-06 - addes function cropSpec
-# Version 0.9.5  2013-09-05 - added function anaNiCuKratiosKandL designed
-#                             to handle variable impurities as a dictionary.
-#                             removed functions anaNiCuKRwKandL and
-#                             anaNiCuKRimpW.
-# Version 0.9.4  2013-09-03 - added function anaNiCuKRwKandL
-# Version 0.9.3  2013-08-29 - added function compPhiRhoZ
-# Version 0.9.2  2013-08-23 - added function anaNiCuKRimpW
-# Version 0.9.1  2013-07-11 - cleans up after loading
-# Version 0.9.0  2013-06-26 - initial release
+# Version 0.9.6.1  2013-09-06 - changed ending arg name in cropSpec
+# Version 0.9.6.0  2013-09-06 - added function cropSpec
+# Version 0.9.5.0  2013-09-05 - added function anaNiCuKratiosKandL designed
+#                               to handle variable impurities as a dictionary.
+#                               removed functions anaNiCuKRwKandL and
+#                               anaNiCuKRimpW.
+# Version 0.9.4.0  2013-09-03 - added function anaNiCuKRwKandL
+# Version 0.9.3.0  2013-08-29 - added function compPhiRhoZ
+# Version 0.9.2.0  2013-08-23 - added function anaNiCuKRimpW
+# Version 0.9.1.0  2013-07-11 - cleans up after loading
+# Version 0.9.0.0  2013-06-26 - initial release
 #
 
 import os
@@ -32,9 +33,9 @@ os.chdir(wd)
 
 # Define functions
 
-def cropSpec(spc, start=0, length=2048):
-  """cropSpec(spc, start=0, length=2048)
-  crop the spectrum (spc) starting with a starting channel and a length.
+def cropSpec(spc, start=0, end=2048):
+  """cropSpec(spc, start=0, end=2048)
+  crop the spectrum (spc) starting with a starting and ending channel.
   This transfers the channel width, zero offset, and probe current
   required for microanalysis.
   
@@ -42,7 +43,7 @@ def cropSpec(spc, start=0, length=2048):
   niSpc = ept.SpectrumFile.open(niFile)[0]
   niSpc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
   ws = wrap(niSpc)
-  niSpc = cropSpec(ws, length=maxCh)
+  niSpc = cropSpec(ws, end=maxCh)
   """
   display(spc)
   nm = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
@@ -51,8 +52,8 @@ def cropSpec(spc, start=0, length=2048):
   zo = spc.getZeroOffset()
   lt = spc.liveTime()
   pc = spc.probeCurrent()
-  cr = epq.SpectrumUtils.slice(spc, start, length)
-  sp = epq.SpectrumUtils.toSpectrum(cw, zo, length, cr)
+  cr = epq.SpectrumUtils.slice(spc, start, end)
+  sp = epq.SpectrumUtils.toSpectrum(cw, zo, end, cr)
   sp = wrap(sp)
   sp.getProperties().setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, nm)
   display(sp)
