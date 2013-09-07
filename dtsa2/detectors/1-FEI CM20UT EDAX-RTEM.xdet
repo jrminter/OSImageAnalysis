@@ -236,7 +236,7 @@
         <string>Ultra-thin window</string>
       </SpectrumProperties>
     </mProperties>
-    <mChannelCount>2048</mChannelCount>
+    <mChannelCount>4096</mChannelCount>
   </mDetProperties>
   <mCalibration class="SiLiCalibration" id="50">
     <mActiveDate id="51">1970-01-01 00:00:00.0 UTC</mActiveDate>
