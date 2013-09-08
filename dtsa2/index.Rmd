@@ -137,7 +137,14 @@ display(niSpc)
 
 ## PhiRhoZ
 
-Note: one needs a lot of steps
+One has several choices of algorithms:
+
+- ``PAP1991``: Full Pouchou and Pichoir algorithm as described in their chapter in the book Electron Probe Quantification.
+- ``XPP1991``:  Simplified XPP algorithm as described in Pouchou & Pichoir in Electron Probe Quantitation.
+- ``Proza96Base`` Ref: Bastin GF, Dijkstra JM and Heijligers HJM, X-Ray Spectrometry, Vol 27, 3-10 (1998)
+
+One can find the java source code in the ``EPQLibrary``
+directory. Note: one needs a lot of steps
 to see the low energy lines...
 
 ```
@@ -146,3 +153,36 @@ det = findDetector("FEI FIB620 EDAX-RTEM")
 cu  = material("Cu", density=8.96)
 phirhoz(cu, det, e0, nSteps=1000, alg=epq.PAP1991())
 ```
+
+I also wrote a custom funtion to wrap this and produce
+csv output
+
+```
+e0     =  25
+nSteps = 200
+cu     = material("Cu", density=8.96)
+det    = findDetector("FEI FIB620 EDAX-RTEM")
+compPhiRhoZ(cu, det, e0, nSteps, alg=epq.XPP1991(), base="xpp-prz", outdir="c:/temp/")
+```
+
+## Unit fun
+
+There are wrapper classes to convert comfortable units
+to SI.
+
+For example, we deal with bema energies in keV but
+internally they are hanlded in Joules. Here is an
+example
+
+```
+upSpc.getProperties().getNumericProperty(epq.SpectrumProperties.BeamEnergy)
+```
+
+returns ``15.0`` while
+
+```
+epq.ToSI.keV(upSpc.getProperties().getNumericProperty(epq.SpectrumProperties.BeamEnergy))
+```
+
+returns ``2.403264795e-15`` see ``EPQLibrary/ToSI.java``
+for details of the available conversions...

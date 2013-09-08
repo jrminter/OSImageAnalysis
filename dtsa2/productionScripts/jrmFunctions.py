@@ -4,6 +4,7 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6.2  2013-09-07 - changed alg naming in compPhiRhoZ
 # Version 0.9.6.1  2013-09-06 - changed ending arg name in cropSpec
 # Version 0.9.6.0  2013-09-06 - added function cropSpec
 # Version 0.9.5.0  2013-09-05 - added function anaNiCuKratiosKandL designed
@@ -129,27 +130,23 @@ def anaNiCuKratiosKandL(unSpec, niSpec, cuSpec, det, e0, impure={}, digits=6, ve
 
 
 
-def compPhiRhoZ(comp, det, e0, nSteps=100, simple=True, outdir="./"):
-  """compPhiRhoZ(comp, det, e0, nSteps=100, simple=True, outdir="./")
+def compPhiRhoZ(comp, det, e0, nSteps=100, alg=epq.PAP1991(), base="pap-prz", outdir="./"):
+  """compPhiRhoZ(comp, det, e0, nSteps=100, alg=epq.PAP1991(), base="pap-prz", outdir="./")
   Computes the ionization  as a function of dept for the composition
   (comp) with the specified detector (det) with the specified number
-  of steps (nSteps). If simple is true, the XPP1991 algorithm is
-  used, otherwise the full PAP1991 algorithm is used. The results
+  of steps (nSteps). Algorithm choices are, the epq.XPP1991()
+  (simplified Pouchou), epq.PAP1991() (full Pouchou and Pichoir)
+  or epq.Proza96Base() (Bastin et al) algorithms. The results
   are written to a .csv file in the output directory (outdir)
   Example:
   e0     =  25
   nSteps = 200
   cu     = material("Cu", density=8.96)
   det    = findDetector("FEI FIB620 EDAX-RTEM")
-  compPhiRhoZ(cu, det, e0, nSteps, simple=True, outdir="c:/temp/")
+  compPhiRhoZ(cu, det, e0, nSteps, alg=epq.XPP1991(), base="xpp-prz", outdir="c:/temp/")
   """
   sName = comp.getName()
-  if(simple == True):
-    alg = epq.XPP1991()
-    sFile = "%s-xpp-prz-%g-kv" % (sName, e0)
-  else:
-    alg = epq.PAP1991()
-    sFile = "%s-pap-prz-%g-kv" % (sName, e0)
+  sFile = "%s-%s-%g-kv" % (sName, base, e0)
   print "Computing " + sFile
   fName = outdir + sFile + ".csv"
   fi = open(fName,'w')
