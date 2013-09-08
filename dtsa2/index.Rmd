@@ -117,10 +117,22 @@ This is helpful because
 ## Specimen props
 
 ```
-sp = epq.SpectrumProperties()
-sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
-sp.setNumericProperty(epq.SpectrumProperties.TakeOffAngle, toa)
-sp.setDetector(det)
+home=os.environ['HOME']
+basDir = "/work/proj/QM13-10-06A-Gutierrez/"
+stdDir = home + basDir + "dat/spc/15kV/std/"
+niFile = stdDir + "Ni-std.spc"
+niSpc = wrap(ept.SpectrumFile.open(niFile)[0])
+
+det = findDetector("FEI FIB620 EDAX-RTEM")
+pr = niSpc.getProperties()
+niSpc.getProperties().StagePosition.getName()
+epq.SpectrumProperties.StagePosition.getName()
+pr.setNumericProperty(epq.SpectrumProperties.BeamEnergy, 15)
+pr.setNumericProperty(epq.SpectrumProperties.TakeOffAngle, 35)
+pr.setDetector(det)
+clear()
+DataManager.removeSpectrum(niSpc)
+display(niSpc)
 ```
 
 ## PhiRhoZ
