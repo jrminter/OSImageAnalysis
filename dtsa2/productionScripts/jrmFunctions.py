@@ -35,6 +35,22 @@ os.chdir(wd)
 
 # Define functions
 
+def setKeySimSpcProps(spc, e0, dose=150):
+  """setKeySimSpcProps(spc, e0, dose=150)
+  Set key spectrum properties for a simulated spectrum.
+  Example:
+  niSpc = ept.SpectrumFile.open(niFile)[0]
+  sw = wrap(niSpc)
+  niSpc = setKeySimSpcProps(sw, e0, dose=150)
+  display(niSpc)
+  """
+  props=spc.getProperties()
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, dose)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  return spc
+
+
 def simBulkSpect(name, matl, e0=15, det=findDetector("FEI FIB620 EDAX-RTEM"), nTraj=100, dose=150, noise=True):
   """simBulkSpect(name, matl, e0=15, det=findDetector("FEI FIB620 EDAX-RTEM"), nTraj=100, dose=150, noise=True)
   Use the standard Monte Carlo functions to simulate bulk spectrum from a material.
