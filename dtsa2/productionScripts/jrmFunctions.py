@@ -4,6 +4,7 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6.3  2013-09-09 - added function simBulkSpect
 # Version 0.9.6.2  2013-09-07 - changed alg naming in compPhiRhoZ
 # Version 0.9.6.1  2013-09-06 - changed ending arg name in cropSpec
 # Version 0.9.6.0  2013-09-06 - added function cropSpec
@@ -33,6 +34,45 @@ os.chdir(wd)
 
 
 # Define functions
+
+def simBulkSpect(name, matl, e0=15, det=findDetector("FEI FIB620 EDAX-RTEM"), nTraj=100, dose=150, noise=True):
+  """simBulkSpect(name, matl, e0=15, det=findDetector("FEI FIB620 EDAX-RTEM"), nTraj=100, dose=150, noise=True)
+  Use the standard Monte Carlo functions to simulate bulk spectrum from a material.
+  This does not correct for continuum fluorescence.
+  Example:
+  ni  = material("Ni", density=8.90)
+  niSpc = simBulkSpect("Ni-sim", ni, e0=15, det=findDetector("FEI FIB620 EDAX-RTEM"), nTraj=100, dose=150)
+  display(niSpc)
+  """
+  origin=epu.Math2.multiply(1.0e-3, epq.SpectrumUtils.getSamplePosition(det.getProperties()))
+  # create a simulator and initialize initialize it.
+
+  monte=nm.MonteCarloSS()
+  monte.setBeamEnergy(epq.ToSI.keV(e0))
+
+  # create the substrate
+  monte.addSubRegion(monte.getChamber(),matl,nm.MultiPlaneShape.createSubstrate([ 0.0, 0.0, -1.0],origin))
+
+  # add event listener to model characteristic radiation
+  xrel=nm.XRayEventListener2(monte,det)
+  monte.addActionListener(xrel)
+  brem=nm.BremsstrahlungEventListener(monte,det)
+  monte.addActionListener(brem)
+  
+  det.reset()
+  monte.runMultipleTrajectories(nTraj)
+  # Get the spectrum and properties
+  spc=det.getSpectrum(dose*1.0e-9 / (nTraj * epq.PhysicalConstants.ElectronCharge))
+  if noise:
+    spc=epq.SpectrumUtils.addNoiseToSpectrum(spc,1.0)
+  props=spc.getProperties()
+  sName="%s-%gkV" % (name, e0)
+
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, sName)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, dose)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
+  return spc
 
 def cropSpec(spc, start=0, end=2048):
   """cropSpec(spc, start=0, end=2048)
