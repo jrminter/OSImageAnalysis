@@ -4,6 +4,7 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6.4  2013-09-09 - added functions isNaN and checkNaN and anaCOFSKR
 # Version 0.9.6.3  2013-09-09 - added function simBulkSpect
 # Version 0.9.6.2  2013-09-07 - changed alg naming in compPhiRhoZ
 # Version 0.9.6.1  2013-09-06 - changed ending arg name in cropSpec
@@ -34,6 +35,63 @@ os.chdir(wd)
 
 
 # Define functions
+
+def isNaN(num):
+  """isNaN(num)
+  Check if a number is NaN, returning True of False"""
+  return num != num
+
+def checkNaN(x):
+  """checkNaN(x)
+  This checks if a value (e.g. K-ratio) is NaN and sets the value to
+  zero if it is. This really helps when writing data frames to be
+  read by R."""
+  if isNaN(x):
+    x = 0.0
+  return x
+  
+def anaCOFSKR(unSpec, cSpec, oSpec, fSpec, sSpec, det, e0):
+  """anaCOFSKR(unSpec, cSpec, oSpec, fSpec, sSpec, det, e0)
+  analyze the K-Ratios for C, O, F and S from unknown (unSpec) spectrum using
+  cSpec, oSpec, fSpec, sSpec standards for the detector identified
+  by the string (det) at an accelerating voltage (e0) kV. Returns a list
+  with the unknown name ('name') and the K-Ratios ('C', 'O', 'F', and 'S'). 
+  
+  Example:
+  theKR = anaCOFSKR(unSpec, cSpec, oSpec, fSpec, sSpec, "FEI FIB620 EDAX-RTEM", 10.0)
+  """
+  # first, prepare the spectra
+  sw=wrap(unSpec)
+  unSpec=sw
+  sw=wrap(cSpec)
+  cSpec = sw
+  sw=wrap(oSpec)
+  oSpec = sw
+  sw=wrap(fSpec)
+  fSpec = sw
+  sw=wrap(sSpec)
+  sSpec = sw
+  
+  # Now set up the calc
+  xrtsC = epq.XRayTransitionSet(epq.Element.C, epq.XRayTransitionSet.K_FAMILY)
+  xrtsO = epq.XRayTransitionSet(epq.Element.O, epq.XRayTransitionSet.K_FAMILY)
+  xrtsF = epq.XRayTransitionSet(epq.Element.F, epq.XRayTransitionSet.K_FAMILY)
+  xrtsS = epq.XRayTransitionSet(epq.Element.S, epq.XRayTransitionSet.K_FAMILY)
+  qa = epq.CompositionFromKRatios()
+  det = Database.findDetector(det)
+  ff=epq.FilterFit(det,epq.ToSI.keV(e0))
+  ff.addReference(element("C"),cSpec)
+  ff.addReference(element("O"),oSpec)
+  ff.addReference(element("F"),fSpec)
+  ff.addReference(element("S"),sSpec)
+  # get the k-ratios from the unknown
+  krs=ff.getKRatios(unSpec)
+  krC=krs.getKRatio(xrtsC)
+  krO=krs.getKRatio(xrtsO)
+  krF=krs.getKRatio(xrtsF)
+  krS=krs.getKRatio(xrtsS)
+  return {'C': krC, 'O': krO, 'F': krF, 'S': krS}
+
 
 def setKeySimSpcProps(spc, e0, dose=150):
   """setKeySimSpcProps(spc, e0, dose=150)
