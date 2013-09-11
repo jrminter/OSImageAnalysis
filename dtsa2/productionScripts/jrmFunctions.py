@@ -4,6 +4,8 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6.5  2013-09-10 - added generic function compKRs to compute the
+#                               k-ratios for an unknown spectrum
 # Version 0.9.6.4  2013-09-09 - added functions isNaN and checkNaN and anaCOFSKR
 # Version 0.9.6.3  2013-09-09 - added function simBulkSpect
 # Version 0.9.6.2  2013-09-07 - changed alg naming in compPhiRhoZ
@@ -49,7 +51,38 @@ def checkNaN(x):
   if isNaN(x):
     x = 0.0
   return x
-  
+
+def compKRs(unSpc, stds, trs, det, e0, digits=5):
+  """compKRs(unSpc, stds, trs, det, e0, digits=5)
+  Peforms a MLLSQ filter-fit of unknown spectrum (unSpc),
+  to the standard spectra in a list of dictionaries of standards.
+  Each standard in the list is a dictionary like
+  {"El":element("C"), "Spc":cSpc} containing the element name
+  and the standard spectrum. The function then computes the
+  k-ratios for a list of transition sets (trs). The
+  function returns a list of k-ratios, rounded to the desired
+  number of digits. The function performs an NaN test, setting
+  NaNs to zero. This function deprecates the functions
+  anaCOFSKR, anaNiCuKratiosKandL, anaNiCuKR"""
+  # Now set up the calc
+  qa = epq.CompositionFromKRatios()
+  ff=epq.FilterFit(det,epq.ToSI.keV(e0))
+  l = len(stds)
+  for i in range(0, l):
+    st=stds[i]
+    el=st["El"]
+    sp=st["Spc"]
+    ff.addReference(el,sp)
+  krs=ff.getKRatios(unSpc)
+  kr=[]
+  n = len(trs)
+  for i in range(0, n):
+    tr=trs[i]
+    k=round(checkNaN(krs.getKRatio(tr)), digits)
+    kr.append(k)
+  return kr
+
+
 def anaCOFSKR(unSpec, cSpec, oSpec, fSpec, sSpec, det, e0):
   """anaCOFSKR(unSpec, cSpec, oSpec, fSpec, sSpec, det, e0)
   analyze the K-Ratios for C, O, F and S from unknown (unSpec) spectrum using
