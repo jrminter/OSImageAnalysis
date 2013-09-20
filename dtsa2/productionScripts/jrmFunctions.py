@@ -4,6 +4,7 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6.6  2013-09-19 - added updateCommonSpecProps
 # Version 0.9.6.5  2013-09-10 - added generic function compKRs to compute the
 #                               k-ratios for an unknown spectrum
 # Version 0.9.6.4  2013-09-09 - added functions isNaN and checkNaN and anaCOFSKR
@@ -37,6 +38,20 @@ os.chdir(wd)
 
 
 # Define functions
+def updateCommonSpecProps(spc, name, dose, e0):
+  """updateCommonSpecProps(spc, name, dose, e0)
+  Update common spectrum properties
+  name - display name
+  dose - dose in nA sec
+  e0 - incident beam energy
+  This is helpful if they were not set properly in a GUI..."""
+  props=spc.getProperties()
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, dose)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, 1.0)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  return spc
+
 
 def isNaN(num):
   """isNaN(num)
