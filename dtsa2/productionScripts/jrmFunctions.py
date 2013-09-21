@@ -4,13 +4,14 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6.7  2013-09-20 - changed updateCommonSpecProps to include detector
 # Version 0.9.6.6  2013-09-19 - added updateCommonSpecProps
 # Version 0.9.6.5  2013-09-10 - added generic function compKRs to compute the
 #                               k-ratios for an unknown spectrum
 # Version 0.9.6.4  2013-09-09 - added functions isNaN and checkNaN and anaCOFSKR
 # Version 0.9.6.3  2013-09-09 - added function simBulkSpect
-# Version 0.9.6.2  2013-09-07 - changed alg naming in compPhiRhoZ
-# Version 0.9.6.1  2013-09-06 - changed ending arg name in cropSpec
+# Version 0.9.6.2  2013-09-07 - changed algorithm naming in compPhiRhoZ
+# Version 0.9.6.1  2013-09-06 - changed ending argument name in cropSpec
 # Version 0.9.6.0  2013-09-06 - added function cropSpec
 # Version 0.9.5.0  2013-09-05 - added function anaNiCuKratiosKandL designed
 #                               to handle variable impurities as a dictionary.
@@ -38,14 +39,16 @@ os.chdir(wd)
 
 
 # Define functions
-def updateCommonSpecProps(spc, name, dose, e0):
-  """updateCommonSpecProps(spc, name, dose, e0)
+def updateCommonSpecProps(spc, name, det, dose, e0):
+  """updateCommonSpecProps(spc, name, det, dose, e0)
   Update common spectrum properties
   name - display name
+  det - the detector
   dose - dose in nA sec
   e0 - incident beam energy
   This is helpful if they were not set properly in a GUI..."""
   props=spc.getProperties()
+  props.setDetector(det)
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, dose)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, 1.0)
