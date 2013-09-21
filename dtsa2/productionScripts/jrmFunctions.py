@@ -39,20 +39,27 @@ os.chdir(wd)
 
 
 # Define functions
-def updateCommonSpecProps(spc, name, det, dose, e0):
-  """updateCommonSpecProps(spc, name, det, dose, e0)
+def updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1):
+  """updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1)
   Update common spectrum properties
-  name - display name
-  det - the detector
-  dose - dose in nA sec
-  e0 - incident beam energy
+  spc      - the spectrum (must supply)
+  det      - the detector (must supply)
+  name     - display name (will update if not empty)
+  liveTime - acquisition live time (sec) (will update if > 0)
+  probeCur - probe current (in nA) (will update if > 0)
+  e0       - incident beam energy (in kV) (will update if > 0)
   This is helpful if they were not set properly in a GUI..."""
   props=spc.getProperties()
   props.setDetector(det)
-  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
-  props.setNumericProperty(epq.SpectrumProperties.LiveTime, dose)
-  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, 1.0)
-  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  l = len(name)
+  if (l > 0) :
+    props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
+  if (liveTime > 0) :
+    props.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
+  if (probeCur > 0) :
+    props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, probeCur)
+  if (e0 > 0) :
+    props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   return spc
 
 
