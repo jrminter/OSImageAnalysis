@@ -4,6 +4,7 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6.8  2013-09-22 - Added measProbeCurrentFromCu
 # Version 0.9.6.7  2013-09-20 - changed updateCommonSpecProps to include detector
 # Version 0.9.6.6  2013-09-19 - added updateCommonSpecProps
 # Version 0.9.6.5  2013-09-10 - added generic function compKRs to compute the
@@ -39,6 +40,31 @@ os.chdir(wd)
 
 
 # Define functions
+def measProbeCurrentFromCu(tape, ref, det, e0, digits=4):
+  """measProbeCurrentFromCu(tape, ref, det, e0, digits=4)
+  Measure the probe current for a session spectrum from Cu tape
+  relative to a reference (ref) spectrum for a detector (det)
+  and e0 kV. The results are rounded to the desired digits.
+  We use the Cu lines. Returns a dictionary:
+  pcMu  - the mean relative probe current (mean K-ratio for optimum TS)
+  pcSE  - the standard error for the relative probe current
+  optTS - the optimal transition set for this kV
+  ffMet - the filter fit metric, close to 0 is good, close to 1 is bad.
+  """
+  qa = epq.CompositionFromKRatios()
+  ff=epq.FilterFit(det,epq.ToSI.keV(e0))
+  ff.addReference(element("Cu"),ref)
+  krs=ff.getKRatios(tape)
+  opt = krs.optimalDatum(element("Cu"))
+  optTS = opt.toString()
+  ku=krs.getKRatioU(opt)
+  pcMu = round(ku.doubleValue(), digits)
+  pcSE = round(ku.uncertainty(), digits)
+  ffMet = round(ff.getFitMetric(tape), digits)
+  # return a dictionary
+  ret = {"pcMu": pcMu, "pcSE": pcSE, "optTS": optTS, "ffMet": ffMet }
+  return ret
+
 def updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1):
   """updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1)
   Update common spectrum properties
