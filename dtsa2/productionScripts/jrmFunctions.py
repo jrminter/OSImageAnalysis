@@ -4,6 +4,7 @@
 #
 # Licensed under the GPL2 | BSD License
 #
+# Version 0.9.6.9  2013-09-23 - changed updateCommonSpecProps to include working distance
 # Version 0.9.6.8  2013-09-22 - Added measProbeCurrentFromCu
 # Version 0.9.6.7  2013-09-20 - changed updateCommonSpecProps to include detector
 # Version 0.9.6.6  2013-09-19 - added updateCommonSpecProps
@@ -65,8 +66,8 @@ def measProbeCurrentFromCu(tape, ref, det, e0, digits=4):
   ret = {"pcMu": pcMu, "pcSE": pcSE, "optTS": optTS, "ffMet": ffMet }
   return ret
 
-def updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1):
-  """updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1)
+def updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1, wrkDist=-1):
+  """updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1, wrkDist=-1)
   Update common spectrum properties
   spc      - the spectrum (must supply)
   det      - the detector (must supply)
@@ -74,18 +75,21 @@ def updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1):
   liveTime - acquisition live time (sec) (will update if > 0)
   probeCur - probe current (in nA) (will update if > 0)
   e0       - incident beam energy (in kV) (will update if > 0)
+  wrkDist  - working distance (in mm) (will update if > 0)
   This is helpful if they were not set properly in a GUI..."""
   props=spc.getProperties()
   props.setDetector(det)
   l = len(name)
-  if (l > 0) :
+  if(l > 0) :
     props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
-  if (liveTime > 0) :
+  if(liveTime > 0) :
     props.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
-  if (probeCur > 0) :
+  if(probeCur > 0) :
     props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, probeCur)
-  if (e0 > 0) :
+  if(e0 > 0) :
     props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  if(wrkDist > 0) :
+    props.setNumericProperty(epq.SpectrumProperties.WorkingDistance, wrkDist)
   return spc
 
 
