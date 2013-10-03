@@ -11,6 +11,15 @@ often the hard way...
 
 # Alchemy
 
+## Getting main menus to work under MacOSX
+To get DTSA-Gemini to work on my MacOSX 10.8 (Mountain
+Lion) laptop, I use the Linux version and start with a
+shell scripts. Upon starting, the main menus are greyed
+out. To get them to work, I need to:
+1. Select the "Help" menu and type "DTSA" in the search box
+2. Select the first item (about) and let it open the window
+3. Close this window and the menus work as expected...
+
 ## Consistent spectrum display
 
 If you have a series of Scriptable spectrum objects, ``spec[i]`` and you
@@ -47,9 +56,9 @@ directory. This will make strings in scripts much more
 robust.
 
 1. Start with a ***clean install***. You need to do the next steps ***in order***...
-2. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI CM20UT`` in the name with a kV range from 40 to 200kV. Import the ``1-FEI CM20UT EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
-3. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI FIB 620`` in the name with a kV range from 40 to 200kV. Import the ``2-FEI FIB 620 EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
-4. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``NIST JXA8500F`` in the name with a kV range from 40 to 200kV. Import the ``3-NIST JXA8500F Brucker-SDD.xdet`` detector. We add this detector to be able to work the DTSA examples. ***Restart DTSA*** to write the database.
+2. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI CM20UT`` in the name with a kV range from 40 to 200 kV. Import the ``1-FEI CM20UT EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
+3. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI FIB 620`` in the name with a kV range from 5 to 30 kV. Import the ``2-FEI FIB 620 EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
+4. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``NIST JXA8500F`` in the name with a kV range from 5 to 30 kV. Import the ``3-NIST JXA8500F Brucker-SDD.xdet`` detector. We add this detector to be able to work the DTSA examples. ***Restart DTSA*** to write the database.
 5. Start DTSA and select the ``Command`` pane. Open the Jython script ``stds.py`` from ``$GIT_HOME/OSImageAnalysis/dtsa2/stds`` directory to load in the standards.
 
 

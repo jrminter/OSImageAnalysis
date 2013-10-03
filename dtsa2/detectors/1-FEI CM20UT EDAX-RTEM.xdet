@@ -25,9 +25,9 @@
         </double-array>
         <string>Detector position</string>
         <double-array id="5">
-          <double>2.27</double>
+          <double>11.8</double>
           <double>0.0</double>
-          <double>1.53</double>
+          <double>2.27</double>
         </double-array>
         <string>Detector thickness</string>
         <double>5.0</double>
@@ -223,11 +223,11 @@
         <string>Nickel layer thickness</string>
         <double>0.0</double>
         <string>Optimal working distance</string>
-        <double>1.53</double>
-        <string>Solid angle</string>
-        <double>5.8219643307652005</double>
-        <string>Specimen-to-detector distance</string>
         <double>2.27</double>
+        <string>Solid angle</string>
+        <double>0.2154553289284688</double>
+        <string>Specimen-to-detector distance</string>
+        <double>11.8</double>
         <string>Support grid open area</string>
         <double>77.0</double>
         <string>Support grid thickness</string>
@@ -236,7 +236,7 @@
         <string>Ultra-thin window</string>
       </SpectrumProperties>
     </mProperties>
-    <mChannelCount>2048</mChannelCount>
+    <mChannelCount>4096</mChannelCount>
   </mDetProperties>
   <mCalibration class="SiLiCalibration" id="50">
     <mActiveDate id="51">1970-01-01 00:00:00.0 UTC</mActiveDate>
