@@ -1,32 +1,17 @@
-# gmrfNiCuPetPapFunctions.py
-# 2013-10-14 J. R. Minter
-#
-# Wrapper functions to run GMRFilm to produce StrataGEM-like
-# plots and to compare computed K-ratios to measured K-ratios
-# for Ni and Cu Ka lines.
-#
-# Released under the Artistic-2.0 license
-# Revision history
-#
-#    Date     Who  Vers  Notes
-# 2013-10-14  JRM  0.0.1 Initial Prototype
-# 2013-10-15  JRM  0.1.0 Moved to gmrfNiCuPetPapFunctions in
-#                        Production scripts to load as needed
+# -*- coding: utf-8 -*-
+# DTSA-II Script - J. R. Minter - 2013-10-15
 
+import sys
 import os
 import glob
-import sys
 import shutil
 import time
 import math
 import csv
+import dtsa2
 
-gitDir = os.environ['GIT_HOME']
-
-# DTSA's unneeded report dir we want to clean up...
-pyrDir = gitDir + "/OSImageAnalysis/dtsa2/productionScripts/gmrfNiCuPetPapFunctions Results"
-
-
+"""A series of scripts for PAP simulations of Ni on Cu on C wrapping calls to GMRFilm
+Place this file in DTSA_ROOT/lib/dtsa2/"""
 
 
 def genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, outFilPath, gmrfPth="C:/Apps/GMRFilm/GMRFILM.EXE"):
@@ -193,6 +178,38 @@ def writeGmrfInNiCu(tNi, tCu, vKv, fPath, toa=35):
   f.write("n\n")
   f.close()
 
-# clean up cruft
-shutil.rmtree(pyrDir)
-print "gmrfNiCuPetPapFunctions loaded!"
+def modNiCuLayers(tNi, tCu, lKv, rptPath):
+  """modNiCuLayers(tNi, tCu, lKv, rptPath)
+  Compute the model StrataGEM plot curve for a given layer structure of
+  tNi nm of Ni on tCu nm of Cu for the list of accelerating voltages lKv.
+  Write the results (e0, krNiKa, kaCuKa) to a .csv file at rptPath
+  Example:
+  modNiCuLayers(200, 400, range(10,31), "./foo.csv")
+  """
+  gmrfPth = "C:/Apps/GMRFilm/GMRFILM.EXE"
+  gmrfCmd = gmrfPth + " < ./in.txt"
+
+  writeGmrfInNiCu(tNi, tCu, lKv, './in.txt', toa=35)
+  os.system(gmrfCmd)
+  a = glob.glob('F*')
+  if (len(a) > 0):
+    # move the output where I want it and clean up
+    shutil.copy2(a[0], './out.txt')
+    os.remove(a[0])
+    os.remove('./in.txt')
+    os.remove('STANDARD.DAT')
+    # parse the results
+    mod = parseNiCuKaSGPlotGMRfilmOutFile('./out.txt', verbose=False)
+    lNiKaMod = mod[1]
+    lCuKaMod = mod[2]
+    fRpt=open(rptPath, 'w')
+    strLine = "e0, krNiKa, krCuLa\n"
+    fRpt.write(strLine)
+    i = 0
+    l = len(lNiKaMod)
+    while(i < l):
+      strLine = "%.1f, %.5f, %.5f\n" % (lKv[i], lNiKaMod[i], lCuKaMod[i])
+      fRpt.write(strLine)
+      i += 1
+    fRpt.close()
+    os.remove('./out.txt')
