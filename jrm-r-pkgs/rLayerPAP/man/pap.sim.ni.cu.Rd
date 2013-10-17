@@ -30,7 +30,7 @@
   fluorescence
 }
 \examples{
-R code here showing how your function works
+### Not run
 }
 \keyword{keywords}
 

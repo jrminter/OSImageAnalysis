@@ -13,6 +13,8 @@
 
   \item{fpath}{full path to the output file (input for
   GMRFilm) \code{fPath}}
+
+  \item{toa}{The detector take-off angle, \code{v.kv}}
 }
 \value{
   none No return value but writes the specified output
@@ -24,7 +26,7 @@
   thickeness values by any spaces.
 }
 \examples{
-R code here showing how your function works
+### not run
 }
 \keyword{keywords}
 

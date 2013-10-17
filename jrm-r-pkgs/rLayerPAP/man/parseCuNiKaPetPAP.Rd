@@ -22,7 +22,7 @@
   routines.
 }
 \examples{
-R code here showing how your function works
+### not run
 }
 \keyword{keywords}
 

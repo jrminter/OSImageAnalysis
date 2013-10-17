@@ -9,6 +9,7 @@
 #' @param t.cu Thickness of Cu in nm \code{t.ni}
 #' @param v.kv A vector of voltages to simulate \code{v.kv}
 #' @param fpath full path to the output file (input for GMRFilm) \code{fPath}
+#' @param toa The detector take-off angle, \code{v.kv}
 #'
 #' @return none No return value but writes the specified output 
 #'
@@ -17,7 +18,8 @@
 #' @export
 #' 
 #' @examples
-#' R code here showing how your function works
+#' ### not run
+#'
 #' 
 write.gmrf.in.ni.cu <- function(t.ni, t.cu, v.kv, fpath, toa=35){
   

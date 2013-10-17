@@ -18,7 +18,8 @@
 #' @export
 #' 
 #' @examples
-#' R code here showing how your function works
+#' ### Not run
+#' 
 pap.sim.ni.cu <- function(v.kv, t.ni, t.cu, toa,
                           pgDir='C:/Apps/GMRfilm',
                           clean=TRUE){

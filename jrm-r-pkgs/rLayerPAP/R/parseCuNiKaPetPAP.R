@@ -15,7 +15,8 @@
 #' @export
 #' 
 #' @examples
-#' R code here showing how your function works
+#' ### not run
+#'
 
 parseCuNiKaPetPAP <- function(v.kv, kr.file.path){
   # create a data.frame to store the results
