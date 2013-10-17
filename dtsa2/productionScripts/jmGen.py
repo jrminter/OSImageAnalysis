@@ -294,3 +294,141 @@ def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
   fs.getProperties().setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, fltName)
   fsw=dt2.wrap(fs)
   return fsw
+  
+def compPhiRhoZ(comp, det, e0, nSteps=100, alg=epq.PAP1991(), base="pap-prz", outdir="./"):
+  """compPhiRhoZ(comp, det, e0, nSteps=100, alg=epq.PAP1991(), base="pap-prz", outdir="./")
+  Computes the ionization  as a function of dept for the composition
+  (comp) with the specified detector (det) with the specified number
+  of steps (nSteps). Algorithm choices are, the epq.XPP1991()
+  (simplified Pouchou), epq.PAP1991() (full Pouchou and Pichoir)
+  or epq.Proza96Base() (Bastin et al) algorithms. The results
+  are written to a .csv file in the output directory (outdir)
+  Example:
+  import dtsa2.jmGen as jmg
+  e0     =  25
+  nSteps = 200
+  cu     = material("Cu", density=8.96)
+  det    = findDetector("FEI FIB620 EDAX-RTEM")
+  jmg.compPhiRhoZ(cu, det, e0, nSteps, alg=epq.XPP1991(), base="xpp-prz", outdir="c:/temp/")
+  """
+  sName = comp.getName()
+  sFile = "%s-%s-%g-kv" % (sName, base, e0)
+  print "Computing " + sFile
+  fName = outdir + sFile + ".csv"
+  fi = open(fName,'w')
+  sp = epq.SpectrumProperties(det.getProperties())
+  sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  xrts = dt2.majorTransitions(comp, e0)
+  rhoZmax = epq.ElectronRange.KanayaAndOkayama1972.compute(comp, epq.ToSI.keV(e0))
+  res = "Idx,rhoz(mg/cm^2)"
+  for xrt in xrts:
+    res = "%s,G(%s),E(%s)" % (res, xrt, xrt)
+  res = res + "\n"
+  fi.write(res)
+  for step in range(0, nSteps):
+    rz = step * rhoZmax / nSteps
+    res = "%d,%g" % (step, 100.0 * rz) # in mg/cm^2
+    for xrt in xrts:
+      alg.initialize(comp, xrt.getDestination(), sp)
+      res = "%s,%g,%g" % (res, alg.computeCurve(rz), alg.computeAbsorbedCurve(xrt, rz))
+    res=res+"\n"
+    fi.write(res)
+  fi.close()
+  
+def simMatlOnSubTEM(det, e0, matl, matlThick, subMat, subThick, lNames, nTraj=10000, lt=100, pc=1):
+  """simMatlOnSubTEM(det, e0, matl, matlThick, subMat, subThick, lNames, nTraj=10000, lt=100, pc=1)
+  Simulate a material on a thin substrate in the TEM for the detector (det),
+  at the accelerating voltage (e0) keV, for the DTSA material (matl) with
+  thickness (matlThick) in nm on the substrate DTSA material (subMat) with
+  thickness (subThick) in nm with a list of names lNames = [matName, subName] by computing
+  nTraj trajectories assuming a live time (lt, sec) and a probe current (pc, in nA) and
+  simulating a noisy spectrum.
+  Example:
+  import dtsa2.jmGen as jmg
+  det=findDetector("FEI CM20UT EDAX-RTEM")
+  # create materials
+  ago=epq.Material(epq.Composition([epq.Element.Ag, epq.Element.O],[0.930958,0.069042]), epq.ToSI.gPerCC(7.14))
+  c=epq.MaterialFactory.createPureElement(epq.Element.C)
+  spc = jmg.simMatlOnSubTEM(det, 200.0, ago, 100.0, c, 50.0, ["Ag2O","C"],  nTraj=10000, lt=100, pc=1)
+  display(spc)
+  """
+  dose = lt*pc
+  layTh=matlThick*1.0e-9
+  subTh=subThick*1.0e-9
+  # place sample at optimal location for the detector
+  origin=epu.Math2.multiply(1.0e-3, epq.SpectrumUtils.getSamplePosition(det.getProperties()))
+  # create a simulator and initialize it.
+  monte=nm.MonteCarloSS()
+  monte.setBeamEnergy(epq.ToSI.keV(e0))
+  # create the film
+  lay=nm.MultiPlaneShape.createFilm([0.0, 0.0, -1.0],[0.0, 0.0, 0.0], layTh)
+  # create the substrate
+  sub=nm.MultiPlaneShape.createFilm([0.0, 0.0, -1.0],[0.0, 0.0,layTh], subTh)
+  monte.addSubRegion(monte.getChamber(), matl, lay)
+  monte.addSubRegion(monte.getChamber(), subMat, sub)
+  # add event listener to model characteristic radiation
+  xrel=nm.XRayEventListener2(monte,det)
+  monte.addActionListener(xrel)
+  # ei=nm.EmissionImage.watchDefaultTransitions(xrel, 512, 2*layThick, origin)
+  # add event listener to model bremsstrahlung
+  brem=nm.BremsstrahlungEventListener(monte,det)
+  monte.addActionListener(brem)
+  # reset the detector and run the trajectories
+  det.reset()
+  monte.runMultipleTrajectories(nTraj)
+  # Get the spectrum a	properties
+  spec=det.getSpectrum(dose*1.0e-9 / (nTraj * epq.PhysicalConstants.ElectronCharge))
+  noisy=dt2.wrap(epq.SpectrumUtils.addNoiseToSpectrum(spec,1.0))
+  props=noisy.getProperties()
+  spName = "Sim %g nm %s on %g nm %s" % (layTh, lNames[0], subTh,  lNames[0])
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, spName)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,pc)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
+  return(noisy)
+  
+def simBrehmTEM(det, e0, matl, matlThick, subMat, subThick, lNames, nTraj=10000, lt=100, pc=1):
+  """simBrehmTEM(det, e0, matl, matlThick, subMat, subThick, lNames, nTraj=10000, lt=100, pc=1)
+  Simulate the bremsstrahlung continuum spectrum for the detector (det),
+  at the accelerating voltage (e0) keV, for the DTSA material (matl) with
+  thickness (matlThick) in nm on the substrate DTSA material (subMat) with
+  thickness (subThick) in nm  a list of names lNames = [matName, subName] 
+  by computing nTraj trajectories assuming a live time (lt, sec) and a probe
+  current (pc, in nA) and if desired, (addNoise) simulating a noisy spectrum.
+  
+  An example:
+  import dtsa2.jmGen as jmg
+  det=findDetector("FEI CM20UT EDAX-RTEM")
+  # create materials
+  ago=epq.Material(epq.Composition([epq.Element.Ag, epq.Element.O],[0.930958,0.069042]), epq.ToSI.gPerCC(7.14))
+  c=epq.MaterialFactory.createPureElement(epq.Element.C)
+  brehm = jmg.simBrehmTEM(det, 200.0, ago, 200.0, c, 50.0, ["Ag2O","C"], nTraj=10000, lt=100, pc=1)
+  display(brehm)
+  """
+  dose = lt*pc
+  layTh=matlThick*1.0e-9
+  subTh=subThick*1.0e-9
+  # create a simulator and initialize initialize it.
+  monte=nm.MonteCarloSS()
+  monte.setBeamEnergy(epq.ToSI.keV(e0))
+  # create the film
+  lay=nm.MultiPlaneShape.createFilm([0.0, 0.0, -1.0],[0.0, 0.0, 0.0], layTh)
+  # create the substrate
+  sub=nm.MultiPlaneShape.createFilm([0.0, 0.0, -1.0],[0.0, 0.0,layTh], subTh)
+  monte.addSubRegion(monte.getChamber(),matl,lay)
+  monte.addSubRegion(monte.getChamber(),subMat,sub)
+  # add event listener to model bremsstrahlung
+  brem=nm.BremsstrahlungEventListener(monte,det)
+  monte.addActionListener(brem)
+  # reset the detector and run the trajectories
+  det.reset()
+  monte.runMultipleTrajectories(nTraj)
+  spec=det.getSpectrum(dose*1.0e-9 / (nTraj * epq.PhysicalConstants.ElectronCharge))
+  noisy=epq.SpectrumUtils.addNoiseToSpectrum(spec,1.0)
+  props=noisy.getProperties()
+  spName = "Sim Brehmstrahlung - %g nm %s on %g nm %s" % (layTh, lNames[0], subTh,  lNames[0])
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, spName)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  return dt2.wrap(noisy)
