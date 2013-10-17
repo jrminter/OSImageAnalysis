@@ -20,6 +20,7 @@ import java.lang as jl
 
 
 import dtsa2 as dt2
+import dtsa2.mcSimulate3 as mc3
 
 """A series of wrapper scripts to make DTSA-II automation easy
 Place this file in DTSA_ROOT/lib/dtsa2/  call with
@@ -209,6 +210,29 @@ def getKLenergy(elmName):
   enL = getLalphaEnergy(elmName)
   res = {"K-alpha" : enK, "L-alpha" : enL}
   return res
+
+def simBulkSpcCor(name, matl, det, e0=15, nTraj=100, lt=100, pc=1, noise=True):
+  """simBulkSpcCor(name, matl, det, e0=15, nTraj=100, lt=100, pc=1, noise=True)
+  Use the mc3 Monte Carlo functions to simulate bulk spectrum from a material with a live time lt
+  and a probe current pc at a voltage e0. This does corrects for continuum fluorescence.
+  Example:
+  import dtsa2.jmGen as jmg
+  det=findDetector("FEI FIB620 EDAX-RTEM")
+  ni = material("Ni", density=8.90)
+  niSpc = jmg.simBulkSpcCor("Ni-sim", ni, det, e0=15,nTraj=100, lt=60, pc=1)
+  display(niSpc)
+  """
+  
+  dose = lt*pc
+  spc = dt2.wrap(mc3.simulate(matl, det, e0, True, nTraj, dose, True, True))
+  props = spc.getProperties()
+  sName = "%s-%gkV" % (name, e0)
+
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, sName)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,pc)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
+  return spc
 
 def simBulkSpcUnCor(name, matl, det, e0=15, nTraj=100, lt=100, pc=1, noise=True):
   """simBulkSpcUnCor(name, matl, det, e0=15, nTraj=100, lt=100, pc=1, noise=True)
