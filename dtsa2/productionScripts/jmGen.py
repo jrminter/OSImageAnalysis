@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# DTSA-II Script - J. R. Minter - 2013-10-15
+# DTSA-II Script - J. R. Minter - 2013-10-16
 
 import sys
 import os
