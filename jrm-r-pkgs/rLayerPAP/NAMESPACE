@@ -1,3 +1,4 @@
 export(pap.sim.ni.cu)
+export(papEta)
 export(parseCuNiKaPetPAP)
 export(write.gmrf.in.ni.cu)

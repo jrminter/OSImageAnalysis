@@ -20,3 +20,4 @@ Collate:
     'rLayerPAP-package.r'
     'write.gmrf.in.ni.cu.R'
     'pap.sim.ni.cu.R'
+    'papEta.R'
