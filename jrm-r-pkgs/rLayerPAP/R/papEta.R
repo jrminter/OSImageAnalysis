@@ -1,6 +1,6 @@
 #' Compute the backscattered electron yield for an element
 #' 
-#' Use the method of Pouchou and Pinchoir 1991 to compute the backscattered
+#' Use the method of Pouchou and Pichoir 1991 to compute the backscattered
 #' electron yield for a given element
 #'
 #' @param z The atomic number of the element \code{z}
