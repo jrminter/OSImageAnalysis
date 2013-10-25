@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 # DTSA-II Script - J. R. Minter - 2013-10-15
+#
+# 2013-10-25 JRM Updated to use gmrfilm built using
+#                Visual Fortran 6
 
 import sys
 import os
@@ -10,12 +13,14 @@ import math
 import csv
 import dtsa2
 
+gmrfPth="C:/Apps/GMRFilm/gmrfilm.exe"
+
 """A series of scripts for PAP simulations of Ni on Cu on C wrapping calls to GMRFilm
 Place this file in DTSA_ROOT/lib/dtsa2/"""
 
 
-def genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, outFilPath, gmrfPth="C:/Apps/GMRFilm/GMRFILM.EXE"):
-  """genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr,  lThNi, lThCu, outFilPath, gmrfPth="C:/Apps/GMRFilm/GMRFILM.EXE")
+def genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, outFilPath):
+  """genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr,  lThNi, lThCu, outFilPath)
   Generate the RMS error between measured and computed k-ratios
   for layers of Ni and Cu for a range of specified values
   of thickness on a PET substrate for a range of accelerating voltages using
@@ -28,8 +33,7 @@ def genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, outFilPath, gmrfP
   lThNi      - a list with the starting, ending, and step size for Ni thickness in nm
   lThCu      - a list with the starting, ending, and step size for Cu thickness in nm
   outFilPath - the path for the .csv file. This contains a line for each voltage with
-               e0, tNi, tCu, krNiKa, krCuKa
-  gmrfPth    - path to the GMRFilm executable"""
+               e0, tNi, tCu, krNiKa, krCuKa"""
   
   # this is how we will run GMRFilm
   gmrfCmd = gmrfPth + " < ./in.txt"
@@ -134,14 +138,16 @@ def parseNiCuKaSGPlotGMRfilmOutFile(inPath, verbose=False):
 
 def writeGmrfInNiCu(tNi, tCu, vKv, fPath, toa=35):
   f=open(fPath, 'w')
-  f.write("S\n")
+  # f.write("S\n")
   f.write("N\n")
   f.write("F\n")
   f.write("Y\n")
   f.write("K\n")
+  f.write("N\n")
   msg = "%.1f\n" % toa
   f.write(msg)
   f.write("e\n")
+  f.write("Y\n")
   msg = "%.1f\n" % vKv[0]
   f.write(msg)
   f.write("3\n") # 3 layers
@@ -160,22 +166,27 @@ def writeGmrfInNiCu(tNi, tCu, vKv, fPath, toa=35):
   msg= "%.1f\n" % (10.*tCu)
   f.write(msg)
   f.write("n\n")
-  f.write("y\n")
+  # f.write("y\n")
   l = len(vKv)
   i = 1
   while (i < l-1):
     f.write("E\n")
+    f.write("Y\n")
     msg= "%.1f\n" % vKv[i]
     f.write(msg)
-    f.write("n\n")
-    f.write("y\n")
+    f.write("N\n")
+    # f.write("y\n")
     i += 1
 
   f.write("E\n")
+  f.write("Y\n")
   msg= "%.1f\n" % vKv[l-1]
   f.write(msg)
+  f.write("N\n")
+  f.write("\n")
   f.write("n\n")
-  f.write("n\n")
+  f.write("\n")
+  f.write("\n")
   f.close()
 
 def modNiCuLayers(tNi, tCu, lKv, rptPath):
@@ -184,9 +195,11 @@ def modNiCuLayers(tNi, tCu, lKv, rptPath):
   tNi nm of Ni on tCu nm of Cu for the list of accelerating voltages lKv.
   Write the results (e0, krNiKa, kaCuKa) to a .csv file at rptPath
   Example:
-  modNiCuLayers(200, 400, range(10,31), "./foo.csv")
+  import os
+  os.chdir("c:/temp")
+  import dtsa2.papNiCu as pap
+  pap.modNiCuLayers(200, 400, range(10,31), "./foo.csv")
   """
-  gmrfPth = "C:/Apps/GMRFilm/GMRFILM.EXE"
   gmrfCmd = gmrfPth + " < ./in.txt"
 
   writeGmrfInNiCu(tNi, tCu, lKv, './in.txt', toa=35)
