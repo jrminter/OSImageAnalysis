@@ -2,7 +2,8 @@
 # DTSA-II Script - J. R. Minter - 2013-10-15
 #
 # 2013-10-25 JRM Updated to use gmrfilm built using
-#                Visual Fortran 6
+#                Visual Fortran 6 and processing with
+#                a cmd file so it works with Win7 x64
 
 import sys
 import os
@@ -13,9 +14,13 @@ import math
 import csv
 import dtsa2
 
-gmrfPth="C:/Apps/GMRFilm/gmrfilm.exe"
+gmrfDir="C:/Apps/GMRFilm/"
+gmrfApp="C:/Apps/GMRFilm/gmrfilm.exe"
+
 
 """A series of scripts for PAP simulations of Ni on Cu on C wrapping calls to GMRFilm
+These were designed to run with the version built by J. R. Minter with Visual Fortran 6.
+At least this runs on 64 bit hardware. W00t!!!
 Place this file in DTSA_ROOT/lib/dtsa2/"""
 
 
@@ -33,11 +38,30 @@ def genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, outFilPath):
   lThNi      - a list with the starting, ending, and step size for Ni thickness in nm
   lThCu      - a list with the starting, ending, and step size for Cu thickness in nm
   outFilPath - the path for the .csv file. This contains a line for each voltage with
-               e0, tNi, tCu, krNiKa, krCuKa"""
-  
-  # this is how we will run GMRFilm
-  gmrfCmd = gmrfPth + " < ./in.txt"
-  
+               e0, tNi, tCu, krNiKa, krCuKa
+  Example:
+  import os
+  import dtsa2.papNiCu as pap
+  os.chdir("C:/Temp/")
+  rptFil = "./qm-03960-S4-pap-rms-dev.csv"
+  lKv = [12, 15, 20, 25, 30]
+  lNiKaKr = [0.87582, 0.72544, 0.44970, 0.29367, 0.19886]
+  lCuKaKr = [0.03778, 0.22748, 0.48349, 0.51801, 0.45176]
+  lThNi   = [195, 260, 5]
+  lThCu   = [535, 620, 5]
+  pap.genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, rptFil)
+  """
+               
+  fCmd=open("./runIt.cmd", 'w')
+  strLine = "@echo off \n"
+  fCmd.write(strLine)
+  strLine = "C:\Apps\GMRFilm\gmrfilm.exe < %1 \n"
+  fCmd.write(strLine)
+  strLine = "\n"
+  fCmd.write(strLine)
+  fCmd.close()
+  myCmd = "runIt ./in.txt"
+
   # clean up any old output files in our working directory
   a = glob.glob('F*')
   if (len(a) > 0):
@@ -46,7 +70,6 @@ def genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, outFilPath):
   fRmsDev=open(outFilPath, 'w')
   strLine = "tNi, tCu, rmsDev\n"
   fRmsDev.write(strLine)
-  
 
   # run the Cu thickness loop
   tCu = lThCu[0]
@@ -60,7 +83,7 @@ def genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, outFilPath):
     while (tNi < eNi):
       # here is where we do the work...
       writeGmrfInNiCu(tNi, tCu, lKv, './in.txt', toa=35)
-      os.system(gmrfCmd)
+      os.system(myCmd)
       a = glob.glob('F*')
       if (len(a) > 0):
         # move the output where I want it and clean up
@@ -91,7 +114,7 @@ def genNiCuPetPapMatchErr(lKv, lNiKaKr, lCuKaKr, lThNi, lThCu, outFilPath):
     tCu += sCu
   # we are done, close the KR file
   fRmsDev.close()
-  
+  os.remove("./runIt.cmd")
 
 def parseNiCuKaSGPlotGMRfilmOutFile(inPath, verbose=False):
   """parseNiCuKaSGPlotGMRfilmOutFile(inPath, verbose=False)
@@ -114,13 +137,14 @@ def parseNiCuKaSGPlotGMRfilmOutFile(inPath, verbose=False):
     rKv = 26*i + 5
     v = lines[rKv].split()[4]
     l = len(v)
-    e0 = float(v[0:l-3])
+    e0 = v[0:l-3]
+    e0 = float(e0)
     le0Mod.append(e0)
   
     rNi = 26*i + 16
     eNi = lines[rNi].split()[2]
     # convert to nm
-    tNi = 0.1*float(lines[rNi].split()[6])
+    tNi = 0.1*float(lines[rNi+1].split()[5])
     # print(tNi)
     kNi = float(lines[rNi].split()[8])
     lNiKaMod.append(kNi)
@@ -129,7 +153,7 @@ def parseNiCuKaSGPlotGMRfilmOutFile(inPath, verbose=False):
     rCu = 26*i+19
     eCu = lines[rCu].split()[2]
     # print(eCu)
-    tCu = 0.1*float(lines[rCu].split()[6])
+    tCu = 0.1*float(lines[rCu+1].split()[5])
     # print(tCu)
     kCu = float(lines[rCu].split()[8])
     lCuKaMod.append(kCu)
@@ -196,14 +220,25 @@ def modNiCuLayers(tNi, tCu, lKv, rptPath):
   Write the results (e0, krNiKa, kaCuKa) to a .csv file at rptPath
   Example:
   import os
-  os.chdir("c:/temp")
   import dtsa2.papNiCu as pap
-  pap.modNiCuLayers(200, 400, range(10,31), "./foo.csv")
+  os.chdir("C:/Temp/")
+  pap.modNiCuLayers(200, 400, range(10,31), "foo.csv")
   """
-  gmrfCmd = gmrfPth + " < ./in.txt"
+  
+  fCmd=open("./runIt.cmd", 'w')
+  strLine = "@echo off \n"
+  fCmd.write(strLine)
+  strLine = "C:\Apps\GMRFilm\gmrfilm.exe < %1 \n"
+  fCmd.write(strLine)
+  strLine = "\n"
+  fCmd.write(strLine)
+  fCmd.close()
 
   writeGmrfInNiCu(tNi, tCu, lKv, './in.txt', toa=35)
-  os.system(gmrfCmd)
+  
+  myCmd = "runIt ./in.txt"
+  os.system(myCmd)
+
   a = glob.glob('F*')
   if (len(a) > 0):
     # move the output where I want it and clean up
@@ -211,6 +246,7 @@ def modNiCuLayers(tNi, tCu, lKv, rptPath):
     os.remove(a[0])
     os.remove('./in.txt')
     os.remove('STANDARD.DAT')
+    os.remove('./runIt.cmd')
     # parse the results
     mod = parseNiCuKaSGPlotGMRfilmOutFile('./out.txt', verbose=False)
     lNiKaMod = mod[1]
