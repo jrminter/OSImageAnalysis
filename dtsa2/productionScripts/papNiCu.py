@@ -159,6 +159,117 @@ def parseNiCuKaSGPlotGMRfilmOutFile(inPath, verbose=False):
     lCuKaMod.append(kCu)
   ret = [le0Mod, lNiKaMod, lCuKaMod]
   return (ret)
+  
+def parseLisNiCuKrGMRfilmOutFile(inPath, verbose=False):
+  """parseLisNiCuKrGMRfilmOutFile(inPath, verbose=False)
+  Parse the output file (fPath) from GMRFilm Output from input
+  generated with writeGmrfInNiThCu
+  This returns a lists of model energy , thickness, and and K-ratios
+  for each voltage:
+  [lEo, lNiTh, lCuTh, lNiKa, lCuKa]"""
+  
+  le0 = []
+  lNiTh = []
+  lCuTh = []
+  lNiKa = []
+  lCuKa = []
+
+  f = open(inPath, "r")
+  lines = f.readlines()
+  f.close()
+  nLines = len(lines)
+  if(verbose):
+    print(nLines)
+  recs = (nLines-13)/15 +1
+  v = lines[5].split()[4]
+  l = len(v)
+  e0 = v[0:l-3]
+  e0 = float(e0)
+  for i in range(recs):
+    le0.append(e0)
+    rNi = 15*i + 16
+    # eNi = lines[rNi].split( )[2]
+    tNi= 0.1*float(lines[rNi+1].split( )[5])
+    lNiTh.append(tNi)
+    # print(tNi)
+    kNi = float(lines[rNi].split()[8])
+    lNiKa.append(kNi)
+
+    rCu = 15*i + 19
+    # eCu = lines[rCu].split()[2]
+    # print(eCu)
+    tCu = 0.1*float(lines[rCu+1].split()[5])
+    lCuTh.append(tCu)
+    # print(tCu)
+    kCu = float(lines[rCu].split()[8])
+    lCuKa.append(kCu)
+  
+  ret = [le0, lNiTh, lCuTh, lNiKa, lCuKa]
+  return (ret)
+  
+def writeGmrfInNiThCu(lNi, tCu, e0, fPath, toa=35):
+  """writeGmrfInNiThCu(lNi, tCu, e0, fPath, toa=35)
+  Write an input file to model a list of Ni thickness (nm) at
+  a single Cu thickness (tCu) and kV (e0). Write to the desired
+  report path (fPath). Optionally change the takeoff angle (toa).
+  
+  Example:
+  import os
+  import dtsa2.papNiCu as pap
+  os.chdir("C:/Temp/")
+  lNi = range(10, 14)
+  pap.writeGmrfInNiThCu(lNi, 400, 15, './in.txt')
+  """
+  f=open(fPath, 'w')
+  f.write("N\n")
+  f.write("F\n")
+  f.write("Y\n")
+  f.write("K\n")
+  f.write("N\n")
+  msg = "%.1f\n" % toa
+  f.write(msg)
+  f.write("e\n")
+  f.write("Y\n")
+  msg = "%.1f\n" % e0
+  f.write(msg)
+  f.write("3\n") # 3 layers
+  f.write("1\n") # 1 element each
+  f.write("1\n")
+  f.write("1\n")
+  f.write("NiKa\n")
+  f.write("CuKa\n")
+  f.write("C Ka\n")
+  f.write("n\n")
+  f.write("8.90\n")
+  f.write("8.96\n")
+  f.write("a\n")
+  # do the first thickness
+  msg= "%.1f\n" % (10.*lNi[0])
+  f.write(msg)
+  msg= "%.1f\n" % (10.*tCu)
+  f.write(msg)
+  l = len(lNi)
+  i = 1
+  while (i < l-1):
+    f.write("Y\n")
+    f.write("a\n")
+    msg= "%.1f\n" % (10.*lNi[i])
+    f.write(msg)
+    msg= "%.1f\n" % (10.*tCu)
+    f.write(msg)
+    i += 1
+  f.write("Y\n")
+  f.write("a\n")
+  msg= "%.1f\n" % (10.*lNi[l-1])
+  f.write(msg)
+  msg= "%.1f\n" % (10.*tCu)
+  f.write(msg)
+  f.write("N\n")
+  f.write("\n")
+  f.write("n\n")
+  f.write("\n")
+  f.write("\n")
+  f.close()
 
 def writeGmrfInNiCu(tNi, tCu, vKv, fPath, toa=35):
   f=open(fPath, 'w')
@@ -212,6 +323,67 @@ def writeGmrfInNiCu(tNi, tCu, vKv, fPath, toa=35):
   f.write("\n")
   f.write("\n")
   f.close()
+  
+def prepNiCuKrForMatch(lNi, lCu, csvFil, e0=15, toa=35):
+  """prepNiCuKrForMatch(lNi, lCu, csvFil, e0=15, toa=35)
+  Compute PAP K-ratios for a range of Ni (lNi) thickness
+  and a range of Ni (lNi) thickness at a single kV (e0)
+  for a given take of angle (toa). Write these to a csv
+  file for import into R for later matching.
+  Example:
+  import os
+  import dtsa2.papNiCu as pap
+  os.chdir("C:/Temp/")
+  lNi = [10, 20, 30, 40]
+  lCu = [200, 210, 220, 230, 240]
+  pap.prepNiCuKrForMatch(lNi, lCu, './modelTest.csv', 15, 35)
+  """
+  # first make a runIt command
+  os.chdir("C:/Temp/")
+  myCmd = "runIt ./in.txt"
+  fCmd=open("./runIt.cmd", 'w')
+  strLine = "@echo off \n"
+  fCmd.write(strLine)
+  strLine = "C:\Apps\GMRFilm\gmrfilm.exe < %1 \n"
+  fCmd.write(strLine)
+  strLine = "\n"
+  fCmd.write(strLine)
+  fCmd.close()
+  # write the header to the csv file
+  fRpt=open(csvFil, 'w')
+  strLine = "e0, tNi, tCu, krNiKa, krCuKa\n"
+  fRpt.write(strLine)
+  fRpt.close()
+  for tCu in lCu:
+    writeGmrfInNiThCu(lNi, tCu, e0, './in.txt', toa=35)
+    # rin GMRfilm
+    os.system(myCmd)
+    a = glob.glob('F*')
+    if (len(a) > 0):
+      # move the output where I want it and clean up
+      shutil.copy2(a[0], './out.txt')
+      os.remove(a[0])
+      os.remove('./in.txt')
+      os.remove('STANDARD.DAT')
+      res = parseLisNiCuKrGMRfilmOutFile('./out.txt')
+      # res = [le0, lNiTh, lCuTh, lNiKa, lCuKa]
+      vEo = res[0]
+      vNiTh = res[1]
+      vCuTh = res[2]
+      vNiK = res[3]
+      vCuK = res[4]
+      l = len(vEo)
+      if (l > 0):
+        fRpt=open(csvFil, 'a')
+        i = 0
+        while (i < l-1):
+          # strLine = "e0, tNi, tCu, krNiKa, krCuKa\n"
+          strLine = "%.1f, %.1f, %.1f, %.5f, %.5f\n" % (vEo[i], vNiTh[i], vCuTh[i], vNiK[i], vCuK[i])
+          fRpt.write(strLine)
+          i+=1
+        fRpt.close()
+        
+    # clean up
 
 def modNiCuLayers(tNi, tCu, lKv, rptPath):
   """modNiCuLayers(tNi, tCu, lKv, rptPath)
@@ -233,6 +405,7 @@ def modNiCuLayers(tNi, tCu, lKv, rptPath):
   strLine = "\n"
   fCmd.write(strLine)
   fCmd.close()
+  
 
   writeGmrfInNiCu(tNi, tCu, lKv, './in.txt', toa=35)
   
@@ -252,7 +425,7 @@ def modNiCuLayers(tNi, tCu, lKv, rptPath):
     lNiKaMod = mod[1]
     lCuKaMod = mod[2]
     fRpt=open(rptPath, 'w')
-    strLine = "e0, krNiKa, krCuLa\n"
+    strLine = "e0, krNiKa, krCuKa\n"
     fRpt.write(strLine)
     i = 0
     l = len(lNiKaMod)
