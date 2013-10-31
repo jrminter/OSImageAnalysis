@@ -4,6 +4,9 @@
 # 2013-10-25 JRM Updated to use gmrfilm built using
 #                Visual Fortran 6 and processing with
 #                a cmd file so it works with Win7 x64
+#
+# 2013-10-31 JRM Added functions to model a layer on
+#                a substrate.
 
 import sys
 import os
@@ -270,6 +273,125 @@ def writeGmrfInNiThCu(lNi, tCu, e0, fPath, toa=35):
   f.write("\n")
   f.write("\n")
   f.close()
+  
+def writeGmrfInElThOnSub(lThLayEl, e0, fPath, lineLayEl="NiKa", rhoLayEl="8.90", lineSubEl="CuKa", toa=35):
+  """writeGmrfInElThOnSub(lThLayEl, e0, fPath, lineLayEl="NiKa", rhoLayEl="8.90", lineSubEl="CuKa", toa=35)
+  Write an input file to model a list of thickness values (lThLayEl, nm) 
+  from an element with X-ray line (lineLayEl) and density
+  (rhoLayEl) on a a substrate with X-ray line (lineSubEl)
+  for a desired kV (e0) and takeoff angle (toa). Write to the desired
+  report path (fPath).
+  
+  Example:
+  import os
+  import dtsa2.papNiCu as pap
+  os.chdir("C:/Temp/")
+  lNi = range(10, 14)
+  pap.writeGmrfInElThOnSub(lNi, fPath='./in.txt')
+  """
+  f=open(fPath, 'w')
+  f.write("N\n")
+  f.write("F\n")
+  f.write("Y\n")
+  f.write("K\n")
+  f.write("N\n")
+  msg = "%.1f\n" % toa
+  f.write(msg)
+  f.write("e\n")
+  f.write("Y\n")
+  msg = "%.1f\n" % e0
+  f.write(msg)
+  f.write("2\n") # 3 layers
+  f.write("1\n") # 1 element each
+  f.write("1\n")
+  f.write(lineLayEl + "\n")
+  f.write(lineSubEl + "\n")
+  f.write("n\n")
+  f.write(rhoLayEl + "\n")
+  f.write("a\n")
+  # do the first thickness
+  msg= "%.1f\n" % (10.*lThLayEl[0])
+  f.write(msg)
+  l = len(lThLayEl)
+  i = 1
+  while (i < l-1):
+    f.write("Y\n")
+    f.write("a\n")
+    msg= "%.1f\n" % (10.*lThLayEl[i])
+    f.write(msg)
+    i += 1
+  f.write("Y\n")
+  f.write("a\n")
+  msg= "%.1f\n" % (10.*lThLayEl[l-1])
+  f.write(msg)
+  f.write("N\n")
+  f.write("\n")
+  f.write("n\n")
+  f.write("\n")
+  f.write("\n")
+  f.close()
+  
+def parseLayOnSubGMRfilmOutFile(inPath, csvFil, verbose=False):
+  """parseLayOnSubGMRfilmOutFile(inPath, csvFil, verbose=False)
+  Parse the output file (fPath) from GMRFilm Output from input
+  generated with writeGmrfInElThOnSub a csv file on csvFil
+  This returns a lists of model energy , thickness, and and K-ratios
+  for each voltage:
+  [lEo, lLayTh, lLayKR, lSubKR]"""
+  
+  le0 = []
+  lLayTh = []
+  lLayKR = []
+  lSubKR = []
+
+  f = open(inPath, "r")
+  lines = f.readlines()
+  f.close()
+  nLines = len(lines)
+  if(verbose):
+    print(nLines)
+  recs = int((nLines-13)/12) +1
+  if(verbose):
+    print(recs)
+  # get the voltage
+  v = lines[5].split()[4]
+  l = len(v)
+  e0 = v[0:l-3]
+  e0 = float(e0)
+  # get the layer trans
+  v = lines[8].split()[3]
+  layLin = "KR" + v.replace(";","")
+  v = lines[9].split()[1]
+  subLin = "KR" + v.replace(";","")
+  for i in range(recs):
+    le0.append(e0)
+    rLay = 12*i + 15
+    # eLay = lines[rLay].split( )[2]
+    tLay= 0.1*float(lines[rLay+1].split( )[5])
+    lLayTh.append(tLay)
+    # print(tNi)
+    kLay = float(lines[rLay].split()[8])
+    lLayKR.append(kLay)
+
+    rSub = 12*i + 18
+    # eSub = lines[rCu].split()[2]
+    # print(eSub)
+    #print(lines[rSub].split())
+    kSub = float(lines[rSub].split()[7])
+    lSubKR.append(kSub)
+  l = len(le0)
+  fRpt=open(csvFil, 'w')
+  strLine = "e0, tLay, %s, %s\n" % (layLin, subLin)
+  fRpt.write(strLine)
+  i = 0
+  while (i < l):
+    # strLine = "e0, tLay, krLay, krSub\n"
+    strLine = "%.1f, %.1f, %.5f, %.5f\n" % (le0[i], lLayTh[i], lLayKR[i], lSubKR[i])
+    fRpt.write(strLine)
+    i+=1
+  fRpt.close()
+
+
 
 def writeGmrfInNiCu(tNi, tCu, vKv, fPath, toa=35):
   f=open(fPath, 'w')
