@@ -356,7 +356,7 @@ def prepNiCuKrForMatch(lNi, lCu, csvFil, e0=15, toa=35):
   fRpt.close()
   for tCu in lCu:
     writeGmrfInNiThCu(lNi, tCu, e0, './in.txt', toa=35)
-    # rin GMRfilm
+    # run GMRfilm
     os.system(myCmd)
     a = glob.glob('F*')
     if (len(a) > 0):
