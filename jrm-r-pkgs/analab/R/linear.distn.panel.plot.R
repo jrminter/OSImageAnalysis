@@ -32,9 +32,16 @@ function(v.dat, n.brks=50, distn.lab=NULL,
   }
   boxplot(v.dat, outchar=T, main=NULL, ylab=distn.lab,
           col="gray80", ...)
-  qqnorm(v.dat, col='black',
-         xlab='Theoretical Quantiles',
-         ylab='Sample Quantiles', main=NULL, ...)
+  if(nchar(distn.lab) >0){
+    qqnorm(v.dat, col='black',
+           xlab='Theoretical Quantiles',
+           ylab=paste0('Sample ', distn.lab ), main=NULL, ...)
+  } else{
+    qqnorm(v.dat, col='black',
+           xlab='Theoretical Quantiles',
+           ylab='Sample measure', main=NULL, ...)
+  }
+
   qqline(v.dat, col='red', lw=2)
   par(mfrow=c(1,1))
 }
