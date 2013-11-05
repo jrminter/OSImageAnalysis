@@ -3,4 +3,5 @@ R CMD check jrmmisc
 pause
 R CMD INSTALL "./jrmmisc*.gz"
 del jrmmisc*.gz
+RD /S /Q jrmmisc.Rcheck
 pause
