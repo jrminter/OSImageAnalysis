@@ -1,3 +1,4 @@
+export(ni.cu.rmsdev.contour.plot)
 export(pap.sim.ni.cu)
 export(papEta)
 export(parseCuNiKaPetPAP)
