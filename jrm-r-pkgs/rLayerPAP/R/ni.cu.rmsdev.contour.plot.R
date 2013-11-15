@@ -1,7 +1,8 @@
 #' Contour plot for Ni/Cu K-Ratio RMS-deviation
 #' 
 #' Prepare a contour plot from a data frame containing the RMS deviation
-#' Ni and Cu K-ratios from model values as a function of Ni and Cu thickness. 
+#' Ni and Cu K-ratios from model values as a function of Ni and Cu thickness.
+#' Optionally save a PDF.
 #'
 #' @param data A data frame with tNi, tCu, and RMSdev values \code{data}
 #' @param lab.cex Optional size for label \code{lab.cex}
@@ -18,13 +19,24 @@
 #' ### Not run
 #' 
 ni.cu.rmsdev.contour.plot <- function(data, lab.cex=0.9, icp="", pdf=""){
+  # save the existing parameters so we can restore at the end
   oldPar <- par(c('mar','plt','pin','xaxs','yaxs'))
   
   data <- data[with(data, order(tNi, tCu)), ]
+  # cast the dataframe as an array
   rs <- acast(data, tCu~tNi, value.var="rmsDev")
+  # the column names are our Cu thickness values
   y <- as.numeric(colnames(rs))
+  # the row names are our Ni thickness values
   x <- as.numeric(rownames(rs))
+  # sort the data frame to get the minimum. We really only need the
+  # first row
   df2 <- data[with(data, order(rmsDev)), ]
+  minCu <- df2$tCu[1]
+  minNi <- df2$tNi[1]
+  labMC <- sprintf("Min: %d nm Ni, %d nm Cu", minNi, minCu)
+  # clean up and reclaim the memory
+  rm(df2)
   
   #             B    L    T    R
   std.mar <- c(5.1, 4.1, 4.1, 2.1)
@@ -71,15 +83,13 @@ ni.cu.rmsdev.contour.plot <- function(data, lab.cex=0.9, icp="", pdf=""){
   contour(x,y,rs,
           xlab='Cu thickness [nm]',
           ylab='Ni thickness [nm]')
-  minCu <- df2$tCu[1]
-  minNi <- df2$tNi[1]
   abline(v=minCu, col='red')
   abline(h=minNi, col='red')
-  labMC  <- sprintf("Min: %d nm Ni, %d nm Cu", minNi, minCu )
+  # adj=1.0 ... right justify
   mtext(labMC, side=1, line=2, adj=1.0, cex=lab.cex, col="red")
   l=nchar(icp)
   if(l>1){
-    # add the icp data
+    # add the icp data. adj=0.0 ... left justify
     mtext(icp, side=1, line=2, adj=0.0, cex=lab.cex, col="blue")
   }
   l=nchar(pdf)
