@@ -51,6 +51,8 @@ dtsa2/index.html
 .Rproj.user
 .Rhistory
 
+jrm-r-pkgs/.RData
+
 jrm-r-pkgs/tikzDevice/src/symbols.rds
 jrm-r-pkgs/tikzDevice/src/tikzDevice.dll
 jrm-r-pkgs/tikzDevice/src/tikzDevice.so
