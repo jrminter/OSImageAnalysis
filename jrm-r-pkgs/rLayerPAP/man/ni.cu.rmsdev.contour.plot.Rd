@@ -22,7 +22,7 @@
 \description{
   Prepare a contour plot from a data frame containing the
   RMS deviation Ni and Cu K-ratios from model values as a
-  function of Ni and Cu thickness.
+  function of Ni and Cu thickness. Optionally save a PDF.
 }
 \examples{
 ### Not run
