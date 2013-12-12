@@ -30,6 +30,7 @@ ImageJ/Analyze_Line/*.class
 ImageJ/Analyze_Line/std/*.csv
 
 # don't keep the Rcheck dirs
+jrm-r-pkgs/.RData
 jrm-r-pkgs/analab.Rcheck/
 jrm-r-pkgs/edp.Rcheck/
 jrm-r-pkgs/measureLines.Rcheck/
