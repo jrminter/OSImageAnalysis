@@ -29,6 +29,8 @@ config
 # py3
 py3/dna/features.csv
 py3/dna/output.png
+py3/russCircles/features.csv
+py3/russCircles/output.png
 
 
 # magCalD692

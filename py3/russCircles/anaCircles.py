@@ -1,94 +1,71 @@
 """
-  dna.py
+  anaCircles.py
   
   2013-12-14 J. R. Minter
   
-  Simple particle analysis of nuclei imaged by fluorescence imaging
-  of DNA.
+  Simple particle analysis of touching circles from an image from
+  John Russ.
   
   Adapted from http://pythonvision.org/basic-tutorial to python3 and
   using mainly skimage.
   
-  image from http://pythonvision.org/media/files/images/dna.jpeg
+  image from http://www.reindeergraphics.com/tutorial/image-447.png.png
   
   Note that since the skimage regionprops supplies the bounding
   box, we can just eliminate the features touching the borders.
-  
 
 """
 import math
-import numpy as np
-import skimage.io as io
-import skimage.feature as fea       # peak_local_max
-import skimage.segmentation as seg  # find_boundaries, visualize_boundaries
-import skimage.morphology as mor    # watershed, disk
-import skimage.filter as fil        # threshold_otsu
-import skimage.measure as mea       # regionprops
-import scipy
-import scipy.ndimage as nd
 import matplotlib.pyplot as plt
-import pymorph as pm
-import mahotas as mh
+import numpy as np
+import scipy.ndimage as nd
+
+import skimage.exposure as expo
+import skimage.feature as fea       # peak_local_max
+import skimage.filter as fil        # rank
+import skimage.io as io
+import skimage.measure as mea       # regionprops
+import skimage.morphology as mor    # watershed, disk
+
 
 bShowIntermed = False
-
 fOut = 'features.csv'
-fImg = 'dna.jpeg'
+fImg = './circles.png'
 
-dna = io.imread(fImg)
-
-if bShowIntermed:
-  plt.imshow(dna)
-  plt.gray()
-  plt.show()
-
-print(dna.shape)
-
-imgRows = dna.shape[0]
-imgCols = dna.shape[1]
-print(dna.dtype)
-print(dna.max())
-print(dna.min())
-
-# T = mh.thresholding.otsu(dna)
-T = fil.threshold_otsu(dna)
-
-dnaf = nd.gaussian_filter(dna, 16)
-thr = dnaf > T
+im = io.imread(fImg)
+print(im.dtype)
+print(im.shape)
+imgRows = im.shape[0]
+imgCols = im.shape[1]
 
 if bShowIntermed:
-  plt.imshow(thr)
+  io.imshow(im, cmap=plt.cm.gray)
   plt.show()
 
+his = expo.histogram(im, nbins=256)
+if bShowIntermed:
+  plt.plot(his[1], his[0])
+  plt.show()
+
+thr = im > 0.5
 dis = nd.distance_transform_edt(thr).astype(np.float32)
+print(dis.shape)
+print(dis.dtype)
 if bShowIntermed:
-  print(dis.shape)
-  print(dis.dtype)
-  plt.imshow(-dis, cmap=plt.cm.jet, interpolation='nearest')
+  io.imshow(-dis, cmap=plt.cm.jet, interpolation='nearest')
   plt.show()
 
 # denoise the EDM
-blur = nd.gaussian_filter(dis, 5)
+blur = nd.gaussian_filter(dis,3)
 if bShowIntermed:
-  plt.imshow(-blur, cmap=plt.cm.jet, interpolation='nearest')
+  io.imshow(-blur, cmap=plt.cm.jet, interpolation='nearest')
   plt.show()
 
-# rmax = pm.regmax(dnaf)
-rmax = fea.peak_local_max(blur, indices=False, footprint=np.ones((3, 3)))
+lMax = fea.peak_local_max(blur, indices=False, footprint=np.ones((3, 3)), labels=im)
+mrk = nd.label(lMax)[0]
+lab = mor.watershed(-dis, mrk, mask=thr)
 
-if bShowIntermed:
-  print(rmax.shape)
-  print(rmax.dtype)
-  print(rmax.max())
-  print(rmax.min())
-  plt.imshow(pm.overlay(dna, rmax))
-  plt.show()
-
-mrk = nd.label(rmax)[0]
-lab = mor.watershed(-blur, mrk, mask=thr)
-
-props = mea.regionprops(lab, intensity_image=dna, cache=True)
-
+props = mea.regionprops(lab, cache=True)
 print("")
 l = len(props)
 
@@ -112,14 +89,18 @@ for i in range(l):
 f.close()
 fig, axes = plt.subplots(ncols=3, figsize=(9, 3))
 ax0, ax1, ax2 = axes
-ax0.imshow(dna, cmap=plt.cm.gray, interpolation='nearest')
-ax0.set_title('original dna')
+ax0.imshow(im, cmap=plt.cm.gray, interpolation='nearest')
+ax0.set_title('original circles')
 ax1.imshow(-blur, cmap=plt.cm.jet, interpolation='nearest')
 ax1.set_title('blurred EDM')
 ax2.imshow(lab, cmap=plt.cm.spectral, interpolation='nearest')
-ax2.set_title('labeled dna')
+ax2.set_title('labeled circles')
 for ax in axes:
   ax.axis('off')
 plt.subplots_adjust(hspace=0.01, wspace=0.01, top=1, bottom=0, left=0, right=1)
 plt.show()
+
+
+
+
 
