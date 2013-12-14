@@ -70,7 +70,7 @@ print("")
 l = len(props)
 
 f = open(fOut,'w')
-line = "label, ecd, minor.ax.len, major.ax.len, ar"
+line = "label, ecd, minor.ax.len, major.ax.len, ar, solidity"
 print(line)
 f.write(line+'\n')
 for i in range(l):
@@ -82,7 +82,7 @@ for i in range(l):
         if(theBox[3] < imgCols):
           ecd = 2.0 * math.sqrt(props[i].area/math.pi)
           ar = props[i].major_axis_length / props[i].minor_axis_length
-          line = "%g, %g, %g, %g, %g" % (i+1, ecd, props[i].minor_axis_length, props[i].major_axis_length, ar )
+          line = "%g, %g, %g, %g, %g, %g" % (i+1, ecd, props[i].minor_axis_length, props[i].major_axis_length, ar, props[i].solidity)
           print(line)
           f.write(line+'\n')
           
