@@ -25,10 +25,20 @@ Thumbs.db
 
 # For this module
 config
+
+# py3
+py3/dna/features.csv
+py3/dna/output.png
+
+
+# magCalD692
 magCalD692/.Rhistory
+
+# ImageJ
 ImageJ/Analyze_Line/*.class
 ImageJ/Analyze_Line/std/*.csv
 
+# jrm-r-pkgs
 # don't keep the Rcheck dirs
 jrm-r-pkgs/analab.Rcheck/
 jrm-r-pkgs/edp.Rcheck/
