@@ -1,14 +1,14 @@
-#' Parse a GMRFilm PAP simulation for Cu on Ni on PET
+#' Parse a GMRFilm PAP simulation for Pd on Pd on PET
 #' 
 #' This reads in a vector of the accelerating voltages simulated
-#' and the the file containing the K-ratios for Ni K-alpha and
+#' and the the file containing the K-ratios for Pd L-alpha and
 #' Cu K-alpha lines and returns a data frame with the values. 
 #' These are input to optimization routines.
 #'
 #' @param v.kv A vector with the simulated accelerating voltages \code{v.kv}
 #' @param kr.file.path file path to the K-Ratio file \code{kr.file.path}
 #'
-#' @return df A data frame with the e0, krNiKa, krCuKa
+#' @return df A data frame with the e0, krPdLa, krCuKa
 #'
 #' @keywords keywords
 #'
@@ -18,11 +18,11 @@
 #' ### not run
 #'
 
-parseCuNiKaPetPAP <- function(v.kv, kr.file.path){
+parseCuPdLaPetPAP <- function(v.kv, kr.file.path){
   # create a data.frame to store the results
   n.kv <- length(v.kv)
   res <- as.data.frame(matrix(data = 0.0, nrow = n.kv, ncol = 3, byrow = FALSE, dimnames = NULL))
-  names(res) <- c('kV', 'kNiKa', 'kCuKa')
+  names(res) <- c('kV', 'kPdLa', 'kCuKa')
   res[,1] <- v.kv
   
   parse.kv <- function(the.line){

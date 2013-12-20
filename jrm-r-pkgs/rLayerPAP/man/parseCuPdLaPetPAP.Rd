@@ -1,8 +1,8 @@
-\name{parseCuNiKaPetPAP}
-\alias{parseCuNiKaPetPAP}
-\title{Parse a GMRFilm PAP simulation for Cu on Ni on PET}
+\name{parseCuPdLaPetPAP}
+\alias{parseCuPdLaPetPAP}
+\title{Parse a GMRFilm PAP simulation for Pd on Pd on PET}
 \usage{
-parseCuNiKaPetPAP(v.kv, kr.file.path)
+parseCuPdLaPetPAP(v.kv, kr.file.path)
 }
 \arguments{
   \item{v.kv}{A vector with the simulated accelerating
@@ -12,12 +12,12 @@ parseCuNiKaPetPAP(v.kv, kr.file.path)
   \code{kr.file.path}}
 }
 \value{
-df A data frame with the e0, krNiKa, krCuKa
+df A data frame with the e0, krPdLa, krCuKa
 }
 \description{
 This reads in a vector of the accelerating voltages
-simulated and the the file containing the K-ratios for Ni
-K-alpha and Cu K-alpha lines and returns a data frame with
+simulated and the the file containing the K-ratios for Pd
+L-alpha and Cu K-alpha lines and returns a data frame with
 the values. These are input to optimization routines.
 }
 \examples{

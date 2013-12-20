@@ -1,14 +1,14 @@
-\name{pap.sim.ni.cu}
-\alias{pap.sim.ni.cu}
-\title{Compute PAP K-Ratios for Ni/Cu using GMRFilm}
+\name{pap.sim.pd.cu}
+\alias{pap.sim.pd.cu}
+\title{Compute PAP K-Ratios for Pd/Cu using GMRFilm}
 \usage{
-pap.sim.ni.cu(v.kv, t.ni, t.cu, toa, pgDir = "C:/Apps/GMRfilm",
+pap.sim.pd.cu(v.kv, t.pd, t.cu, toa, pgDir = "C:/Apps/GMRfilm",
   clean = TRUE)
 }
 \arguments{
   \item{v.kv}{A vector of kvs to simulate \code{v.kv}}
 
-  \item{t.ni}{Ni thickness in nm \code{t.ni}}
+  \item{t.pd}{Pd thickness in nm \code{t.pd}}
 
   \item{t.cu}{Cu thickness in nm \code{t.cu}}
 
@@ -20,11 +20,11 @@ pap.sim.ni.cu(v.kv, t.ni, t.cu, toa, pgDir = "C:/Apps/GMRfilm",
   files\code{clean}}
 }
 \value{
-df A data frame with the kVs and the Ni and Cu K-a K-ratios
+df A data frame with the kVs and the Pd and Cu K-a K-ratios
 }
 \description{
-Compute the NiKa and CuKa K-ratios using GMRFilm for a
-vector of accelerating voltages for specified Ni and Cu
+Compute the PdKa and CuKa K-ratios using GMRFilm for a
+vector of accelerating voltages for specified Pd and Cu
 thickness values. Note: this corrects for continuum
 fluorescence
 }
