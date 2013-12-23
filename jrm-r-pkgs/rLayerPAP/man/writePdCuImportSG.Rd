@@ -1,0 +1,39 @@
+\name{writePdCuImportSG}
+\alias{writePdCuImportSG}
+\title{Write an import file for a StrataGem analysis for PdCu}
+\usage{
+writePdCuImportSG(df, sName, tPd, tCu, outDir)
+}
+\arguments{
+  \item{df}{A data frame with mean (col:stat, row:mu) KR
+  stats for pdL and CuK \code{df}}
+
+  \item{sName}{A short identifier for the sample
+  \code{sName}}
+
+  \item{tPd}{A guess for the Pd thickness in nm \code{tPd}}
+
+  \item{tCu}{A guess for the Cu thickness in nm \code{tCu}}
+
+  \item{outDir}{A directory to receive the SG import file
+  \code{outDir}}
+}
+\value{
+none
+}
+\description{
+Read an R data frame containing PD and Ni K-Ratio
+statistics and construct a StrataGRM import text file.
+}
+\examples{
+### not run
+# setwd("~/work/proj/QM13-10-11A-Schell/R")
+# str.kr.rda <- '../dat/qm.04024.KS6.Exp.Stats.RData'
+# load(str.kr.rda)
+# edsDir <- Sys.getenv("EDS_ROOT")
+# outPath <- paste0(edsDir,"/StrataGEM/")
+# dir.create(outPath, showWarnings = FALSE)
+# writePdCuImportSG(qm.04024.KS6.Exp.Stats, "qm-04024-KS6", 9, 800, outPath)
+}
+\keyword{keywords}
+
