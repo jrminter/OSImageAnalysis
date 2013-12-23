@@ -4,13 +4,13 @@
 #' GMRFilm to compute the K-ratios for Pd Ka and Cu Ka for a
 #' specified thickness of Pd and Cu for a vector of kV values.
 #'
-#' @param t.pd Thickness of Pd in nm \code{t.pd}
-#' @param t.cu Thickness of Cu in nm \code{t.cu}
-#' @param v.kV a vector of voltage (kV) to simulate \code{v.kV}
-#' @param fpath full path to the output file (input for GMRFilm) \code{fPath}
-#' @param toa The detector take-off angle, \code{toa}
+#' @param tPd Thickness of Pd in nm 
+#' @param tCu Thickness of Cu in nm 
+#' @param vkV A vector of voltage to simulate 
+#' @param fPath Path to the output file 
+#' @param toa The detector take-off angle
 #'
-#' @return none No return value but writes the specified output 
+#' @return none
 #'
 #' @keywords keywords
 #'
@@ -18,12 +18,9 @@
 #' 
 #' @examples
 #' ### not run
-#' # 
-#' # setwd("C:/Apps/GMRFilm/")
-#' # v.kV = c(10, 12, 15, 20, 25, 30)
-#' # write.gmrf.in.pd.cu(200, 400, v.kV, './in.txt')
-write.gmrf.in.pd.cu <- function(t.pd, t.cu, v.kV, fpath, toa=35){
-  sink(fpath)
+
+writeInputPdCuSG <- function(tPd, tCu, vkV, fPath, toa=35){
+  sink(fPath)
   cat("N\n")
   cat("F\n")
   cat("Y\n")
@@ -33,7 +30,7 @@ write.gmrf.in.pd.cu <- function(t.pd, t.cu, v.kV, fpath, toa=35){
   cat(msg)
   cat("E\n")
   cat("Y\n")
-  msg <- sprintf("%.1f\n", v.kV[1])
+  msg <- sprintf("%.1f\n", vkV[1])
   cat(msg)
   cat("3\n") # 3 layers
   cat("1\n") # 1 element each
@@ -46,17 +43,17 @@ write.gmrf.in.pd.cu <- function(t.pd, t.cu, v.kV, fpath, toa=35){
   cat("8.96\n")
   cat("a\n")
   # do the first thickness
-  msg <- sprintf("%.1f\n", 10*t.pd)
+  msg <- sprintf("%.1f\n", 10*tPd)
   cat(msg)
-  msg <- sprintf("%.1f\n", 10*t.cu)
+  msg <- sprintf("%.1f\n", 10*tCu)
   cat(msg)
   cat("n\n")
-  l <- length(v.kV)
+  l <- length(vkV)
   i <- 2
   while (i < l){
     cat("E\n")
     cat("Y\n")
-    msg <- sprintf("%.1f\n", v.kV[i])
+    msg <- sprintf("%.1f\n", vkV[i])
     cat(msg)
     cat("n\n")
     i = i+1
@@ -64,13 +61,10 @@ write.gmrf.in.pd.cu <- function(t.pd, t.cu, v.kV, fpath, toa=35){
   # write the last kV
   cat("E\n")
   cat("y\n")
-  msg <- sprintf("%.1f\n", v.kV[l])
+  msg <- sprintf("%.1f\n", vkV[l])
   cat(msg) 
   cat("N\n")
   cat("\n")
   cat("N\n")
   sink()
 }
-# setwd("C:/Apps/GMRFilm/")
-# v.kV = c(10, 12, 15, 20, 25, 30)
-# write.gmrf.in.pd.cu(200, 400, v.kV, './in.txt')

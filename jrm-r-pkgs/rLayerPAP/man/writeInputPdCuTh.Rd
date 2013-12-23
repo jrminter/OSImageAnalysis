@@ -1,0 +1,36 @@
+\name{writeInputPdCuTh}
+\alias{writeInputPdCuTh}
+\title{Write an input file to simulate of a range Pd thickness on Cu}
+\usage{
+writeInputPdCuTh(vPd, tCu, e0, fPath, toa = 35)
+}
+\arguments{
+  \item{vPd}{A vector of thickness of Pd in nm \code{vPd}}
+
+  \item{tCu}{Thickness of Cu in nm \code{tCu}}
+
+  \item{e0}{A voltage (kV) to simulate \code{e0}}
+
+  \item{fPath}{full path to the output file (input for
+  GMRFilm) \code{fPath}}
+
+  \item{toa}{The detector take-off angle, \code{toa}}
+}
+\value{
+none
+}
+\description{
+Write an input file for GMRFilm to construct an input file
+for GMRFilm to compute the K-ratios for Pd La and Cu Ka for
+a vector of accelerating voltages and specified thickness
+values by any spaces.
+}
+\examples{
+### not run
+#
+# setwd("C:/Temp/")
+# vPd = c(50, 100, 200)
+# writeInputPdCuTh(vPd, 400, 15, './in.txt')
+}
+\keyword{keywords}
+

@@ -1,15 +1,16 @@
-#' Parse a GMRFilm PAP simulation for Ni on Cu on PET
+#' Parse a GMRFilm PAP simulation for Pd on Cu on PET
 #' 
-#' This reads an output file (gmrf.sg.path) produced by GMRFilm
-#' using write.gmrf.in.ni.cu containing Ni K-alpha and
-#' Cu K-alpha K-ratios for specified values of Ni and Cu thickness
-#' and a vector of accelrating voltages and returns a data frame
-#' with the values. 
+#' This reads an output file (fPath) produced by GMRFilm
+#' using writeInputPdCuSG containing Pd L-alpha and
+#' Cu K-alpha K-ratios for specified values of Pd and Cu thickness
+#' and a vector of accelerating voltages and returns a data frame
+#' with the values.
+#' 
 #' These are input to optimization routines.
 #'
-#' @param gmrf.sg.path File path to the K-Ratio file \code{gmrf.sg.path}
+#' @param fPath File path to the K-Ratio file
 #'
-#' @return df A data frame with the e0, krNiKa, krCuKa
+#' @return df A data frame with the e0, krPdLa, krCuKa
 #'
 #' @keywords keywords
 #'
@@ -18,14 +19,14 @@
 #' @examples
 #' ### not run
 #' # setwd("C:/Temp/")
-#' # df <- parse.ni.cu.gmrf.sg.out("./out.txt")
+#' # df <- parsePdCuOut("./out")
 #' # print(df)
 #'
 
-parse.ni.cu.gmrf.sg.out <- function(gmrf.sg.path){
+parsePdCuOut <- function(fPath){
   # create empty vectors to store the results  
   v.kV <- vector(mode = "numeric", length = 0)
-  v.kNiKa <- vector(mode = "numeric", length = 0)
+  v.kPdLa <- vector(mode = "numeric", length = 0)
   v.kCuKa <- vector(mode = "numeric", length = 0)
   
   parse.kv <- function(the.line){
@@ -45,7 +46,7 @@ parse.ni.cu.gmrf.sg.out <- function(gmrf.sg.path){
     ret
   }
   
-  a <- readLines(gmrf.sg.path, n = -1)
+  a <- readLines(fPath, n = -1)
   n.kv <- length(a)/26
   for (j in 1:n.kv){
     off <- (j-1)*26+6
@@ -55,18 +56,13 @@ parse.ni.cu.gmrf.sg.out <- function(gmrf.sg.path){
     off <- (j-1)*26+17
     vals <- parse.layer(a[off])
     ni <- vals[[2]][1]
-    v.kNiKa <- append(v.kNiKa, ni)
+    v.kPdLa <- append(v.kPdLa, ni)
     
     off <- (j-1)*26+20
     vals <- parse.layer(a[off])
     cu <- vals[[2]][1]
     v.kCuKa <- append(v.kCuKa, cu)
   }
-  res <- data.frame(kV=v.kV, kNiKa=v.kNiKa, kCuKa=v.kCuKa)
+  res <- data.frame(kV=v.kV, kPdLa=v.kPdLa, kCuKa=v.kCuKa)
   return(res)
 }
-
-# setwd("C:/Temp/")
-# df <- parse.ni.cu.gmrf.sg.out("./out.txt")
-# print(df)
-

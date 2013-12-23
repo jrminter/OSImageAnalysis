@@ -9,23 +9,16 @@
 #' @return none
 #'
 #' @keywords keywords
-#'
-#' @export
 #' 
 #' @examples
 #' ### Not run
-#' # make.gmrf.run.it()
-make.gmrf.run.it <- function(wrkDir='C:/Temp/'){
-  start.wd <- getwd()
+#' # makeRunIt()
+
+makeRunIt <- function(wrkDir='C:/Temp/'){
   setwd(wrkDir)
   sink("./runIt.cmd")
   cat("@echo off\n")
-  # get rid of any previous output files
-  cat("DEL /S /Q /F F*.* \n")
-  cat("C:\\Apps\\GMRFilm\\gmrfilm.exe < %1 \n")
-  cat("MV F*.* out.txt\n")
-  cat("DEL /S /Q /F standard.dat \n")
+  cat("C:\\Apps\\GMRFilm\\gmrfilm.exe < in.txt \n")
   cat("\n")
   sink()
 }
-# make.gmrf.run.it()

@@ -1,8 +1,8 @@
-\name{make.gmrf.run.it}
-\alias{make.gmrf.run.it}
+\name{makeRunIt}
+\alias{makeRunIt}
 \title{Make a run-it cmd file for GMRFilm}
 \usage{
-make.gmrf.run.it(wrkDir = "C:/Temp/")
+makeRunIt(wrkDir = "C:/Temp/")
 }
 \arguments{
   \item{wrkDir}{Working directory for GMRFilm simulation
@@ -19,7 +19,7 @@ fluorescence
 }
 \examples{
 ### Not run
-# make.gmrf.run.it()
+# makeRunIt()
 }
 \keyword{keywords}
 

@@ -5,7 +5,7 @@
 papEta(z)
 }
 \arguments{
-  \item{z}{The atomic number of the element \code{z}}
+  \item{z}{The atomic number of the element}
 }
 \value{
 the backscattered electron yield
