@@ -9,6 +9,8 @@
 #' @return none
 #'
 #' @keywords keywords
+#'
+#' @export
 #' 
 #' @examples
 #' ### Not run

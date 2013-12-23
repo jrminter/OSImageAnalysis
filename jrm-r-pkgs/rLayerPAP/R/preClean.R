@@ -5,6 +5,8 @@
 #' @return none
 #'
 #' @keywords keywords
+#'
+#' @export
 
 preClean <- function(wrkDir='C:/Temp/'){
   setwd(wrkDir)

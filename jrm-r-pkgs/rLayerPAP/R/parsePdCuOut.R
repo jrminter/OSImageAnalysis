@@ -18,8 +18,16 @@
 #' 
 #' @examples
 #' ### not run
-#' # setwd("C:/Temp/")
-#' # df <- parsePdCuOut("./out")
+#' # wrkDir <- "C:/Temp/"
+#' # vkV <- 10:30
+#' # setwd(wrkDir)
+#' # preClean(wrkDir)
+#' # makeRunIt(wrkDir)
+#' # inFil <- './in.txt'
+#' # writeInputPdCuSG(200, 400, vkV, inFil) 
+#' # system("runIt", show.output.on.console=TRUE)
+#' # kFil  <- getOutputFile()
+#' # df <- parsePdCuOut(kFil)
 #' # print(df)
 #'
 

@@ -12,6 +12,9 @@
 moveIt <- function(wrkDir='C:/Temp/'){
   setwd(wrkDir)
   files <- list.files(pattern="^[F]")
-  print(files)
+  if(length(files) < 1)
+  {
+    print("error: did not find an output file")
+  }
   file.rename(files[1], "./out.txt")
 }
