@@ -2,8 +2,7 @@
 \alias{pap.sim.ni.cu}
 \title{Compute PAP K-Ratios for Ni/Cu using GMRFilm}
 \usage{
-pap.sim.ni.cu(v.kv, t.ni, t.cu, toa, pgDir = "C:/Apps/GMRfilm",
-  clean = TRUE)
+pap.sim.ni.cu(v.kv, t.ni, t.cu, toa, wrkDir = "C:/Temp/", clean = FALSE)
 }
 \arguments{
   \item{v.kv}{A vector of kvs to simulate \code{v.kv}}
@@ -14,7 +13,7 @@ pap.sim.ni.cu(v.kv, t.ni, t.cu, toa, pgDir = "C:/Apps/GMRfilm",
 
   \item{toa}{take off angle for detector in deg \code{toa}}
 
-  \item{pgDir}{location of GMRFilm \code{pgDir}}
+  \item{wrkDir}{Working directory \code{wrkDir}}
 
   \item{clean}{Boolean to delete input/output
   files\code{clean}}
@@ -30,6 +29,10 @@ fluorescence
 }
 \examples{
 ### Not run
+# v.kV <- 10:30
+# print(v.kV)
+# df <- pap.sim.ni.cu(v.kV, 8.8, 861., 35.0, wrkDir='C:/Temp/', clean=FALSE)
+# print(head(df))
 }
 \keyword{keywords}
 

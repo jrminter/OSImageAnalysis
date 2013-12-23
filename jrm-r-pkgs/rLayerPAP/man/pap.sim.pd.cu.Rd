@@ -2,8 +2,7 @@
 \alias{pap.sim.pd.cu}
 \title{Compute PAP K-Ratios for Pd/Cu using GMRFilm}
 \usage{
-pap.sim.pd.cu(v.kv, t.pd, t.cu, toa, pgDir = "C:/Apps/GMRfilm",
-  clean = TRUE)
+pap.sim.pd.cu(v.kv, t.pd, t.cu, toa, wrkDir = "C:/Temp/", clean = FALSE)
 }
 \arguments{
   \item{v.kv}{A vector of kvs to simulate \code{v.kv}}
@@ -14,7 +13,7 @@ pap.sim.pd.cu(v.kv, t.pd, t.cu, toa, pgDir = "C:/Apps/GMRfilm",
 
   \item{toa}{take off angle for detector in deg \code{toa}}
 
-  \item{pgDir}{location of GMRFilm \code{pgDir}}
+  \item{wrkDir}{Working directory \code{wrkDir}}
 
   \item{clean}{Boolean to delete input/output
   files\code{clean}}
@@ -30,6 +29,10 @@ fluorescence
 }
 \examples{
 ### Not run
+# v.kV <- 10:30
+# print(v.kV)
+# df <- df <- pap.sim.pd.cu(v.kV, 8.8, 861., 35.0, wrkDir='C:/Temp/', clean=FALSE)
+# print(head(df))
 }
 \keyword{keywords}
 

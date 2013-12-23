@@ -261,6 +261,7 @@ def writeGmrfInNiThCu(lNi, tCu, e0, fPath, toa=35):
     msg= "%.1f\n" % (10.*tCu)
     f.write(msg)
     i += 1
+  # write the last layer
   f.write("Y\n")
   f.write("a\n")
   msg= "%.1f\n" % (10.*lNi[l-1])

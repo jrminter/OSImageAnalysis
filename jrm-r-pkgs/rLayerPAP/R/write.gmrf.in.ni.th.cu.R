@@ -1,12 +1,13 @@
-#' Write an input file for a StrataGem type simulation for CuNi
+#' Write an input file for a simulation of a range Ni thickness on Cu
 #' 
 #' Write an input file for GMRFilm to construct an input file for
 #' GMRFilm to compute the K-ratios for Ni Ka and Cu Ka for a
-#' specified thickness of Ni and Cu for a vector of kV values.
+#' vector of Ni thickness (nm) a at a single Cu thickness (tCu)
+# 'and kV (e0).
 #'
-#' @param t.ni Thickness of Ni in nm \code{t.ni}
+#' @param v.ni A vector of thickness of Ni in nm \code{v.ni}
 #' @param t.cu Thickness of Cu in nm \code{t.cu}
-#' @param v.kV a vector of voltage (kV) to simulate \code{v.kV}
+#' @param e0 A voltage (kV) to simulate \code{e0}
 #' @param fpath full path to the output file (input for GMRFilm) \code{fPath}
 #' @param toa The detector take-off angle, \code{toa}
 #'
@@ -19,21 +20,21 @@
 #' @examples
 #' ### not run
 #' # 
-#' # setwd("C:/Temp/")
-#' # v.kV = c(10, 12, 15, 20, 25, 30)
-#' # write.gmrf.in.ni.cu(200, 400, v.kV, './in.txt')
-write.gmrf.in.ni.cu <- function(t.ni, t.cu, v.kV, fpath, toa=35){
+#' # setwd("C:/Temp/GMRFilm/")
+#' # v.ni = c(50, 100, 200)
+#' # write.gmrf.in.ni.th.cu(v.ni, 400, 15, './in.txt')
+write.gmrf.in.ni.th.cu <- function(v.ni, t.cu, e0, fpath, toa=35){
   sink(fpath)
   cat("N\n")
   cat("F\n")
   cat("Y\n")
   cat("K\n")
-  cat("\n")
+  cat("N\n")
   msg <- sprintf("%.1f\n", toa)
   cat(msg)
-  cat("E\n")
+  cat("e\n")
   cat("Y\n")
-  msg <- sprintf("%.1f\n", v.kV[1])
+  msg <- sprintf("%.1f\n", e0)
   cat(msg)
   cat("3\n") # 3 layers
   cat("1\n") # 1 element each
@@ -42,35 +43,40 @@ write.gmrf.in.ni.cu <- function(t.ni, t.cu, v.kV, fpath, toa=35){
   cat("NiKa\n")
   cat("CuKa\n")
   cat("C Ka\n")
+  cat("n\n")
   cat("8.90\n")
   cat("8.96\n")
   cat("a\n")
   # do the first thickness
-  msg <- sprintf("%.1f\n", 10*t.ni)
+  msg <- sprintf("%.1f\n", 10*v.ni[1])
   cat(msg)
   msg <- sprintf("%.1f\n", 10*t.cu)
   cat(msg)
-  cat("n\n")
-  l <- length(v.kV)
+  l <- length(v.ni)
   i <- 2
   while (i < l){
-    cat("E\n")
     cat("Y\n")
-    msg <- sprintf("%.1f\n", v.kV[i])
+    cat("a\n")
+    msg <- sprintf("%.1f\n", 10*v.ni[i])
     cat(msg)
-    cat("n\n")
+    msg <- sprintf("%.1f\n", 10*t.cu)
+    cat(msg)
     i = i+1
   }
-  # write the last kV
-  cat("E\n")
-  cat("y\n")
-  msg <- sprintf("%.1f\n", v.kV[l])
+  # write the last layer
+  cat("Y\n")
+  cat("a\n")
+  msg <- sprintf("%.1f\n", 10*v.ni[l])
+  cat(msg)
+  msg <- sprintf("%.1f\n", 10*t.cu)
   cat(msg) 
   cat("N\n")
   cat("\n")
-  cat("N\n")
+  cat("n\n")
+  cat("\n")
+  cat("\n")
   sink()
 }
-# setwd("C:/Temp/")
-# v.kV = c(10, 12, 15, 20, 25, 30)
-# write.gmrf.in.ni.cu(200, 400, v.kV, './in.txt')
+# setwd("C:/Apps/GMRFilm/")
+# v.ni = c(50, 100, 200)
+# write.gmrf.in.ni.th.cu(v.ni, 400, 15, './in.txt')

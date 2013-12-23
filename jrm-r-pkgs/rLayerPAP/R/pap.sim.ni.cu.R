@@ -8,7 +8,7 @@
 #' @param t.ni Ni thickness in nm \code{t.ni}
 #' @param t.cu Cu thickness in nm \code{t.cu}
 #' @param toa take off angle for detector in deg \code{toa}
-#' @param pgDir location of GMRFilm \code{pgDir}
+#' @param wrkDir Working directory \code{wrkDir}
 #' @param clean Boolean to delete input/output files\code{clean}
 #'
 #' @return df A data frame with the kVs and the Ni and Cu K-a K-ratios 
@@ -19,25 +19,26 @@
 #' 
 #' @examples
 #' ### Not run
+#' # v.kV <- 10:30
+#' # print(v.kV)
+#' # df <- pap.sim.ni.cu(v.kV, 8.8, 861., 35.0, wrkDir='C:/Temp/', clean=FALSE)
+#' # print(head(df))
 #' 
 pap.sim.ni.cu <- function(v.kv, t.ni, t.cu, toa,
-                          pgDir='C:/Apps/GMRfilm',
-                          clean=TRUE){
+                          wrkDir='C:/Temp/',
+                          clean=FALSE){
   wd <- getwd()
-  setwd(pgDir)
+  setwd(wrkDir)
   # get rid of old output files
   files <- list.files(pattern="^[F]")
   file.remove(files)
-  inFil <- paste0(pgDir, '/myTest.txt')
+  make.gmrf.run.it(wrkDir)
+  inFil <- paste0(wrkDir, './in.txt')
   write.gmrf.in.ni.cu(t.ni, t.cu, v.kv, inFil, toa=toa) 
-  cmd <- "gmrfilm < myTest.txt"
+  cmd <- "runIt"
   system(cmd, show.output.on.console=TRUE)
-  files <- list.files(pattern="^[F]")
-  file.rename(files[1], "myOut.txt")
-  
-  # print(list.files())
-  k.fil  <- "C:/apps/GMRFilm/myOut.txt"
-  df <- parseCuNiKaPetPAP(v.kv, k.fil)
+  k.fil  <- "./out.txt"
+  df <- parse.ni.cu.gmrf.sg.out(k.fil)
   # print(df)
   if(clean){
     file.remove(inFil, k.fil)

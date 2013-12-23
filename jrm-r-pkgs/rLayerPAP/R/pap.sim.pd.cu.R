@@ -8,7 +8,7 @@
 #' @param t.pd Pd thickness in nm \code{t.pd}
 #' @param t.cu Cu thickness in nm \code{t.cu}
 #' @param toa take off angle for detector in deg \code{toa}
-#' @param pgDir location of GMRFilm \code{pgDir}
+#' @param wrkDir Working directory \code{wrkDir}
 #' @param clean Boolean to delete input/output files\code{clean}
 #'
 #' @return df A data frame with the kVs and the Pd and Cu K-a K-ratios 
@@ -19,26 +19,26 @@
 #' 
 #' @examples
 #' ### Not run
+#' # v.kV <- 10:30
+#' # print(v.kV)
+#' # df <- df <- pap.sim.pd.cu(v.kV, 8.8, 861., 35.0, wrkDir='C:/Temp/', clean=FALSE)
+#' # print(head(df))
 #' 
 pap.sim.pd.cu <- function(v.kv, t.pd, t.cu, toa,
-                          pgDir='C:/Apps/GMRfilm',
-                          clean=TRUE){
+                          wrkDir='C:/Temp/',
+                          clean=FALSE){
   wd <- getwd()
-  setwd(pgDir)
+  setwd(wrkDir)
   # get rid of old output files
   files <- list.files(pattern="^[F]")
   file.remove(files)
-  inFil <- paste0(pgDir, '/myTest.txt')
+  make.gmrf.run.it(wrkDir)
+  inFil <- paste0(wrkDir, './in.txt')
   write.gmrf.in.pd.cu(t.pd, t.cu, v.kv, inFil, toa=toa) 
-  cmd <- "gmrfilm < myTest.txt"
+  cmd <- "runIt"
   system(cmd, show.output.on.console=TRUE)
-  files <- list.files(pattern="^[F]")
-  file.rename(files[1], "myOut.txt")
-  
-  # print(list.files())
-  k.fil  <- "C:/apps/GMRFilm/myOut.txt"
-  df <- parseCuPdLaPetPAP(v.kv, k.fil)
-  # print(df)
+  k.fil  <- "./out.txt"
+  df <- parse.pd.cu.gmrf.sg.out(k.fil)
   if(clean){
     file.remove(inFil, k.fil)
   }
