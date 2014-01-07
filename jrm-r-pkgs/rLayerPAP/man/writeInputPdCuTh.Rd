@@ -2,7 +2,7 @@
 \alias{writeInputPdCuTh}
 \title{Write an input file to simulate of a range Pd thickness on Cu}
 \usage{
-writeInputPdCuTh(vPd, tCu, e0, fPath, toa = 35)
+  writeInputPdCuTh(vPd, tCu, e0, fPath, toa = 35)
 }
 \arguments{
   \item{vPd}{A vector of thickness of Pd in nm \code{vPd}}
@@ -17,13 +17,13 @@ writeInputPdCuTh(vPd, tCu, e0, fPath, toa = 35)
   \item{toa}{The detector take-off angle, \code{toa}}
 }
 \value{
-none
+  none
 }
 \description{
-Write an input file for GMRFilm to construct an input file
-for GMRFilm to compute the K-ratios for Pd La and Cu Ka for
-a vector of accelerating voltages and specified thickness
-values by any spaces.
+  Write an input file for GMRFilm to construct an input
+  file for GMRFilm to compute the K-ratios for Pd La and Cu
+  Ka for a vector of accelerating voltages and specified
+  thickness values by any spaces.
 }
 \examples{
 ### not run

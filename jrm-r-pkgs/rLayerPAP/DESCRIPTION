@@ -16,3 +16,24 @@ Suggests:
     knitr
 License: MIT
 LazyData: true
+Collate:
+    'getOutputFile.R'
+    'makeRunIt.R'
+    'matchErrorNiCu.R'
+    'matchErrorPdCu.R'
+    'moveIt.R'
+    'ni.cu.rmsdev.contour.plot.R'
+    'papEta.R'
+    'parseNiCuOut.R'
+    'parsePdCuOut.R'
+    'pd.cu.rmsdev.contour.plot.R'
+    'preClean.R'
+    'rLayerPAP-package.r'
+    'simNiCuSG.R'
+    'simPdCuSG.R'
+    'writeInputNiCuSG.R'
+    'writeInputNiCuTh.R'
+    'writeInputPdCuSG.R'
+    'writeInputPdCuTh.R'
+    'writeNiCuImportSG.R'
+    'writePdCuImportSG.R'

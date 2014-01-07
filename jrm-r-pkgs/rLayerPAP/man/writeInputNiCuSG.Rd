@@ -2,7 +2,7 @@
 \alias{writeInputNiCuSG}
 \title{Write an input file for a StrataGem type simulation for CuNi}
 \usage{
-writeInputNiCuSG(tNi, tCu, vkV, fPath, toa = 35)
+  writeInputNiCuSG(tNi, tCu, vkV, fPath, toa = 35)
 }
 \arguments{
   \item{tNi}{Thickness of Ni in nm \code{tNi}}
@@ -16,13 +16,13 @@ writeInputNiCuSG(tNi, tCu, vkV, fPath, toa = 35)
   \item{toa}{The detector take-off angle \code{toa}}
 }
 \value{
-none
+  none
 }
 \description{
-Write an input file for GMRFilm to construct an input file
-for GMRFilm to compute the K-ratios for Ni Ka and Cu Ka for
-a specified thickness of Ni and Cu for a vector of kV
-values.
+  Write an input file for GMRFilm to construct an input
+  file for GMRFilm to compute the K-ratios for Ni Ka and Cu
+  Ka for a specified thickness of Ni and Cu for a vector of
+  kV values.
 }
 \examples{
 ### not run

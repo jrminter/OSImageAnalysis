@@ -2,7 +2,7 @@
 \alias{writePdCuImportSG}
 \title{Write an import file for a StrataGem analysis for PdCu}
 \usage{
-writePdCuImportSG(df, sName, tPd, tCu, outDir)
+  writePdCuImportSG(df, sName, tPd, tCu, outDir)
 }
 \arguments{
   \item{df}{A data frame with mean (col:stat, row:mu) KR
@@ -19,11 +19,11 @@ writePdCuImportSG(df, sName, tPd, tCu, outDir)
   \code{outDir}}
 }
 \value{
-none
+  none
 }
 \description{
-Read an R data frame containing PD and Ni K-Ratio
-statistics and construct a StrataGRM import text file.
+  Read an R data frame containing PD and Ni K-Ratio
+  statistics and construct a StrataGRM import text file.
 }
 \examples{
 ### not run

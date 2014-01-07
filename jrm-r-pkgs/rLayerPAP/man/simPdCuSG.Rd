@@ -2,8 +2,8 @@
 \alias{simPdCuSG}
 \title{Compute PAP K-Ratios for Pd/Cu using GMRFilm}
 \usage{
-simPdCuSG(vkV, tPd, tCu, toa, waitSec, wrkDir = "C:/Temp/", echo = TRUE,
-  clean = FALSE)
+  simPdCuSG(vkV, tPd, tCu, toa, waitSec,
+    wrkDir = "C:/Temp/", echo = TRUE, clean = FALSE)
 }
 \arguments{
   \item{vkV}{A vector of kvs to simulate}
@@ -23,14 +23,14 @@ simPdCuSG(vkV, tPd, tCu, toa, waitSec, wrkDir = "C:/Temp/", echo = TRUE,
   \item{clean}{Boolean to delete input/output files}
 }
 \value{
-df A data frame with the kVs and the Pd L-a and Cu K-a
-K-ratios
+  df A data frame with the kVs and the Pd L-a and Cu K-a
+  K-ratios
 }
 \description{
-Compute the PdLa and CuKa K-ratios using GMRFilm for a
-vector of accelerating voltages for specified Pd and Cu
-thickness values. Note: this corrects for continuum
-fluorescence
+  Compute the PdLa and CuKa K-ratios using GMRFilm for a
+  vector of accelerating voltages for specified Pd and Cu
+  thickness values. Note: this corrects for continuum
+  fluorescence
 }
 \examples{
 ### Not run

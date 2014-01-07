@@ -2,7 +2,8 @@
 \alias{pd.cu.rmsdev.contour.plot}
 \title{Contour plot for Pd/Cu K-Ratio RMS-deviation}
 \usage{
-pd.cu.rmsdev.contour.plot(data, lab.cex = 0.9, icp = "", pdf = "")
+  pd.cu.rmsdev.contour.plot(data, lab.cex = 0.9, icp = "",
+    pdf = "")
 }
 \arguments{
   \item{data}{A data frame with tPd, tCu, and RMSdev values
@@ -16,12 +17,12 @@ pd.cu.rmsdev.contour.plot(data, lab.cex = 0.9, icp = "", pdf = "")
   plot\code{pdf}}
 }
 \value{
-A plot
+  A plot
 }
 \description{
-Prepare a contour plot from a data frame containing the RMS
-deviation Pd and Cu K-ratios from model values as a
-function of Pd and Cu thickness. Optionally save a PDF.
+  Prepare a contour plot from a data frame containing the
+  RMS deviation Pd and Cu K-ratios from model values as a
+  function of Pd and Cu thickness. Optionally save a PDF.
 }
 \examples{
 ### Not run
