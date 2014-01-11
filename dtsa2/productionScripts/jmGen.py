@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 # DTSA-II Script - J. R. Minter - 2013-10-16
+#
+#  Modifications
+#   Date      Who                       What
+# ----------  ---  -------------------------------------------------
+# 2014-01-11  JRM  added measProbeCurrentFromCu
 
 import sys
 import os
@@ -432,3 +437,35 @@ def simBrehmTEM(det, e0, matl, matlThick, subMat, subThick, lNames, nTraj=10000,
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   return dt2.wrap(noisy)
+  
+def measProbeCurrentFromCu(thisCu, stdCu, det, e0, digits=4):
+  """measProbeCurrentFromCu(thisCu, stdCu, det, e0, digits=4)
+  Measure the probe current for a session spectrum (thisCu) from
+  the Cu standard (a probe current proxy) relative to the reference
+  spectrum (stdCu) spectrum used to record standards. This assumes
+  a detector (det) and e0 kV. The results are rounded to the desired digits.
+  We use the Cu lines.
+  
+  Returns a dictionary:
+  pcMu  - the mean relative probe current (mean K-ratio for optimum TS)
+  pcSE  - the standard error for the relative probe current
+  optTS - the optimal transition set for this kV
+  ffMet - the filter fit metric, close to 0 is good, close to 1 is bad.
+  
+  An example:
+  import dtsa2.jmGen as jmg
+  res = jmg.measProbeCurrentFromCu(unCuSpc, rfCuSpc, det, e0)
+  """
+  qa = epq.CompositionFromKRatios()
+  ff = epq.FilterFit(det,epq.ToSI.keV(e0))
+  ff.addReference(dt2.element("Cu"),stdCu)
+  krs = ff.getKRatios(thisCu)
+  opt = krs.optimalDatum(dt2.element("Cu"))
+  optTS = opt.toString()
+  ku=krs.getKRatioU(opt)
+  pcMu = round(ku.doubleValue(), digits)
+  pcSE = round(ku.uncertainty(), digits)
+  ffMet = round(ff.getFitMetric(thisCu), digits)
+  # return a dictionary
+  ret = {"pcMu": pcMu, "pcSE": pcSE, "optTS": optTS, "ffMet": ffMet }
+  return ret
