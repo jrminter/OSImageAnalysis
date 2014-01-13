@@ -21,6 +21,7 @@ import gov.nist.microanalysis.EPQLibrary as epq
 import gov.nist.microanalysis.EPQLibrary.Detector as epd
 import gov.nist.microanalysis.Utility as epu
 import gov.nist.microanalysis.EPQTools as ept
+import java.io as jio
 import java.lang as jl
 
 
@@ -469,3 +470,76 @@ def measProbeCurrentFromCu(thisCu, stdCu, det, e0, digits=4):
   # return a dictionary
   ret = {"pcMu": pcMu, "pcSE": pcSE, "optTS": optTS, "ffMet": ffMet }
   return ret
+  
+def avgSpectra(dir, names, det, e0, wrkDist, pc=1, acqTime=100, resName="Avg", debug=False):
+  """avgSpectra(dir, names, det, e0, wrkDist, pc=1, acqTime=100, resName="Avg", debug=False)
+  Compute the average spectrum from a list (names) of file names, assuming the individuals
+  were recorded with an acquisition time of (acqTime) sec using the detector (det)
+  at e0 kV with a working distance (wrkDist) and a probe current (pc) with default 1 .
+  Return return the average spectrum
+  with a display (resName). The (debug) flag prints file names if positive.
+  
+  Example:
+  import dtsa2.jmGen as jmg
+  findDetector("FEI FIB620 EDAX-RTEM")
+  theAvg = jmg.avgSpectra('C:\Temp\', ['Cu-12-1.spc','Cu-12-2.spc','Cu-12-3.spc'], det, 12, 17.1, 1.0, resName="Cu Std 12 kV")
+  display(theAvg)
+  """
+  if(debug):
+    print(names)
+  nSpec = len(names)
+  factor = 1.0 / float(nSpec)
+  sPath = dir+names[0]
+  sum  = dt2.wrap(ept.SpectrumFile.open(sPath)[0])
+  updateCommonSpecProps(sum, det, name="", liveTime=acqTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+  for i in range(1, nSpec):
+    sPath = dir+names[i]
+    tmp = dt2.wrap(ept.SpectrumFile.open(sPath)[0])
+    updateCommonSpecProps(tmp, det, name="", liveTime=acqTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    sum += tmp
+  avg=factor*sum
+  updateCommonSpecProps(avg, det, name=resName, liveTime=acqTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+  return avg
+
+def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, acqTime=100, debug=False):
+  """ makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, acqTime=100, debug=False)
+  Generate standard spectra for a project with base directory (prjBaseDir) for
+  the standard with (stdName) from (nDupl) duplicate spectra recorded at
+  each of a list (vkV) of accelerating voltages with detector (det), working
+  distance (wrkDist), and probe current (pc, default 1.0) and acquisition time (acqTime, default 100 sec).
+  A debug flag(default, False) prints names.
+  This assumes EDAX spc spectra
+  are all store in prjBaseDir with names of the form stdName-12-1.spc where
+  12 is the kV and 1 is the duplicate number. This writes the standards in
+  files like prjBaseDir/msa/std/12kV/stdName.msa.
+  
+  Example:
+  import dtsa2.jmGen as jmg
+  findDetector("FEI FIB620 EDAX-RTEM")
+  vkV = [10, 12, 15, 20, 25, 30]
+  prjBaseDir = 'C:/Temp'
+  makeStdSpcSpectra(prjBaseDir, "Cu", 3, vkV, det, 17.1, 1.0, 100.0, False)
+  """
+  for e0 in vkV:
+    vNames = []
+    disName='%s Std %gkV' % (stdName, e0)
+    spcDir = prjBaseDir + '/spc/stds/'
+    msaDir = prjBaseDir + '/msa/std/%gkV/' % e0
+    for i in range(nDupl):
+      vNames.append('%s-%g-%d.spc' % (stdName, e0, i+1))
+    if(debug):
+      print(vNames)
+    
+    theAvg = avgSpectra(spcDir, vNames, det, e0, wrkDist, pc, acqTime, resName=disName, debug=debug)
+    updateCommonSpecProps(theAvg, det, name=disName, liveTime=acqTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    dt2.display(theAvg)
+    
+    outFil = msaDir + '%s.msa' % stdName
+    a = glob.glob(outFil)
+    if (len(a) > 0):
+      os.remove(a[0])
+    fos=jio.FileOutputStream(outFil)
+    ept.WriteSpectrumAsEMSA1_0.write(theAvg,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
+    fos.close()
+    if(debug):
+      print(outFil)
