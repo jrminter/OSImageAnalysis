@@ -543,3 +543,16 @@ def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, acqTi
     fos.close()
     if(debug):
       print(outFil)
+      
+def getSpcAcqTime(spc):
+  """getSpcAcqTime(spc)
+  Return a string representation of the the local acquisition date and time for the input spectrum.
+  Example:
+  import dtsa2.jmGen as jmg
+  strTim = jmg.getSpcAcqTime(cuSpc)
+  """
+  props = spc.getProperties()
+  ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
+  acqTim = ts.toLocaleString()
+  return acqTim
+ 
