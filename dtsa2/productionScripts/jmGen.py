@@ -471,12 +471,11 @@ def measProbeCurrentFromCu(thisCu, stdCu, det, e0, digits=4):
   ret = {"pcMu": pcMu, "pcSE": pcSE, "optTS": optTS, "ffMet": ffMet }
   return ret
   
-def avgSpectra(dir, names, det, e0, wrkDist, pc=1, acqTime=100, resName="Avg", debug=False):
-  """avgSpectra(dir, names, det, e0, wrkDist, pc=1, acqTime=100, resName="Avg", debug=False)
+def avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False):
+  """avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False)
   Compute the average spectrum from a list (names) of file names, assuming the individuals
-  were recorded with an acquisition time of (acqTime) sec using the detector (det)
-  at e0 kV with a working distance (wrkDist) and a probe current (pc) with default 1 .
-  Return return the average spectrum
+  were recorded using the detector (det) at e0 kV with a working distance (wrkDist) and a
+  probe current (pc) with default 1. Return return the average spectrum
   with a display (resName). The (debug) flag prints file names if positive.
   
   Example:
@@ -490,23 +489,29 @@ def avgSpectra(dir, names, det, e0, wrkDist, pc=1, acqTime=100, resName="Avg", d
   nSpec = len(names)
   factor = 1.0 / float(nSpec)
   sPath = dir+names[0]
-  sum  = dt2.wrap(ept.SpectrumFile.open(sPath)[0])
-  updateCommonSpecProps(sum, det, name="", liveTime=acqTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+  sum = dt2.wrap(ept.SpectrumFile.open(sPath)[0])
+  props = sum.getProperties()
+  # use the live time and acquisition time of the first spectrum for the average
+  liveTime = props.getNumericProperty(epq.SpectrumProperties.LiveTime)
+  ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
+  updateCommonSpecProps(sum, det, name="", probeCur=pc, e0=e0, wrkDist=wrkDist)
   for i in range(1, nSpec):
     sPath = dir+names[i]
     tmp = dt2.wrap(ept.SpectrumFile.open(sPath)[0])
-    updateCommonSpecProps(tmp, det, name="", liveTime=acqTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    updateCommonSpecProps(tmp, det, name="",  probeCur=pc, e0=e0, wrkDist=wrkDist)
     sum += tmp
   avg=factor*sum
-  updateCommonSpecProps(avg, det, name=resName, liveTime=acqTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+  updateCommonSpecProps(avg, det, name=resName, liveTime=liveTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+  props = avg.getProperties()
+  props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
   return avg
 
-def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, acqTime=100, debug=False):
-  """ makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, acqTime=100, debug=False)
+def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, debug=False):
+  """ makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, debug=False)
   Generate standard spectra for a project with base directory (prjBaseDir) for
   the standard with (stdName) from (nDupl) duplicate spectra recorded at
   each of a list (vkV) of accelerating voltages with detector (det), working
-  distance (wrkDist), and probe current (pc, default 1.0) and acquisition time (acqTime, default 100 sec).
+  distance (wrkDist), and probe current (pc, default 1.0).
   A debug flag(default, False) prints names.
   This assumes EDAX spc spectra
   are all store in prjBaseDir with names of the form stdName-12-1.spc where
@@ -518,7 +523,7 @@ def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, acqTi
   findDetector("FEI FIB620 EDAX-RTEM")
   vkV = [10, 12, 15, 20, 25, 30]
   prjBaseDir = 'C:/Temp'
-  makeStdSpcSpectra(prjBaseDir, "Cu", 3, vkV, det, 17.1, 1.0, 100.0, False)
+  makeStdSpcSpectra(prjBaseDir, "Cu", 3, vkV, det, 17.1, 1.0, False)
   """
   for e0 in vkV:
     vNames = []
@@ -530,8 +535,8 @@ def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, acqTi
     if(debug):
       print(vNames)
     
-    theAvg = avgSpectra(spcDir, vNames, det, e0, wrkDist, pc, acqTime, resName=disName, debug=debug)
-    updateCommonSpecProps(theAvg, det, name=disName, liveTime=acqTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    theAvg = avgSpectra(spcDir, vNames, det, e0, wrkDist, pc, resName=disName, debug=debug)
+    updateCommonSpecProps(theAvg, det, name=disName, probeCur=pc, e0=e0, wrkDist=wrkDist)
     dt2.display(theAvg)
     
     outFil = msaDir + '%s.msa' % stdName
