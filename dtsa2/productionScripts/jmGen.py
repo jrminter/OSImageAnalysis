@@ -2,9 +2,11 @@
 # DTSA-II Script - J. R. Minter - 2013-10-16
 #
 #  Modifications
-#   Date      Who                       What
-# ----------  ---  -------------------------------------------------
-# 2014-01-11  JRM  added measProbeCurrentFromCu
+#   Date      Who  Ver                       What
+# ----------  --- -----  -------------------------------------------------
+# 2014-01-11  JRM 1.1.0  added measProbeCurrentFromCu
+# 2014-01-16  JRM 1.1.1  updated doc for avgSpectra, makeStdSpcSpectra,
+#                        getSpcAcqTime, getSpcAcqTimeDT and measRefProbeCur
 
 import sys
 import os
