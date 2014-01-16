@@ -560,4 +560,56 @@ def getSpcAcqTime(spc):
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
   acqTim = ts.toLocaleString()
   return acqTim
+
+def getSpcAcqTimeDT(spc):
+  """getSpcAcqTimeDT(spc)
+  Return a date/time object with the local acquisition date and time for the input spectrum.
+  Example:
+  import dtsa2.jmGen as jmg
+  dt = jmg.getSpcAcqTimeDT(cuSpc)
+  """
+  props = spc.getProperties()
+  ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
+  return ts
+
  
+def measRefProbeCur(baseDir, vkV, det, rptFil, debug=False):
+  """measRefProbeCur(baseDir, vkV, det, rptFil, debug=False)
+  Measure the relative prove current for Cu reference spectra in the
+  baseDir/spc/refs/%gkV/ directory using the Cu standard spectra in
+  baseDir/msa/std/%gkV/Cu.msa
+  for a list (vkV) of e0 values for the detector det.
+  Write the report (a .csv file) to rptFil.
+  
+  Example:
+  import dtsa2.jmGen as jmg
+  jmg.measRefProbeCur(baseDir, vkV, det, rptFil)
+  """
+  # prepare the output file
+  f=open(rptFil, 'w')
+  strLine = 'e0, refFile, acqTime, pcMu, pcSE\n'
+  f.write(strLine)
+
+  for e0 in vkV:
+    stdFil = baseDir + "/msa/std/%gkV/Cu.msa" % e0
+    std = dt2.wrap(ept.SpectrumFile.open(stdFil)[0])
+    refDir = baseDir + "/spc/refs/%gkV/" % e0
+    refQue = baseDir + "/spc/refs/%gkV/*.spc" % e0
+    a = glob.glob(refQue)
+    l = len(a)
+    if ( l > 0):
+      for i in range(l):
+        ref = dt2.wrap(ept.SpectrumFile.open(a[i])[0])
+        refName = os.path.basename(a[i])
+        refTim = getSpcAcqTime(ref)
+        res = measProbeCurrentFromCu(ref, std, det, e0)
+        if(debug):
+          print([res['pcMu'], res['pcSE']])
+        strLine = "%s" % e0 + ", "
+        strLine = strLine + "%s" % refName.replace(".spc", "") + ", "
+        strLine = strLine + "%s" % refTim.replace(",", "") + ", "
+        strLine = strLine + "%.5f" % res['pcMu'] + ", "
+        strLine = strLine + "%.5f" % res['pcSE'] + "\n"
+        f.write(strLine)
+
+  f.close()
