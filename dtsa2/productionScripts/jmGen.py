@@ -7,6 +7,7 @@
 # 2014-01-11  JRM 1.1.0  added measProbeCurrentFromCu
 # 2014-01-16  JRM 1.1.1  updated doc for avgSpectra, makeStdSpcSpectra,
 #                        getSpcAcqTime, getSpcAcqTimeDT and measRefProbeCur
+# 2014-01-22  JRM 1.1.2  added makeAvgRefSpectra and measRefProbeCurMsa
 
 import sys
 import os
@@ -597,6 +598,90 @@ def measRefProbeCur(baseDir, vkV, det, rptFil, debug=False):
     std = dt2.wrap(ept.SpectrumFile.open(stdFil)[0])
     refDir = baseDir + "/spc/refs/%gkV/" % e0
     refQue = baseDir + "/spc/refs/%gkV/*.spc" % e0
+    a = glob.glob(refQue)
+    l = len(a)
+    if ( l > 0):
+      for i in range(l):
+        ref = dt2.wrap(ept.SpectrumFile.open(a[i])[0])
+        refName = os.path.basename(a[i])
+        refTim = getSpcAcqTime(ref)
+        res = measProbeCurrentFromCu(ref, std, det, e0)
+        if(debug):
+          print([res['pcMu'], res['pcSE']])
+        strLine = "%s" % e0 + ", "
+        strLine = strLine + "%s" % refName.replace(".spc", "") + ", "
+        strLine = strLine + "%s" % refTim.replace(",", "") + ", "
+        strLine = strLine + "%.5f" % res['pcMu'] + ", "
+        strLine = strLine + "%.5f" % res['pcSE'] + "\n"
+        f.write(strLine)
+
+  f.close()
+
+def makeAvgRefSpectra(prjBaseDir, refName, nDupl, vkV, det, wrkDist, pc=1, debug=False):
+  """ makeAvgRefSpectra(prjBaseDir, refName, nDupl, vkV, det, wrkDist, pc=1, debug=False)
+  Generate standard spectra for a project with base directory (prjBaseDir) for
+  the standard with (refName) from (nDupl) duplicate spectra recorded at
+  each of a list (vkV) of accelerating voltages with detector (det), working
+  distance (wrkDist), and probe current (pc, default 1.0).
+  A debug flag(default, False) prints names.
+  This assumes EDAX spc spectra
+  are all store in prjBaseDir with names of the form refName-12-1.spc where
+  12 is the kV and 1 is the duplicate number. This writes the standards in
+  files like prjBaseDir/msa/std/12kV/refName.msa.
+  
+  Example:
+  import dtsa2.jmGen as jmg
+  findDetector("FEI FIB620 EDAX-RTEM")
+  vkV = [10, 12, 15, 20, 25, 30]
+  prjBaseDir = 'C:/Temp'
+  makeAvgRefSpectra(prjBaseDir, "Cu", 3, vkV, det, 17.1, 1.0, False)
+  """
+  for e0 in vkV:
+    vNames = []
+    disName='%s Ref %gkV' % (refName, e0)
+    spcDir = prjBaseDir + '/spc/refs/'
+    msaDir = prjBaseDir + '/msa/ref/%gkV/' % e0
+    for i in range(nDupl):
+      vNames.append('%s-%g-%d.spc' % (refName, e0, i+1))
+    if(debug):
+      print(vNames)
+    
+    theAvg = avgSpectra(spcDir, vNames, det, e0, wrkDist, pc, resName=disName, debug=debug)
+    updateCommonSpecProps(theAvg, det, name=disName, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    dt2.display(theAvg)
+    
+    outFil = msaDir + '%s.msa' % refName
+    a = glob.glob(outFil)
+    if (len(a) > 0):
+      os.remove(a[0])
+    fos=jio.FileOutputStream(outFil)
+    ept.WriteSpectrumAsEMSA1_0.write(theAvg,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
+    fos.close()
+    if(debug):
+      print(outFil)
+
+def measRefProbeCurMsa(baseDir, vkV, det, rptFil, debug=False):
+  """measRefProbeCurMsa(baseDir, vkV, det, rptFil, debug=False)
+  Measure the relative prove current for Cu reference spectra in the
+  baseDir/msa/ref/%gkV/ directory using the Cu standard spectra in
+  baseDir/msa/std/%gkV/Cu.msa
+  for a list (vkV) of e0 values for the detector det.
+  Write the report (a .csv file) to rptFil.
+  
+  Example:
+  import dtsa2.jmGen as jmg
+  jmg.measRefProbeCurMsa(baseDir, vkV, det, rptFil)
+  """
+  # prepare the output file
+  f=open(rptFil, 'w')
+  strLine = 'e0, refFile, acqTime, pcMu, pcSE\n'
+  f.write(strLine)
+
+  for e0 in vkV:
+    stdFil = baseDir + "/msa/std/%gkV/Cu.msa" % e0
+    std = dt2.wrap(ept.SpectrumFile.open(stdFil)[0])
+    refDir = baseDir + "/msa/ref/%gkV/" % e0
+    refQue = baseDir + "/msa/ref/%gkV/*.msa" % e0
     a = glob.glob(refQue)
     l = len(a)
     if ( l > 0):
