@@ -14,8 +14,8 @@ scatter plots that encapsulates low-level R graphics.
 \tabular{ll}{
 Package: \tab analab\cr
 Type: \tab Package\cr
-Version: \tab 1.4.4\cr
-Date: \tab 2013-11-05\cr
+Version: \tab 1.4.5\cr
+Date: \tab 2014-02-04\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }

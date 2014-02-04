@@ -35,11 +35,11 @@ function(v.dat, n.brks=50, distn.lab=NULL,
   if(nchar(distn.lab) >0){
     qqnorm(v.dat, col='black',
            xlab='Theoretical Quantiles',
-           ylab=paste0('Sample ', distn.lab ), main=NULL, ...)
+           ylab=paste0('Sample Quantiles ', distn.lab), main=NULL, ...)
   } else{
     qqnorm(v.dat, col='black',
            xlab='Theoretical Quantiles',
-           ylab='Sample measure', main=NULL, ...)
+           ylab='Sample Quantiles', main=NULL, ...)
   }
 
   qqline(v.dat, col='red', lw=2)
