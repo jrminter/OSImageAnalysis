@@ -8,6 +8,7 @@
 # 2014-01-16  JRM 1.1.1  updated doc for avgSpectra, makeStdSpcSpectra,
 #                        getSpcAcqTime, getSpcAcqTimeDT and measRefProbeCur
 # 2014-01-22  JRM 1.1.2  added makeAvgRefSpectra and measRefProbeCurMsa
+# 2014-02-06  JRM 1.1.3  added simAnaStdSpc
 
 import sys
 import os
@@ -700,3 +701,54 @@ def measRefProbeCurMsa(baseDir, vkV, det, rptFil, debug=False):
         f.write(strLine)
 
   f.close()
+
+def simAnaStdSpc(mat, e0, det, cuRef, magNoise=1.0):
+  """simAnaStdSpc(mat, e0, det, cuRef, magNoise=1.0)
+  Use an analytical model to simulate an analytical standard from the specified material(mat)
+  at the accelerating voltage (e0 in kV) for the specified detector (det) given a Cu reference
+  spectrum (cuRef) and adding noise (magNoise) with a magnitude that defaults to 1.0
+  The function simulates a Cu spectrum, computes the correct probe current, and then
+  simulates the standard.
+  Example:
+  import dtsa2.jmGen as jmg
+  mat = material("Ag", density=10.49)
+  det = findDetector("FEI FIB620 EDAX-RTEM")
+  cuRef = dt2.wrap(ept.SpectrumFile.open("PathToRef")[0])
+  spc = jmg.simAnaStdSpc(mat, 25, det, cuRef, magNoise=1.0)
+  """
+  cu = dt2.material("Cu", density=8.96)
+  props = cuRef.getProperties()
+  # use the live time and acquisition time of the first spectrum for the average
+  liveTime = props.getNumericProperty(epq.SpectrumProperties.LiveTime)
+  ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
+  pc = props.getNumericProperty(epq.SpectrumProperties.FaradayBegin)
+  
+  sp = epq.SpectrumProperties(det.getProperties())
+  sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, 1.0)
+  sp.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
+    
+  res = dt2.wrap(epq.SpectrumSimulator.Basic.generateSpectrum(cu, sp, det, True))
+  cuSim = dt2.wrap(epq.SpectrumUtils.addNoiseToSpectrum(res, 1.0))
+  cuSim.rename("%s-Sim-%0.1f kV" % (cu, e0))
+  
+  a = measProbeCurrentFromCu(cuSim, cuRef, det, e0)
+  pcMu = a['pcMu']
+  factor = 1.0/pcMu
+  print(factor)
+  
+  sp = epq.SpectrumProperties(det.getProperties())
+  sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  sp.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
+  
+  res = dt2.wrap(epq.SpectrumSimulator.Basic.generateSpectrum(mat, sp, det, True))
+  res *= factor
+  stdSim = dt2.wrap(epq.SpectrumUtils.addNoiseToSpectrum(res, magNoise))
+  props = stdSim.getProperties()
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
+  stdSim.rename("%s" % mat)
+  return stdSim
+  
