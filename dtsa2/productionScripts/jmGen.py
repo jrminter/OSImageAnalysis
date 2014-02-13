@@ -10,6 +10,7 @@
 # 2014-01-22  JRM 1.1.2  added makeAvgRefSpectra and measRefProbeCurMsa
 # 2014-02-06  JRM 1.1.3  added simAnaStdSpc
 # 2014-02-07  JRM 1.1.4  added simMcStdSpc
+# 2014-02-12  JRM 1.1.5  added compareBulkSpc
 
 import sys
 import os
@@ -810,4 +811,30 @@ def simMcStdSpc(mat, e0, det, cuRef, nTraj=1000, debug=False):
   if(debug):
     dt2.display(stdSim)
   return stdSim
-  
+
+def compareBulkSpc(unk, ref, det, e0, elem=epq.Element.Cu, trs="Cu K-L3"):
+  """compareBulkSpc(unk, ref, det, e0, elem=epq.Element.Cu, trs="Cu K-L3")
+  Compare a bulk spectrum (unk) to a reference (ref) from the same element (elem)
+  recorded on the same detector (det) and kV (e0). Use a preferred transition
+  set (trs). Useful for checking probe current changes.
+  Example:
+  import dtsa2.jmGen as jmg
+  det=findDetector("FEI FIB620 EDAX-RTEM")
+  res = jmg.compareBulkSpc(unk, ref, det, e0, elem=epq.Element.Cu, trs="Cu K-L3")
+  """
+  comp = epq.Composition(elem)
+  sp = ref.getProperties()
+  sp.setCompositionProperty(epq.SpectrumProperties.StandardComposition, comp)
+  qus = epq.QuantifySpectrumUsingStandards(det, epq.ToSI.keV(e0))
+  qus.addStandard(elem, comp, ref)
+  xrt = dt2.transition(trs)
+  for roi in qus.getRegionOfInterestSet(elem):
+    if roi.contains(xrt):
+      qus.setPreferredROI(elem, roi)
+  a = qus.compute(unk)
+  res = a.getComposition()
+  wtFrMu = round(res.weightFraction(elem, False), 5)
+  wtFrU  = res.weightFractionU(elem, False)
+  out = [wtFrMu, wtFrU]
+  return out
+    
