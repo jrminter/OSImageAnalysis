@@ -11,6 +11,7 @@
 # 2014-02-06  JRM 1.1.3  added simAnaStdSpc
 # 2014-02-07  JRM 1.1.4  added simMcStdSpc
 # 2014-02-12  JRM 1.1.5  added compareBulkSpc
+# 2014-02-13  JRM 1.1.6  added readEdaxSpc. gets rid of some problems w opening
 
 import sys
 import os
@@ -837,4 +838,42 @@ def compareBulkSpc(unk, ref, det, e0, elem=epq.Element.Cu, trs="Cu K-L3"):
   wtFrU  = res.weightFractionU(elem, False)
   out = [wtFrMu, wtFrU]
   return out
-    
+
+def readEdaxSpc(path, det, pc, wrkDist):
+  """readEdaxSpc(path, det, pc, wrkDist)
+  Read an EDAX .spc file from (path), set the DTSA detector (det), the
+  probe current (pc) and working distance (wrkDist). This writes to a
+  temp .msa file and re-reads to get consistency
+  Example:
+  import dtsa2.jmGen as jmg
+  det=findDetector("FEI FIB620 EDAX-RTEM")
+  spc = jmg.readEdaxSpc(path, det, 1.0, 17.2)
+  """
+  edsDir = os.environ['EDS_ROOT']
+  tmpFil = edsDir + "/tmp.msa"
+  spc = dt2.wrap(ept.SpectrumFile.open(path)[0])
+  dt2.display(spc)
+  props = spc.getProperties()
+  lt = props.getNumericProperty(epq.SpectrumProperties.LiveTime)
+  e0 = props.getNumericProperty(epq.SpectrumProperties.BeamEnergy)
+  name = props.getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,pc)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
+  fos=jio.FileOutputStream(tmpFil)
+  ept.WriteSpectrumAsEMSA1_0.write(spc,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
+  fos.close()
+  # clear()
+  dt2.DataManager.removeSpectrum(spc)
+  spc = dt2.wrap(ept.SpectrumFile.open(tmpFil)[0])
+  props = spc.getProperties()
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
+  props.setDetector(det)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  os.remove(tmpFil)
+  return spc
+  
+  
