@@ -12,6 +12,8 @@
 # 2014-02-07  JRM 1.1.4  added simMcStdSpc
 # 2014-02-12  JRM 1.1.5  added compareBulkSpc
 # 2014-02-13  JRM 1.1.6  added readEdaxSpc. gets rid of some problems w opening
+# 2014-02-24  JRM 1.1.7  Updated compPhiRhoZ for more control over transitions
+#                        need to verify on a PAP example...
 
 import sys
 import os
@@ -308,39 +310,50 @@ def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
   fsw=dt2.wrap(fs)
   return fsw
   
-def compPhiRhoZ(comp, det, e0, nSteps=100, alg=epq.PAP1991(), base="pap-prz", outdir="./"):
-  """compPhiRhoZ(comp, det, e0, nSteps=100, alg=epq.PAP1991(), base="pap-prz", outdir="./")
+def compPhiRhoZ(comp, det, e0, nSteps=100, xrts=[], alg=epq.PAP1991(), base="pap-prz", outdir="./"):
+  """compPhiRhoZ(comp, det, e0, nSteps=100, xrts=[], alg=epq.PAP1991(), base="pap-prz", outdir="./")
   Computes the ionization  as a function of dept for the composition
   (comp) with the specified detector (det) with the specified number
   of steps (nSteps). Algorithm choices are, the epq.XPP1991()
   (simplified Pouchou), epq.PAP1991() (full Pouchou and Pichoir)
   or epq.Proza96Base() (Bastin et al) algorithms. The results
   are written to a .csv file in the output directory (outdir)
+  This reproduces the example in McSwiggen, 'Char. of sub-micrometer features with the FE-EPMA',
+  EMAS2013, Fig 7 A and B p. 64
   Example:
   import dtsa2.jmGen as jmg
-  e0     =  25
+  e0     =   7
   nSteps = 200
-  cu     = material("Cu", density=8.96)
+  rho    = 0.5*(7.874 + 8.908)
+  feni   = material("FeNi", density=rho)
   det    = findDetector("FEI FIB620 EDAX-RTEM")
-  jmg.compPhiRhoZ(cu, det, e0, nSteps, alg=epq.XPP1991(), base="xpp-prz", outdir="c:/temp/")
+  trs=[epq.XRayTransition(epq.Element.Fe,  epq.XRayTransition.LA1), epq.XRayTransition(epq.Element.Ni,  epq.XRayTransition.LA1)]
+  a = jmg.compPhiRhoZ(feni, det, e0, nSteps, xrts=trs,  alg=epq.PAP1991(), base="pap-prz", outdir="c:/temp/")
   """
   sName = comp.getName()
+  rho = comp.getDensity() # kg/m3
+  rho /= 1000.0 # g/cm3
+  # print(rho)
   sFile = "%s-%s-%g-kv" % (sName, base, e0)
-  print "Computing " + sFile
+  print("Computing " + sFile)
   fName = outdir + sFile + ".csv"
   fi = open(fName,'w')
   sp = epq.SpectrumProperties(det.getProperties())
   sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
-  xrts = dt2.majorTransitions(comp, e0)
+  if len(xrts) < 1:
+    xrts = dt2.majorTransitions(comp, e0)
+  
   rhoZmax = epq.ElectronRange.KanayaAndOkayama1972.compute(comp, epq.ToSI.keV(e0))
-  res = "Idx,rhoz(mg/cm^2)"
+  # res = "Idx,rhoz(mg/cm^2)"
+  res = "Idx, z(nm)"
   for xrt in xrts:
     res = "%s,G(%s),E(%s)" % (res, xrt, xrt)
   res = res + "\n"
   fi.write(res)
   for step in range(0, nSteps):
     rz = step * rhoZmax / nSteps
-    res = "%d,%g" % (step, 100.0 * rz) # in mg/cm^2
+    # res = "%d,%g" % (step, 100.0 * rz) # in mg/cm^2
+    res = "%d,%g" % (step, 1000000.0 * rz / rho) # in nm
     for xrt in xrts:
       alg.initialize(comp, xrt.getDestination(), sp)
       res = "%s,%g,%g" % (res, alg.computeCurve(rz), alg.computeAbsorbedCurve(xrt, rz))
