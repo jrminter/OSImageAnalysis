@@ -14,6 +14,8 @@
 # 2014-02-13  JRM 1.1.6  added readEdaxSpc. gets rid of some problems w opening
 # 2014-02-24  JRM 1.1.7  Updated compPhiRhoZ for more control over transitions
 #                        need to verify on a PAP example...
+# 2014-02-25  JRM 1.1.8  Updated compPhiRhoZ left as mg/cm2. Test showed it matched
+#                        Pouchou 1993 C Ka. Process to nm in R...
 
 import sys
 import os
@@ -344,16 +346,18 @@ def compPhiRhoZ(comp, det, e0, nSteps=100, xrts=[], alg=epq.PAP1991(), base="pap
     xrts = dt2.majorTransitions(comp, e0)
   
   rhoZmax = epq.ElectronRange.KanayaAndOkayama1972.compute(comp, epq.ToSI.keV(e0))
-  # res = "Idx,rhoz(mg/cm^2)"
-  res = "Idx, z(nm)"
+  # let's stick with DTSA-II default of writing results in mg/cm2.
+  # Do the transform to z (nm) at plotting time
+  res = "Idx,rhoz(mg/cm^2)"
+  # res = "Idx, z(nm)"
   for xrt in xrts:
     res = "%s,G(%s),E(%s)" % (res, xrt, xrt)
   res = res + "\n"
   fi.write(res)
   for step in range(0, nSteps):
     rz = step * rhoZmax / nSteps
-    # res = "%d,%g" % (step, 100.0 * rz) # in mg/cm^2
-    res = "%d,%g" % (step, 1000000.0 * rz / rho) # in nm
+    res = "%d,%g" % (step, 100.0 * rz) # in mg/cm^2
+    # res = "%d,%g" % (step, 1000000.0 * rz / rho) # in nm
     for xrt in xrts:
       alg.initialize(comp, xrt.getDestination(), sp)
       res = "%s,%g,%g" % (res, alg.computeCurve(rz), alg.computeAbsorbedCurve(xrt, rz))
