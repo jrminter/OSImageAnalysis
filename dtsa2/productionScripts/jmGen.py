@@ -16,6 +16,8 @@
 #                        need to verify on a PAP example...
 # 2014-02-25  JRM 1.1.8  Updated compPhiRhoZ left as mg/cm2. Test showed it matched
 #                        Pouchou 1993 C Ka. Process to nm in R...
+# 2014-02-26  JRM 1.1.9  Added sumCounts 
+
 
 import sys
 import os
@@ -893,4 +895,19 @@ def readEdaxSpc(path, det, pc, wrkDist):
   os.remove(tmpFil)
   return spc
   
-  
+def sumCounts(spc, start, end):
+  """sumCounts(spc, start, end)
+  Compute a raw integral for a spectrum by summing the counts from
+  start to end channels. Returns the sum.
+  Example:
+  import dtsa2.jmGen as jmg
+  a = jmg.sumCounts(s1, 0, 1500)
+  print(a)
+  """
+  spc = dt2.wrap(spc)
+  sum = 0.
+  for i in range(start, end):
+    cts = spc.getCounts(i)
+    sum += cts
+    # print sum   
+  return sum  
