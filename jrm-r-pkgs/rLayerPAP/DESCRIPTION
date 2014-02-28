@@ -4,7 +4,7 @@ Title: Tools to simulate x-ray EDS from stratified layers (PAP1991)
 Description: Helpful wrapper functions for Win boxes to manage GMRFilm
     simulations of layered specimens using the Pouchou and Pichoir Phi(rho z)
     model.
-Version: 0.1.8
+Version: 0.1.9
 Authors@R: c(person("John", "Minter", role = c("aut", "cre","ths"), email =
     "jrminter@gmail.com"))
 Author: John Minter <jrminter@gmail.com>
@@ -16,24 +16,3 @@ Suggests:
     knitr
 License: MIT
 LazyData: true
-Collate:
-    'getOutputFile.R'
-    'makeRunIt.R'
-    'matchErrorNiCu.R'
-    'matchErrorPdCu.R'
-    'moveIt.R'
-    'ni.cu.rmsdev.contour.plot.R'
-    'papEta.R'
-    'parseNiCuOut.R'
-    'parsePdCuOut.R'
-    'pd.cu.rmsdev.contour.plot.R'
-    'preClean.R'
-    'rLayerPAP-package.r'
-    'simNiCuSG.R'
-    'simPdCuSG.R'
-    'writeInputNiCuSG.R'
-    'writeInputNiCuTh.R'
-    'writeInputPdCuSG.R'
-    'writeInputPdCuTh.R'
-    'writeNiCuImportSG.R'
-    'writePdCuImportSG.R'

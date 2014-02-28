@@ -2,13 +2,13 @@
 \alias{getOutputFile}
 \title{Get the output file produced by GMRFilm}
 \usage{
-  getOutputFile()
+getOutputFile()
 }
 \value{
-  outFile
+outFile
 }
 \description{
-  Get the output file produced by GMRFilm
+Get the output file produced by GMRFilm
 }
 \examples{
 ### not run

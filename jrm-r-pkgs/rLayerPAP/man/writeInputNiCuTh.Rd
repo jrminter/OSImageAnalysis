@@ -2,7 +2,7 @@
 \alias{writeInputNiCuTh}
 \title{Write an input file to simulate of a range Ni thickness on Cu}
 \usage{
-  writeInputNiCuTh(vNi, tCu, e0, fPath, toa = 35)
+writeInputNiCuTh(vNi, tCu, e0, fPath, toa = 35)
 }
 \arguments{
   \item{vNi}{A vector of thickness of Ni in nm \code{vNi}}
@@ -16,13 +16,13 @@
   \item{toa}{The detector take-off angle \code{toa}}
 }
 \value{
-  none
+none
 }
 \description{
-  Write an input file for GMRFilm to construct an input
-  file for GMRFilm to compute the K-ratios for Ni Ka and Cu
-  Ka for a vector of Ni thickness (nm) a at a single Cu
-  thickness (tCu) and kV (e0).
+Write an input file for GMRFilm to construct an input file
+for GMRFilm to compute the K-ratios for Ni Ka and Cu Ka for
+a vector of Ni thickness (nm) a at a single Cu thickness
+(tCu) and kV (e0).
 }
 \examples{
 ### not run

@@ -2,8 +2,7 @@
 \alias{matchErrorNiCu}
 \title{Generate the K-Ratio match error for Ni on Cu using a PAP model}
 \usage{
-  matchErrorNiCu(vkV, vNiKR, vCuKR, vNiTh, vCuTh, waitSec,
-    wrkDir = "C:/Temp/")
+matchErrorNiCu(vkV, vNiKR, vCuKR, vNiTh, vCuTh, waitSec, wrkDir = "C:/Temp/")
 }
 \arguments{
   \item{vkV}{A vector of accelerating voltages (kV) to
@@ -23,13 +22,13 @@
   \item{wrkDir}{A working directory for the computation}
 }
 \value{
-  A data frame with t.Ni, t.Cu, and rms.dev
+A data frame with t.Ni, t.Cu, and rms.dev
 }
 \description{
-  Use GMRFilm to compute the RMS deviation between
-  experimental Ni K-alpha and Cu K-alpha K-Ratios and model
-  values computed using the Phi-Rho-Z model of Pouchou and
-  Pichoir (1991).
+Use GMRFilm to compute the RMS deviation between
+experimental Ni K-alpha and Cu K-alpha K-Ratios and model
+values computed using the Phi-Rho-Z model of Pouchou and
+Pichoir (1991).
 }
 \examples{
 ### Not run

@@ -2,7 +2,7 @@
 \alias{writeInputPdCuSG}
 \title{Write an input file for a StrataGem type simulation for CuPd}
 \usage{
-  writeInputPdCuSG(tPd, tCu, vkV, fPath, toa = 35)
+writeInputPdCuSG(tPd, tCu, vkV, fPath, toa = 35)
 }
 \arguments{
   \item{tPd}{Thickness of Pd in nm}
@@ -16,13 +16,13 @@
   \item{toa}{The detector take-off angle}
 }
 \value{
-  none
+none
 }
 \description{
-  Write an input file for GMRFilm to construct an input
-  file for GMRFilm to compute the K-ratios for Pd Ka and Cu
-  Ka for a specified thickness of Pd and Cu for a vector of
-  kV values.
+Write an input file for GMRFilm to construct an input file
+for GMRFilm to compute the K-ratios for Pd Ka and Cu Ka for
+a specified thickness of Pd and Cu for a vector of kV
+values.
 }
 \examples{
 ### not run

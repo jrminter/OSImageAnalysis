@@ -2,17 +2,17 @@
 \alias{preClean}
 \title{Pre-clean for GMRFilm}
 \usage{
-  preClean(wrkDir = "C:/Temp/")
+preClean(wrkDir = "C:/Temp/")
 }
 \arguments{
   \item{wrkDir}{Working directory for GMRFilm simulation
   \code{wrkDir}}
 }
 \value{
-  none
+none
 }
 \description{
-  Pre-clean for GMRFilm
+Pre-clean for GMRFilm
 }
 \keyword{keywords}
 
