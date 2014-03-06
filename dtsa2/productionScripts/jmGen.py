@@ -4,19 +4,20 @@
 #  Modifications
 #   Date      Who  Ver                       What
 # ----------  --- -----  -------------------------------------------------
-# 2014-01-11  JRM 1.1.0  added measProbeCurrentFromCu
-# 2014-01-16  JRM 1.1.1  updated doc for avgSpectra, makeStdSpcSpectra,
-#                        getSpcAcqTime, getSpcAcqTimeDT and measRefProbeCur
-# 2014-01-22  JRM 1.1.2  added makeAvgRefSpectra and measRefProbeCurMsa
-# 2014-02-06  JRM 1.1.3  added simAnaStdSpc
-# 2014-02-07  JRM 1.1.4  added simMcStdSpc
-# 2014-02-12  JRM 1.1.5  added compareBulkSpc
-# 2014-02-13  JRM 1.1.6  added readEdaxSpc. gets rid of some problems w opening
-# 2014-02-24  JRM 1.1.7  Updated compPhiRhoZ for more control over transitions
-#                        need to verify on a PAP example...
-# 2014-02-25  JRM 1.1.8  Updated compPhiRhoZ left as mg/cm2. Test showed it matched
-#                        Pouchou 1993 C Ka. Process to nm in R...
-# 2014-02-26  JRM 1.1.9  Added sumCounts 
+# 2014-01-11  JRM 1.1.00  added measProbeCurrentFromCu
+# 2014-01-16  JRM 1.1.01  updated doc for avgSpectra, makeStdSpcSpectra,
+#                         getSpcAcqTime, getSpcAcqTimeDT and measRefProbeCur
+# 2014-01-22  JRM 1.1.02  added makeAvgRefSpectra and measRefProbeCurMsa
+# 2014-02-06  JRM 1.1.03  added simAnaStdSpc
+# 2014-02-07  JRM 1.1.04  added simMcStdSpc
+# 2014-02-12  JRM 1.1.05  added compareBulkSpc
+# 2014-02-13  JRM 1.1.06  added readEdaxSpc. gets rid of some problems w opening
+# 2014-02-24  JRM 1.1.07  Updated compPhiRhoZ for more control over transitions
+#                         need to verify on a PAP example...
+# 2014-02-25  JRM 1.1.08  Updated compPhiRhoZ left as mg/cm2. Test showed it matched
+#                         Pouchou 1993 C Ka. Process to nm in R...
+# 2014-02-26  JRM 1.1.09  Added sumCounts 
+# 2014-03-06  JRM 1.1.10  Added getCurrentDetectorCalibration
 
 
 import sys
@@ -158,21 +159,25 @@ def cropSpec(spc, start=0, end=2048):
   ws = wrap(niSpc)
   niSpc = jmg.cropSpec(ws, end=maxCh)
   """
-  dt2.display(spc)
-  nm = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
-  dt2.clear()
+  # dt2.display(spc)
+  props = spc.getProperties()
+  nm = props.getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
+  ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
   cw = spc.getChannelWidth()
   zo = spc.getZeroOffset()
   lt = spc.liveTime()
   pc = spc.probeCurrent()
   cr = epq.SpectrumUtils.slice(spc, start, end)
   sp = epq.SpectrumUtils.toSpectrum(cw, zo, end, cr)
+  dt2.DataManager.removeSpectrum(spc)
+  # dt2.clear()
   sp = dt2.wrap(sp)
-  sp.getProperties().setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, nm)
-  dt2.display(sp)
+  props = sp.getProperties()
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, nm)
+  props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
   sp.setProbeCurrent(pc)
   sp.setLiveTime(lt)
-  dt2.DataManager.removeSpectrum(spc)
+  # dt2.display(sp)
   return sp
 
 def getKalphaEnergy(elmName):
@@ -911,3 +916,22 @@ def sumCounts(spc, start, end):
     sum += cts
     # print sum   
   return sum  
+
+def getCurrentDetectorCalibration(det):
+  """getCurrentDetectorCalibration(det)
+  Get the current calibration from the specified detector. Return a dictionary with
+  the offset, scale, guid, solid angle, and resolution
+  Example:
+  import dtsa2.jmGen as jmg
+  det=findDetector("FEI FIB620 EDAX-RTEM")
+  cal = jmg.getCurrentDetectorCalibration(det)
+  print(cal)
+  """
+  prop = det.getProperties()
+  off  = round(prop.getNumericProperty(epq.SpectrumProperties.EnergyOffset), 5)
+  sca  = round(prop.getNumericProperty(epq.SpectrumProperties.EnergyScale), 5)
+  soa  = round(prop.getNumericProperty(epq.SpectrumProperties.SolidAngle), 5)
+  resn = round(prop.getNumericProperty(epq.SpectrumProperties.Resolution), 2)
+  guid = prop.getTextProperty(epq.SpectrumProperties.DetectorGUID)
+  res = {"Offset":off, "Scale":sca, "GUID":guid, "sR": soa, "resn": resn}
+  return res
