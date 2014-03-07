@@ -18,6 +18,7 @@
 #                         Pouchou 1993 C Ka. Process to nm in R...
 # 2014-02-26  JRM 1.1.09  Added sumCounts 
 # 2014-03-06  JRM 1.1.10  Added getCurrentDetectorCalibration
+# 2014-03-07  JRM 1.1.11  Updated getCurrentDetectorCalibration for more param
 
 
 import sys
@@ -920,7 +921,7 @@ def sumCounts(spc, start, end):
 def getCurrentDetectorCalibration(det):
   """getCurrentDetectorCalibration(det)
   Get the current calibration from the specified detector. Return a dictionary with
-  the offset, scale, guid, solid angle, and resolution
+  the probe, name, det name, window, offset, scale, quad, fudge factor, solid angle, resolution, and guid
   Example:
   import dtsa2.jmGen as jmg
   det=findDetector("FEI FIB620 EDAX-RTEM")
@@ -928,10 +929,17 @@ def getCurrentDetectorCalibration(det):
   print(cal)
   """
   prop = det.getProperties()
-  off  = round(prop.getNumericProperty(epq.SpectrumProperties.EnergyOffset), 5)
-  sca  = round(prop.getNumericProperty(epq.SpectrumProperties.EnergyScale), 5)
+  cal  = det.getCalibration()
+  prob = det.getOwner()
+  name = det.getName()
+  win  = det.getWindow()
+  ad   = cal.getActiveDate().toString()
+  off  = round(det.getZeroOffset(), 5)
+  sca  = round(cal.getChannelWidth(), 5)
+  quad = det.getQuadratic()
+  fud  = cal.getFudgeFactor()
   soa  = round(prop.getNumericProperty(epq.SpectrumProperties.SolidAngle), 5)
   resn = round(prop.getNumericProperty(epq.SpectrumProperties.Resolution), 2)
   guid = prop.getTextProperty(epq.SpectrumProperties.DetectorGUID)
-  res = {"Offset":off, "Scale":sca, "GUID":guid, "sR": soa, "resn": resn}
+  res = {"Probe":prob, "Name": name, "Win":win, "ActiveDate": ad, "Offset":off, "Scale":sca,  "Quad":quad, "FudgeFac":fud, "sR": soa, "resn": resn, "GUID":guid}
   return res
