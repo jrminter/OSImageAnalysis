@@ -14,11 +14,14 @@
 # 2014-02-13  JRM 1.1.06  added readEdaxSpc. gets rid of some problems w opening
 # 2014-02-24  JRM 1.1.07  Updated compPhiRhoZ for more control over transitions
 #                         need to verify on a PAP example...
-# 2014-02-25  JRM 1.1.08  Updated compPhiRhoZ left as mg/cm2. Test showed it matched
+# 2014-02-25  JRM 1.1.08  Updated compPhiRhoZ left as mg/cm2.
+#                         Test showed it matched
 #                         Pouchou 1993 C Ka. Process to nm in R...
 # 2014-02-26  JRM 1.1.09  Added sumCounts 
 # 2014-03-06  JRM 1.1.10  Added getCurrentDetectorCalibration
 # 2014-03-07  JRM 1.1.11  Updated getCurrentDetectorCalibration for more param
+# 2014-03-07  JRM 1.1.12  Added estimateProbeCurrentFromCu using an
+#                         analytical sim
 
 
 import sys
@@ -69,7 +72,7 @@ def ensureDir(d):
     
 def clearAllSpectra():
   """clearAllSpectra()
-  Clear all spectra from the data manager. Loaded from jrmFunctions.py."""
+  Clear all spectra from the data manager."""
   DataManager = dt2.DataManager.getInstance()
   DataManager.clearSpectrumList()
   
@@ -943,3 +946,30 @@ def getCurrentDetectorCalibration(det):
   guid = prop.getTextProperty(epq.SpectrumProperties.DetectorGUID)
   res = {"Probe":prob, "Name": name, "Win":win, "ActiveDate": ad, "Offset":off, "Scale":sca,  "Quad":quad, "FudgeFac":fud, "sR": soa, "resn": resn, "GUID":guid}
   return res
+  
+def estimateProbeCurrentFromCu(cuSpc, det, iDigits=5):
+  """estimateProbeCurrentFromCu(cuSpc, det)
+  Estimate the probe current from a Cu standard spectrum recorded
+  from a Cu standard from the current detector. The function simulates
+  a bulk Cu spectrum from a Phi-Rho-Z model for the detector at the same
+  e0 and live time, assuming a 1 nA probe current. The estimated probe
+  current is the ratio of the total counts from the two spectra.
+  Example:
+  import dtsa2.jmGen as jmg
+  det = findDetector("FEI FIB620 EDAX-RTEM")
+  pc = jmg.estimateProbeCurrentFromCu(spc, det)
+  """
+  lt = cuSpc.liveTime()
+  cts = cuSpc.totalCounts()
+  props = cuSpc.getProperties()
+  e0 = props.getNumericProperty(epq.SpectrumProperties.BeamEnergy)
+  # print(e0)
+  cu = dt2.material("Cu", density=8.96)
+  sim = dt2.simulate(cu, det=det, keV=e0, dose=lt, withPoisson=False)
+  cSim = sim.totalCounts()
+  uExp = math.sqrt(cts)/cts
+  uSim = math.sqrt(cSim)/cSim
+  pc = cts/cSim
+  uTot = math.sqrt(uExp*uExp+uSim*uSim)*pc
+  ret = {"nA":round(pc, iDigits), "sd":round(uTot,iDigits)}
+  return ret
