@@ -22,6 +22,8 @@
 # 2014-03-07  JRM 1.1.11  Updated getCurrentDetectorCalibration for more param
 # 2014-03-07  JRM 1.1.12  Added estimateProbeCurrentFromCu using an
 #                         analytical sim
+# 2014-03-10  JRM 1.1.13  Added makeStdMsaSpectra to make standards corrected
+#                         for prove current.
 
 
 import sys
@@ -572,6 +574,55 @@ def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, debug
     
     theAvg = avgSpectra(spcDir, vNames, det, e0, wrkDist, pc, resName=disName, debug=debug)
     updateCommonSpecProps(theAvg, det, name=disName, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    dt2.display(theAvg)
+    
+    outFil = msaDir + '%s.msa' % stdName
+    a = glob.glob(outFil)
+    if (len(a) > 0):
+      os.remove(a[0])
+    fos=jio.FileOutputStream(outFil)
+    ept.WriteSpectrumAsEMSA1_0.write(theAvg,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
+    fos.close()
+    if(debug):
+      print(outFil)
+
+def makeStdMsaSpectra(prjBaseDir, stdName, rho, nDupl, vkV, vPc, det, wrkDist, debug=False):
+  """ makeStdMsaSpectra(prjBaseDir, stdName, rho, nDupl, vkV, vPc, det, wrkDist, debug=False)
+  Generate standard spectra for a project with base directory (prjBaseDir) for
+  the standard with (stdName) and density (rho) g/cm3 from (nDupl) duplicate spectra recorded at
+  each of a list (vkV) of accelerating voltages with a corresponding list of
+  probe currents (vPc) with detector (det), working distance (wrkDist).
+  A debug flag(default, False) prints names.
+  This assumes MSA .msa spectra that are all stored in prjBaseDir/msa/stds/ with
+  names of the form stdName-12-1.spc where 12 is the kV and 1 is the duplicate number.
+  This writes the standards in files like prjBaseDir/std/12kV/stdName.msa.
+  
+  Example:
+  import dtsa2.jmGen as jmg
+  findDetector("FEI FIB620 EDAX-RTEM")
+  vkV = [12, 15, 20, 25, 30]
+  vPc = [0.1163, 0.1261, 0.1278, 0.1518, 0.1335]
+  prjBaseDir = 'C:/Temp'
+  jmg.makeStdMsaSpectra(prjBaseDir, "Ni", 8.90, 3, vkV, vPc, det, wrkDist, debug=False)
+  """
+  mat = dt2.material(stdName, density=rho)
+  l = len(vkV)
+  for i in range(l):
+    e0 = vkV[i]
+    pc = vPc[i]
+    vNames = []
+    disName='%s Std %gkV' % (stdName, e0)
+    spcDir = prjBaseDir + '/msa/stds/'
+    msaDir = prjBaseDir + '/std/%gkV/' % e0
+    ensureDir(msaDir)
+    for i in range(nDupl):
+      vNames.append('%s-%g-%d.msa' % (stdName, e0, i+1))
+    if(debug):
+      print(vNames)
+    
+    theAvg = avgSpectra(spcDir, vNames, det, e0, wrkDist, pc, resName=disName, debug=debug)
+    updateCommonSpecProps(theAvg, det, name=disName, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    theAvg.setAsStandard(mat)
     dt2.display(theAvg)
     
     outFil = msaDir + '%s.msa' % stdName
