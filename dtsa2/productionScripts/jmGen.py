@@ -24,6 +24,8 @@
 #                         analytical sim
 # 2014-03-10  JRM 1.1.13  Added makeStdMsaSpectra to make standards corrected
 #                         for prove current.
+# 2014-03-10  JRM 1.1.14  Updated makeStdSpcSpectra to make it work more like
+#                         makeStdMsaSpectra and added listCalibrations
 
 
 import sys
@@ -43,6 +45,7 @@ import gov.nist.microanalysis.Utility as epu
 import gov.nist.microanalysis.EPQTools as ept
 import java.io as jio
 import java.lang as jl
+import java.util as ju
 
 
 import dtsa2 as dt2
@@ -543,30 +546,37 @@ def avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False):
   props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
   return avg
 
-def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, debug=False):
-  """ makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, debug=False)
+def makeStdSpcSpectra(prjBaseDir, stdName, rho, nDupl, vkV, vPc, det, wrkDist, debug=False):
+  """ makeStdSpcSpectra(prjBaseDir, stdName, rho, nDupl, vkV, vPc, det, wrkDist, debug=False)
   Generate standard spectra for a project with base directory (prjBaseDir) for
-  the standard with (stdName) from (nDupl) duplicate spectra recorded at
-  each of a list (vkV) of accelerating voltages with detector (det), working
-  distance (wrkDist), and probe current (pc, default 1.0).
+  the standard with (stdName) and density (rho) g/cm3 from (nDupl) duplicate spectra recorded at
+  each of a list (vkV) of accelerating voltages with a corresponding list of
+  probe currents (vPc) with detector (det), working distance (wrkDist).
   A debug flag(default, False) prints names.
-  This assumes EDAX spc spectra
-  are all store in prjBaseDir with names of the form stdName-12-1.spc where
-  12 is the kV and 1 is the duplicate number. This writes the standards in
-  files like prjBaseDir/msa/std/12kV/stdName.msa.
+  This assumes MSA .spc spectra that are all stored in prjBaseDir/msa/stds/ with
+  names of the form stdName-12-1.spc where 12 is the kV and 1 is the duplicate number.
+  This writes the standards in files like prjBaseDir/msa/std/12kV/stdName.msa.
   
   Example:
   import dtsa2.jmGen as jmg
   findDetector("FEI FIB620 EDAX-RTEM")
-  vkV = [10, 12, 15, 20, 25, 30]
+  vkV = [12] # , 15, 20, 25, 30]
+  vPc = [0.1163] # , 0.1261, 0.1278, 0.1518, 0.1335]
   prjBaseDir = 'C:/Temp'
-  makeStdSpcSpectra(prjBaseDir, "Cu", 3, vkV, det, 17.1, 1.0, False)
+  jmg.makeStdSpcSpectra(prjBaseDir, "Cu", 8.96, 3, vkV, vPc, det, wrkDist, debug=False)
   """
-  for e0 in vkV:
+  ensureDir(prjBaseDir + '/msa/')
+  ensureDir(prjBaseDir + '/msa/std/')
+  mat = dt2.material(stdName, density=rho)
+  l = len(vkV)
+  for i in range(l):
+    e0 = vkV[i]
+    pc = vPc[i]
     vNames = []
     disName='%s Std %gkV' % (stdName, e0)
     spcDir = prjBaseDir + '/spc/stds/'
     msaDir = prjBaseDir + '/msa/std/%gkV/' % e0
+    ensureDir(msaDir)
     for i in range(nDupl):
       vNames.append('%s-%g-%d.spc' % (stdName, e0, i+1))
     if(debug):
@@ -574,6 +584,7 @@ def makeStdSpcSpectra(prjBaseDir, stdName, nDupl, vkV, det, wrkDist, pc=1, debug
     
     theAvg = avgSpectra(spcDir, vNames, det, e0, wrkDist, pc, resName=disName, debug=debug)
     updateCommonSpecProps(theAvg, det, name=disName, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    theAvg.setAsStandard(mat)
     dt2.display(theAvg)
     
     outFil = msaDir + '%s.msa' % stdName
@@ -594,7 +605,7 @@ def makeStdMsaSpectra(prjBaseDir, stdName, rho, nDupl, vkV, vPc, det, wrkDist, d
   probe currents (vPc) with detector (det), working distance (wrkDist).
   A debug flag(default, False) prints names.
   This assumes MSA .msa spectra that are all stored in prjBaseDir/msa/stds/ with
-  names of the form stdName-12-1.spc where 12 is the kV and 1 is the duplicate number.
+  names of the form stdName-12-1.msa where 12 is the kV and 1 is the duplicate number.
   This writes the standards in files like prjBaseDir/std/12kV/stdName.msa.
   
   Example:
@@ -1024,3 +1035,18 @@ def estimateProbeCurrentFromCu(cuSpc, det, iDigits=5):
   uTot = math.sqrt(uExp*uExp+uSim*uSim)*pc
   ret = {"nA":round(pc, iDigits), "sd":round(uTot,iDigits)}
   return ret
+  
+def listCalibrations(det):
+  """listCalibrations(det)
+  list the calibrations for the specified detector.
+  Example:
+  import dtsa2.jmGen as jmg
+  det = findDetector("FEI FIB620 EDAX-RTEM")
+  jmg.listCalibrations(det)
+  """
+  print det
+  tm=ju.TreeMap()
+  for cal in dt2.Database.getCalibrations(det.getDetectorProperties()):
+    tm.put(cal.getActiveDate(), cal)
+  for me in tm.entrySet():
+    print me.getValue()
