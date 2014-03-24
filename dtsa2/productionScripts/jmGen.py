@@ -27,6 +27,8 @@
 # 2014-03-10  JRM 1.1.14  Updated makeStdSpcSpectra to make it work more like
 #                         makeStdMsaSpectra and added listCalibrations
 # 2014-03-13  JRM 1.1.14  Moved some functions around. Need to do some refactoring...
+# 2014-03-24  JRM 1.1.15  Fix to cropSpc to get the zero offset right when we use a 
+#                         start value...
 
 import sys
 import os
@@ -155,8 +157,8 @@ def compKRs(unSpc, stds, trs, det, e0, digits=5):
     kr.append(k)
   return kr
 
-def cropSpec(spc, start=0, end=2048):
-  """cropSpec(spc, start=0, end=2048)
+def cropSpec(spc, start=0, end=2048, bClear=True):
+  """cropSpec(spc, start=0, end=2048, bClear=True)
   crop the spectrum (spc) starting with a starting and ending channel.
   This transfers the channel width, zero offset, and probe current
   required for microanalysis.
@@ -176,9 +178,11 @@ def cropSpec(spc, start=0, end=2048):
   zo = spc.getZeroOffset()
   lt = spc.liveTime()
   pc = spc.probeCurrent()
-  cr = epq.SpectrumUtils.slice(spc, start, end)
-  sp = epq.SpectrumUtils.toSpectrum(cw, zo, end, cr)
-  dt2.DataManager.removeSpectrum(spc)
+  cr = epq.SpectrumUtils.slice(spc, start, end-start)
+  # note fix to get zero offset right
+  sp = epq.SpectrumUtils.toSpectrum(cw, zo+(cw*start), end-start, cr)
+  if bClear:
+    dt2.DataManager.removeSpectrum(spc)
   # dt2.clear()
   sp = dt2.wrap(sp)
   props = sp.getProperties()
