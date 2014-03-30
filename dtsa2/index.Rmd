@@ -56,10 +56,10 @@ directory. This will make strings in scripts much more
 robust.
 
 1. Start with a ***clean install***. You need to do the next steps ***in order***...
-2. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI CM20UT`` in the name with a kV range from 40 to 200 kV. Import the ``1-FEI CM20UT EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
-3. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI FIB 620`` in the name with a kV range from 5 to 30 kV. Import the ``2-FEI FIB 620 EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
+2. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI FIB 620`` in the name with a kV range from 5 to 30 kV. Import the ``2-FEI FIB 620 EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
+3. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI CM20UT`` in the name with a kV range from 40 to 200 kV. Import the ``2-FEI CM20UT EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
 4. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``NIST JXA8500F`` in the name with a kV range from 5 to 30 kV. Import the ``3-NIST JXA8500F Brucker-SDD.xdet`` detector. We add this detector to be able to work the DTSA examples. ***Restart DTSA*** to write the database.
-5. Start DTSA and select the ``Command`` pane. Open the Jython script ``stds.py`` from ``$GIT_HOME/OSImageAnalysis/dtsa2/stds`` directory to load in the standards.
+5. Start DTSA and select the ``Command`` pane. Open the Jython script ``stds.py`` from ``$GIT_HOME/OSImageAnalysis/dtsa2/productionScripts`` directory to load in the standards.
 
 
 When you get done, the instruments preferences
@@ -72,18 +72,18 @@ Note these results from the command pane:
 ```
 1> Database = dt2.DTSA2.getSession()
 Database.getDetectors()
-[NIST JXA8500F Brucker-SDD, Si(Li), FEI FIB620 EDAX-RTEM, FEI CM20UT EDAX-RTEM]
+[FEI FIB620 EDAX-RTEM, NIST JXA8500F Brucker-SDD, Si(Li), FEI CM20UT EDAX-RTEM]
 Elapse: 0:00:00.0
 2> listDetectors()
 Name  Detector
+d2	FEI FIB620 EDAX-RTEM
 d4	NIST JXA8500F Brucker-SDD
 d1	Si(Li)
-d3	FEI FIB620 EDAX-RTEM
-d2	FEI CM20UT EDAX-RTEM
+d3	FEI CM20UT EDAX-RTEM
 3> Database.getElectronProbes()
-{Probe=1, NIST JXA8500F=4, FEI CM20UT=2, FEI FIB 620=3}
+{FEI FIB 620=2, Probe=1, NIST JXA8500F=4, FEI CM20UT=3}
 4> listMaterials()
-[Cu, Cu standard, Fe standard, K411, K412, Mn standard, Ni, SRM-484, SS-316, Zn standard]
+[Al2O3, Cu standard, Fe standard, FeNi, K411, K412, K496, Mn standard, NaCl, Ni, Pd, SRM-484, SS-316, Zn standard]
 5> 
 
 ```

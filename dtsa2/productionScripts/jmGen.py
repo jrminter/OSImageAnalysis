@@ -170,20 +170,62 @@ def cropSpec(spc, start=0, end=2048, bClear=True):
   ws = wrap(niSpc)
   niSpc = jmg.cropSpec(ws, end=maxCh)
   """
-  # dt2.display(spc)
+  dt2.display(spc)
   props = spc.getProperties()
+  nm = props.getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
+  ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
+  cw = spc.getChannelWidth()
+  print(cw)
+  print(start)
+  zo = spc.getZeroOffset()
+  lt = spc.liveTime()
+  pc = spc.probeCurrent()
+  cr = epq.SpectrumUtils.slice(spc, start, end-start)
+  dt2.DataManager.removeSpectrum(spc)
+  # note fix to get zero offset right
+  sp = epq.SpectrumUtils.toSpectrum(cw, zo+(cw*start), end-start, cr)
+  sp = dt2.wrap(sp)
+  props = sp.getProperties()
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, nm)
+  props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
+  sp.setProbeCurrent(pc)
+  sp.setLiveTime(lt)
+  # dt2.display(sp)
+  return sp
+
+def clipSpec(spc, lcChan=0, hcChan=2048, bClear=True):
+  """clipSpec(spc, lcChan=0, hcChan=2048, bClear=True)
+  clip the spectrum (spc) starting with a starting and ending channel.
+  This transfers the channel width, zero offset, and probe current
+  required for microanalysis.
+  
+  Example:
+  import dtsa2.jmGen as jmg
+  niSpc = ept.SpectrumFile.open(niFile)[0]
+  niSpc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
+  ws = wrap(niSpc)
+  niSpc = jmg.clipSpec(ws, lcChan=20, hcChan=2048)
+  """
+  dt2.display(spc)
+  props = spc.getProperties()
+  nc = spc.getChannelCount()
   nm = props.getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
   cw = spc.getChannelWidth()
   zo = spc.getZeroOffset()
   lt = spc.liveTime()
   pc = spc.probeCurrent()
-  cr = epq.SpectrumUtils.slice(spc, start, end-start)
-  # note fix to get zero offset right
-  sp = epq.SpectrumUtils.toSpectrum(cw, zo+(cw*start), end-start, cr)
+  cr = epq.SpectrumUtils.slice(spc, 0, hcChan)
+  # zero uneeded area
+  for i in range(lcChan):
+    cr[i] = 0.
+  # for i in range(hcChan, nc):
+  #  cr[i] = 0.
   if bClear:
-    dt2.DataManager.removeSpectrum(spc)
-  # dt2.clear()
+    dt2.clear()
+  dt2.DataManager.removeSpectrum(spc)
+  # note fix to get zero offset right
+  sp = epq.SpectrumUtils.toSpectrum(cw, 0, hcChan, cr)
   sp = dt2.wrap(sp)
   props = sp.getProperties()
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, nm)
@@ -1055,3 +1097,39 @@ def listCalibrations(det):
     tm.put(cal.getActiveDate(), cal)
   for me in tm.entrySet():
     print me.getValue()
+
+def clipToCustomFib(spc, lcChan=20, hcChan=2000):
+  """clipToCustomFib(spc, lcChan=20, hcChan)
+  clip the spectrum to match the Custom FIB detector, zeroing the first
+  lcChannels. Returns a 2048 channel spectrum with the detector set.
+  Example:
+  import dtsa2.jmGen as jmg
+  clip = jmg.clipToCustomFib(spc, lcChan=20)
+  """
+  det = dt2.findDetector("CustomFIB")
+  dt2.display(spc)
+  props = spc.getProperties()
+  nm = props.getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
+  ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
+  lt = spc.liveTime()
+  pc = spc.probeCurrent()
+  cr = epq.SpectrumUtils.slice(spc, 0, 2048)
+  print(len(cr))
+  dt2.DataManager.removeSpectrum(spc)
+  dt2.clear()
+  # note fix to get zero offset right
+  for i in range(lcChan):
+    cr[i] = 0.
+  for i in range(hcChan, 2048):
+    cr[i] = 0.
+  sp = epq.SpectrumUtils.toSpectrum(10.0, 0, 2048, cr)
+  sp = dt2.wrap(sp)
+  props = sp.getProperties()
+  props.setDetector(det)
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, "Foo")
+  props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
+  sp.setProbeCurrent(pc)
+  sp.setLiveTime(lt)
+  # dt2.display(sp)
+  return sp
+  
