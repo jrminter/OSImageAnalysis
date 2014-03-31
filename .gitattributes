@@ -29,4 +29,7 @@ Makefile text
 *.png binary
 *.jpg binary
 *.pdf binary
+# EDAX .spc files
+*.spc binary
+
 
