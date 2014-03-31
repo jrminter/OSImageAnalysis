@@ -6,7 +6,7 @@ FEI FIB620 EDAX-RTEM
 Moxtek AP 3.3 model
 TOA 35
 AZI 225
-OWD 17.1
+OWD 17.2
 STD 47.0
 Area 10.0 
 Au    8.0
