@@ -26,9 +26,11 @@
 #                         for prove current.
 # 2014-03-10  JRM 1.1.14  Updated makeStdSpcSpectra to make it work more like
 #                         makeStdMsaSpectra and added listCalibrations
-# 2014-03-13  JRM 1.1.14  Moved some functions around. Need to do some refactoring...
-# 2014-03-24  JRM 1.1.15  Fix to cropSpc to get the zero offset right when we use a 
-#                         start value...
+# 2014-03-13  JRM 1.1.14  Moved some functions around. Need to do some
+#                         refactoring...
+# 2014-03-24  JRM 1.1.15  Fix to cropSpc to get the zero offset right when we
+#                         use a start value...
+# 2014-03-30  JRM 1.1.16  Worked on cropSpec again and two versions of clipSpc.
 
 import sys
 import os
@@ -161,37 +163,41 @@ def cropSpec(spc, start=0, end=2048, bClear=True):
   """cropSpec(spc, start=0, end=2048, bClear=True)
   crop the spectrum (spc) starting with a starting and ending channel.
   This transfers the channel width, zero offset, and probe current
-  required for microanalysis.
+  required for microanalysis. Note: This only seems to work
+  right for non-zero starts with no default detector, but not so sure now...
   
   Example:
   import dtsa2.jmGen as jmg
   niSpc = ept.SpectrumFile.open(niFile)[0]
   niSpc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
   ws = wrap(niSpc)
-  niSpc = jmg.cropSpec(ws, end=maxCh)
+  niSpc = jmg.cropSpec(ws, start=50, end=2048, bClear=True)
   """
   dt2.display(spc)
   props = spc.getProperties()
   nm = props.getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
   cw = spc.getChannelWidth()
-  print(cw)
-  print(start)
   zo = spc.getZeroOffset()
   lt = spc.liveTime()
   pc = spc.probeCurrent()
   cr = epq.SpectrumUtils.slice(spc, start, end-start)
   dt2.DataManager.removeSpectrum(spc)
+  if bClear:
+    dt2.clear()
   # note fix to get zero offset right
-  sp = epq.SpectrumUtils.toSpectrum(cw, zo+(cw*start), end-start, cr)
-  sp = dt2.wrap(sp)
-  props = sp.getProperties()
+  sp = epq.SpectrumUtils.toSpectrum(cw, zo+start*cw, end-start, cr)
+  rm = dt2.wrap(sp)
+  # nzo = zo+start
+  # rm = dt2.wrap(epq.SpectrumUtils.remap(sp, nzo, cw))
+  # remap never worked right...
+  props = rm.getProperties()
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, nm)
   props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
-  sp.setProbeCurrent(pc)
-  sp.setLiveTime(lt)
+  rm.setProbeCurrent(pc)
+  rm.setLiveTime(lt)
   # dt2.display(sp)
-  return sp
+  return rm
 
 def clipSpec(spc, lcChan=0, hcChan=2048, bClear=True):
   """clipSpec(spc, lcChan=0, hcChan=2048, bClear=True)
