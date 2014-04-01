@@ -20,6 +20,9 @@ out. To get them to work, I need to:
 2. Select the first item (about) and let it open the window
 3. Close this window and the menus work as expected...
 
+## Java Exceptions from quantify claiming spectra are unequal lengths.
+I think there is a 4000 maximum length. Spectra from EDAX are 4096 observations long. I've tried clipping spectra but this only seems to work if the detector uses the initial calibration. If one uses the ``Calibration alien'' things crash again, even if the spectra have the same calibration hash. Grrr. Reported this to Nick Ritchie. For now, just use the manufacturers' routines...
+
 ## Consistent spectrum display
 
 If you have a series of Scriptable spectrum objects, ``spec[i]`` and you
@@ -36,8 +39,6 @@ defaults. My long term goal is to be able to create
 a reproducible environment from Jython scripts that
 set up instruments, detectors, and standards from
 version control.
-
-
 
 ## Instrument/Detector setup
 
@@ -56,10 +57,11 @@ directory. This will make strings in scripts much more
 robust.
 
 1. Start with a ***clean install***. You need to do the next steps ***in order***...
-2. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI FIB 620`` in the name with a kV range from 5 to 30 kV. Import the ``2-FEI FIB 620 EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
-3. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI CM20UT`` in the name with a kV range from 40 to 200 kV. Import the ``2-FEI CM20UT EDAX-RTEM.xdet`` detector. ***Restart DTSA*** to write the database.
-4. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``NIST JXA8500F`` in the name with a kV range from 5 to 30 kV. Import the ``3-NIST JXA8500F Brucker-SDD.xdet`` detector. We add this detector to be able to work the DTSA examples. ***Restart DTSA*** to write the database.
-5. Start DTSA and select the ``Command`` pane. Open the Jython script ``stds.py`` from ``$GIT_HOME/OSImageAnalysis/dtsa2/productionScripts`` directory to load in the standards.
+2. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI FIB 620`` in the name with a kV range from 5 to 30 kV. Import the parameters from the ``2FIB620-Cu-25-1.spc`` spectrum. Then enter the appropriate parameters from the ``FIB620.txt`` file and apply the changes. ***Restart DTSA*** to write the database.
+3. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``FEI CM20UT`` in the name with a kV range from 40 to 200 kV. Import the ``CM20UT-NiO.spc`` spectrum.  Then enter the appropriate parameters from the ``CM20UT.txt`` file and apply the changes. ***Restart DTSA*** to write the database.
+4. Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``Sirion400NC`` in the name with a kV range from 5 to 30 kV. Import the ``Sirion-NiOnCu.msa`` spectrum.  Then enter the appropriate parameters from the ``Sirion400NC.txt`` file and apply the changes. ***Restart DTSA*** to write the database.
+5. (Optional) Go into Preferences and select the ``Instruments and Detector`` folder icon and the ``Add`` button. Click the dialog box and paste in ``NIST JXA8500F`` in the name with a kV range from 5 to 30 kV. Import the ``3-NIST JXA8500F Brucker-SDD.xdet`` detector. We add this detector to be able to work the DTSA examples. ***Restart DTSA*** to write the database.
+6. Start DTSA and select the ``Command`` pane. Open the Jython script ``stds.py`` from ``$GIT_HOME/OSImageAnalysis/dtsa2/productionScripts`` directory to load in the standards.
 
 
 When you get done, the instruments preferences
@@ -71,20 +73,19 @@ Note these results from the command pane:
 
 ```
 1> Database = dt2.DTSA2.getSession()
-Database.getDetectors()
-[FEI FIB620 EDAX-RTEM, NIST JXA8500F Brucker-SDD, Si(Li), FEI CM20UT EDAX-RTEM]
-Elapse: 0:00:00.0
-2> listDetectors()
+2> Database.getDetectors()
+[FEI FIB620 EDAX-RTEM, NIST JXA8500F Brucker-SDD, Oxford XMaxN 80, Si(Li), FEI CM20UT EDAX-RTEM]
+3> listDetectors()
 Name  Detector
 d2	FEI FIB620 EDAX-RTEM
 d4	NIST JXA8500F Brucker-SDD
+d5	Oxford XMaxN 80
 d1	Si(Li)
 d3	FEI CM20UT EDAX-RTEM
-3> Database.getElectronProbes()
-{FEI FIB 620=2, Probe=1, NIST JXA8500F=4, FEI CM20UT=3}
-4> listMaterials()
-[Al2O3, Cu standard, Fe standard, FeNi, K411, K412, K496, Mn standard, NaCl, Ni, Pd, SRM-484, SS-316, Zn standard]
-5> 
+4> Database.getElectronProbes()
+{NIST JXA8500F=4, FEI FIB 620=2, FEI CM20UT=3, Probe=1, FEI Sirion 400NC=5}
+5> listMaterials()
+[Al2O3, Cu, Cu standard, Fe standard, FeNi, K411, K412, K496, Mn standard, NaCl, Ni, Pd, SRM-484, SS-316, Zn standard]
 
 ```
 
@@ -92,7 +93,7 @@ Note how the Python dictionaries are listed in alphabetical order, but the indic
 
 ***Note*** I tried to do this from Jython scripts but
 seem to have trouble setting up and deleting instrument
-directly from the scripts. One ***can*** zip up the documents and database folders and restore...
+directly from the scripts. One ***can*** zip up the documents and database folders and restore.... I like to zip up the database folder and store and transport from system to system.
 
 
 ## Convenient environment variables
@@ -110,7 +111,7 @@ terminated with a ``/`` .
 
 ## Consistent materials and standards
 I keep mine in
-``$GIT_HOME/OSImageAnalysis/dtsa2/stds/stds.py``
+``$GIT_HOME/OSImageAnalysis/dtsa2/productionScripts/stds.py``
 
 This is helpful because
 
