@@ -31,6 +31,7 @@
 # 2014-03-24  JRM 1.1.15  Fix to cropSpc to get the zero offset right when we
 #                         use a start value...
 # 2014-03-30  JRM 1.1.16  Worked on cropSpec again and two versions of clipSpc.
+# 2014-04-01  JRM 1.1.17  Added function matchDet
 
 import sys
 import os
@@ -1104,38 +1105,36 @@ def listCalibrations(det):
   for me in tm.entrySet():
     print me.getValue()
 
-def clipToCustomFib(spc, lcChan=20, hcChan=2000):
-  """clipToCustomFib(spc, lcChan=20, hcChan)
-  clip the spectrum to match the Custom FIB detector, zeroing the first
-  lcChannels. Returns a 2048 channel spectrum with the detector set.
+def matchDet(spc, det):
+  """matchDet(spc, det)
+  Map the spectrum to match the channel length of the desired detector,
+  copying the key parameters for quantitative analysis.
   Example:
   import dtsa2.jmGen as jmg
-  clip = jmg.clipToCustomFib(spc, lcChan=20)
+  det = findDetector("FEI FIB620 EDAX-RTEM")
+  out = jmg.matchDet(spc, det)
+  display(out)
   """
-  det = dt2.findDetector("CustomFIB")
   dt2.display(spc)
+  end = det.channelCount
   props = spc.getProperties()
+  e0 = props.getNumericProperty(epq.SpectrumProperties.BeamEnergy)
   nm = props.getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
+  cw = spc.getChannelWidth()
+  zo = spc.getZeroOffset()
   lt = spc.liveTime()
   pc = spc.probeCurrent()
-  cr = epq.SpectrumUtils.slice(spc, 0, 2048)
-  print(len(cr))
+  cr = epq.SpectrumUtils.slice(spc, 0, end)
   dt2.DataManager.removeSpectrum(spc)
   dt2.clear()
-  # note fix to get zero offset right
-  for i in range(lcChan):
-    cr[i] = 0.
-  for i in range(hcChan, 2048):
-    cr[i] = 0.
-  sp = epq.SpectrumUtils.toSpectrum(10.0, 0, 2048, cr)
-  sp = dt2.wrap(sp)
-  props = sp.getProperties()
+  sp = epq.SpectrumUtils.toSpectrum(cw, zo, end, cr)
+  rm = dt2.wrap(sp)
+  props = rm.getProperties()
   props.setDetector(det)
-  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, "Foo")
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, nm)
   props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
-  sp.setProbeCurrent(pc)
-  sp.setLiveTime(lt)
-  # dt2.display(sp)
-  return sp
-  
+  rm.setProbeCurrent(pc)
+  rm.setLiveTime(lt)
+  return rm
