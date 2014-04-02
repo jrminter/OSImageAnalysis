@@ -28,6 +28,8 @@ for e0 in vkV:
   raw = readSpectrum(cuFil, i=0, det=None)
   print(raw.getChannelCount())
   cuStdSpc = jmg.matchDet(raw, det)
+  # try remap to see if it picks up calibration
+  cuStdSpc = cuStdSpc.remap(det)
   cuStdSpc.setAsStandard(epq.Composition(epq.Element.Cu))
   cuStdSpc.rename("CuStd")  
   # set up the standard
@@ -39,6 +41,8 @@ for e0 in vkV:
   raw = readSpectrum(cuFil, i=0, det=None)
   print(raw.getChannelCount())
   cuSpc = jmg.matchDet(raw, det)
+  # try remap to see if it picks up calibration
+  cuSpc = cuSpc.remap(det)
   cuSpc.rename("CuUnk")
   print(cuSpc.getChannelCount())
   display(cuSpc)
