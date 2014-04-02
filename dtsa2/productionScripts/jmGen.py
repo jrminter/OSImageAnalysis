@@ -32,6 +32,7 @@
 #                         use a start value...
 # 2014-03-30  JRM 1.1.16  Worked on cropSpec again and two versions of clipSpc.
 # 2014-04-01  JRM 1.1.17  Added function matchDet
+# 2014-04-02  JRM 1.1.18  Incorporated matchDet into relevant functions
 
 import sys
 import os
@@ -116,6 +117,7 @@ def updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1, wr
   e0       - incident beam energy (in kV) (will update if > 0)
   wrkDist  - working distance (in mm) (will update if > 0)
   This is helpful if they were not set properly in a GUI..."""
+  spc = matchDet(spc, det)
   props=spc.getProperties()
   props.setDetector(det)
   l = len(name)
@@ -368,6 +370,7 @@ def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
   Compute a top hat filter for spectrum spc with the given detector
   the specified kV (e0) with the desired filter width and normalization.
   """
+  spc = matchDet(spc, det)
   rawName=spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
   fltName=rawName+"-thf"
   spc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin, 1.0)
@@ -550,6 +553,8 @@ def measProbeCurrentFromCu(thisCu, stdCu, det, e0, digits=4):
   import dtsa2.jmGen as jmg
   res = jmg.measProbeCurrentFromCu(unCuSpc, rfCuSpc, det, e0)
   """
+  thisCu = matchDet(thisCu, det)
+  stdCu = matchDet(stdCu, det)
   qa = epq.CompositionFromKRatios()
   ff = epq.FilterFit(det,epq.ToSI.keV(e0))
   ff.addReference(dt2.element("Cu"),stdCu)
@@ -588,10 +593,12 @@ def avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False):
   liveTime = props.getNumericProperty(epq.SpectrumProperties.LiveTime)
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
   updateCommonSpecProps(sum, det, name="", probeCur=pc, e0=e0, wrkDist=wrkDist)
+  sum = matchDet(sum, det)
   for i in range(1, nSpec):
     sPath = dir+names[i]
     tmp = dt2.wrap(ept.SpectrumFile.open(sPath)[0])
     updateCommonSpecProps(tmp, det, name="",  probeCur=pc, e0=e0, wrkDist=wrkDist)
+    tmp = matchDet(tmp, det)
     sum += tmp
   avg=factor*sum
   updateCommonSpecProps(avg, det, name=resName, liveTime=liveTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
@@ -644,6 +651,7 @@ def measRefProbeCur(baseDir, vkV, det, rptFil, debug=False):
   for e0 in vkV:
     stdFil = baseDir + "/msa/std/%gkV/Cu.msa" % e0
     std = dt2.wrap(ept.SpectrumFile.open(stdFil)[0])
+    std = matchDet(std, det)
     refDir = baseDir + "/spc/refs/%gkV/" % e0
     refQue = baseDir + "/spc/refs/%gkV/*.spc" % e0
     a = glob.glob(refQue)
@@ -653,6 +661,7 @@ def measRefProbeCur(baseDir, vkV, det, rptFil, debug=False):
         ref = dt2.wrap(ept.SpectrumFile.open(a[i])[0])
         refName = os.path.basename(a[i])
         refTim = getSpcAcqTime(ref)
+        ref = matchDet(ref, det)
         res = measProbeCurrentFromCu(ref, std, det, e0)
         if(debug):
           print([res['pcMu'], res['pcSE']])
@@ -728,6 +737,7 @@ def measRefProbeCurMsa(baseDir, vkV, det, rptFil, debug=False):
   for e0 in vkV:
     stdFil = baseDir + "/msa/std/%gkV/Cu.msa" % e0
     std = dt2.wrap(ept.SpectrumFile.open(stdFil)[0])
+    std = matchDet(std, det)
     refDir = baseDir + "/msa/ref/%gkV/" % e0
     refQue = baseDir + "/msa/ref/%gkV/*.msa" % e0
     a = glob.glob(refQue)
@@ -737,6 +747,7 @@ def measRefProbeCurMsa(baseDir, vkV, det, rptFil, debug=False):
         ref = dt2.wrap(ept.SpectrumFile.open(a[i])[0])
         refName = os.path.basename(a[i])
         refTim = getSpcAcqTime(ref)
+        ref = matchDet(ref, det)
         res = measProbeCurrentFromCu(ref, std, det, e0)
         if(debug):
           print([res['pcMu'], res['pcSE']])
@@ -765,6 +776,7 @@ def simAnaStdSpc(mat, e0, det, cuRef, magNoise=1.0):
   """
   cu = dt2.material("Cu", density=8.96)
   props = cuRef.getProperties()
+  cuRef = matchDet(cuRef, det)
   # use the live time and acquisition time of the first spectrum for the average
   liveTime = props.getNumericProperty(epq.SpectrumProperties.LiveTime)
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
@@ -819,6 +831,7 @@ def simMcStdSpc(mat, e0, det, cuRef, nTraj=1000, debug=False):
   """
   cu = dt2.material("Cu", density=8.96)
   props = cuRef.getProperties()
+  cuRef = matchDet(cuRef, det)
   # use the live time and acquisition time of the first spectrum for the average
   liveTime = props.getNumericProperty(epq.SpectrumProperties.LiveTime)
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
@@ -868,6 +881,8 @@ def compareBulkSpc(unk, ref, det, e0, elem=epq.Element.Cu, trs="Cu K-L3"):
   res = jmg.compareBulkSpc(unk, ref, det, e0, elem=epq.Element.Cu, trs="Cu K-L3")
   """
   comp = epq.Composition(elem)
+  ref = matchDet(ref, det)
+  unk = matchDet(unk, det)
   sp = ref.getProperties()
   sp.setCompositionProperty(epq.SpectrumProperties.StandardComposition, comp)
   qus = epq.QuantifySpectrumUsingStandards(det, epq.ToSI.keV(e0))
@@ -893,8 +908,6 @@ def readEdaxSpc(path, det, pc, wrkDist):
   det=findDetector("FEI FIB620 EDAX-RTEM")
   spc = jmg.readEdaxSpc(path, det, 1.0, 17.2)
   """
-  edsDir = os.environ['EDS_ROOT']
-  tmpFil = edsDir + "/tmp.msa"
   spc = dt2.wrap(ept.SpectrumFile.open(path)[0])
   dt2.display(spc)
   props = spc.getProperties()
@@ -905,19 +918,13 @@ def readEdaxSpc(path, det, pc, wrkDist):
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
-  fos=jio.FileOutputStream(tmpFil)
-  ept.WriteSpectrumAsEMSA1_0.write(spc,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
-  fos.close()
-  # clear()
-  dt2.DataManager.removeSpectrum(spc)
-  spc = dt2.wrap(ept.SpectrumFile.open(tmpFil)[0])
+  spc = matchDet(spc, det)
   props = spc.getProperties()
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
   props.setDetector(det)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
-  os.remove(tmpFil)
   return spc
   
 def sumCounts(spc, start, end):
@@ -975,6 +982,7 @@ def estimateProbeCurrentFromCu(cuSpc, det, iDigits=5):
   det = findDetector("FEI FIB620 EDAX-RTEM")
   pc = jmg.estimateProbeCurrentFromCu(spc, det)
   """
+  cuSpc = matchDet(cuSpc, det)
   lt = cuSpc.liveTime()
   cts = cuSpc.totalCounts()
   props = cuSpc.getProperties()
@@ -1028,6 +1036,7 @@ def makeStdSpcSpectra(prjBaseDir, stdName, rho, nDupl, vkV, vPc, det, wrkDist, d
     
     theAvg = avgSpectra(spcDir, vNames, det, e0, wrkDist, pc, resName=disName, debug=debug)
     updateCommonSpecProps(theAvg, det, name=disName, probeCur=pc, e0=e0, wrkDist=wrkDist)
+    theAvg = matchDet(theAvg, det)
     theAvg.setAsStandard(mat)
     dt2.display(theAvg)
     

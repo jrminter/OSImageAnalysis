@@ -3,6 +3,9 @@
 # 2014-03-31 J. R. Minter 
 # Make MSA files to test quantify
 #
+# 2014-04-01 JRM I get the error
+# "Cu-15-Std does not have the same number of channels as Cu-15-Unk"
+# with end any longer than 2048
 import os
 import shutil
 import java.io as jio
@@ -23,12 +26,14 @@ det     = findDetector(sDet)
 pc      = 1.0
 wrkDist = 17.2 # mm
 vkV     = [15]
-end     = 1200
+end     = 2048
 
 for e0 in vkV:
   cuFil = spcDir + "Cu-%g-1.spc" % e0
   raw = readSpectrum(cuFil, i=0, det=det)
   lt = raw.liveTime()
+  print("raw channel count:")
+  print(raw.getChannelCount())
   cuStdSpc = jmg.cropSpec(raw, start=0, end=end)
   props = cuStdSpc.getProperties()
   props.setDetector(det)
@@ -41,6 +46,7 @@ for e0 in vkV:
   cuStdSpc.rename("CuStd")  
   display(cuStdSpc)
   # set up the standard
+  print("cuStdSpc channel count:")
   print(cuStdSpc.getChannelCount())
   display(cuStdSpc)
   cuStdFil = msaDir + "Cu-%g-Std.msa" % e0
@@ -51,6 +57,8 @@ for e0 in vkV:
   cuFil = spcDir + "Cu-%g-2.spc" % e0
   raw = readSpectrum(cuFil, i=0, det=det)
   lt = raw.liveTime()
+  print("raw channel count:")
+  print(raw.getChannelCount())
   cuSpc = jmg.cropSpec(raw, start=0, end=end)
   props = cuSpc.getProperties()
   props.setDetector(det)
@@ -61,6 +69,7 @@ for e0 in vkV:
   cuSpc.setProbeCurrent(pc)
   cuSpc.rename("CuUnk")
   display(cuSpc)
+  print("cuSpc channel count:")
   print(cuSpc.getChannelCount())
   display(cuSpc)
   cuUnkFil = msaDir + "Cu-%g-Unk.msa" % e0
