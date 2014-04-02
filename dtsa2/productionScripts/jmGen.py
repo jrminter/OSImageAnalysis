@@ -33,6 +33,8 @@
 # 2014-03-30  JRM 1.1.16  Worked on cropSpec again and two versions of clipSpc.
 # 2014-04-01  JRM 1.1.17  Added function matchDet
 # 2014-04-02  JRM 1.1.18  Incorporated matchDet into relevant functions
+# 2014-04-02  JRM 1.1.19  Incorporated deleteDetector and dumpMaterials from
+#                         NIST for convenience.
 
 import sys
 import os
@@ -41,6 +43,7 @@ import shutil
 import time
 import math
 import csv
+import codecs
 
 sys.packageManager.makeJavaPackage("gov.nist.microanalysis.NISTMonte.Gen3", "CharacteristicXRayGeneration3, BremsstrahlungXRayGeneration3, FluorescenceXRayGeneration3, XRayTransport3", None)
 import gov.nist.microanalysis.NISTMonte as nm
@@ -1113,6 +1116,56 @@ def listCalibrations(det):
     tm.put(cal.getActiveDate(), cal)
   for me in tm.entrySet():
     print me.getValue()
+
+def deleteDetector(det):
+  """deleteDetector(det)
+  Delete a detector. Use listDetectors() to identify the detector.
+  By N. Ritchie at NIST. Use with care.  Any spectra associated with this detector
+  will become lost souls.
+  Example:
+  import dtsa2.jmGen as jmg
+  jmg.deleteDetector(d1)
+  """
+  dt2.Database.deleteDetector(dt2.Database.findDetector(det.getDetectorProperties()))
+  
+def dumpMaterials():
+  """dumpMaterials()
+  Dumping all the standards currently defined in the database to a Python script
+  written to the user's home directory. The Python script can be used to export the
+  standards to DTSA-II on another computer. By N. Ritchie at NIST. Note: I keep a
+  annotated version in the productionScripts directory which can be added to from
+  this output and is maintained under version control
+  Example:
+  import dtsa2.jmGen as jmg
+  jmg.dumpMaterials() 
+  """
+  filename = jl.System.getProperty("user.home")+"/stds.py"
+  # Get a set containing all standards
+  stds=dt2.Database.findAllStandards()
+  # Build up the repopulate helper script in the variable 'text' 
+  text = "# -*- coding: utf-8 -*-\n\n"
+  # Define a helper method 'defineStd'
+  text += "def defineStd(elms,qty,name,density=None):\n"
+  text += "  c=epq.Composition(map(element,elms),qty,name)\n"
+  text += "  if density:\n"
+  text += "    c=epq.Material(c,epq.ToSI.gPerCC(density))\n"
+  text += "  Database.addStandard(c)\n\n"
+  # For each standard in the database
+  for mat in stds:
+	  elms = "(%s,)" % (",".join(["\"%s\"" % elm.toAbbrev() for elm in mat.getElementSet()]))
+	  qty = "(%s,)" % (",".join(["%f" % mat.weightFraction(elm,False) for elm in mat.getElementSet()]))
+	  text += "defineStd(%s,%s,\"" % (elms, qty)
+	  text += mat.toString()
+	  text += "\""
+	  if isinstance(mat,epq.Material):
+	    text += ",%f)\n" % epq.FromSI.gPerCC(mat.getDensity())
+	  else:
+		  text += ")\n"
+  # Write the result to a text file.
+  print text
+  f = codecs.open(filename, 'w', encoding='utf-8')
+  f.write(text)
+  f.close()
 
 def matchDet(spc, det):
   """matchDet(spc, det)
