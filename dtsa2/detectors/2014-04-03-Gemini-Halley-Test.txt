@@ -1,0 +1,15 @@
+0. I am using java1.7.0_51 (64 bit) on Win 7 Pro x64 SP1
+1. Un-installed Halley
+2. Deleted the gov javasoft key from registry
+3. Deleted the report and database files from my report directory (C:\Data\eds\dtsa)
+4. Installed 2012-11-15 DTSA-II Gemini (C:\Apps\dtsa\Gemini)
+5. Set default detectors for FIB-620 and CM20UT by importing spectra and using parameters from my text file and selecting 4096 channels.
+6. Tried calibrating both detectors. No issues.
+
+7. Uninstall Gemini
+8. Install Halley
+9. Calibrate FIB-620 with same spectrum as Gemini. No probs
+10. Calibrate CM20UT with same spectrum as Gemini. java.util.concurrent.ExecutionException: java.lang.ArrayIndexOutOfBoundsException: 4096
+
+Go figure...
+
