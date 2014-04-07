@@ -9,6 +9,4 @@ AZI 225
 OWD 17.2
 STD 47.0
 Area 10.0 
-Au    8.0
-DL    0.085
-th    5.0
+4096 channels
