@@ -2,9 +2,9 @@ Instrument: FEI CM20UT
 40 - 200 kV
 FEI CM20UT EDAX-RTEM
 Moxtek AP 3.3 model
-TOA 0.0
+TOA 14.1
 AZI 270
-OWD 2.27
+OWD 2.3
 STD 11.8
 Area 30.0 
 Au    8.0
