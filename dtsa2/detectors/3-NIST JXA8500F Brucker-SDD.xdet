@@ -1,6 +1,6 @@
 <gov.nist.microanalysis.EPQLibrary.Detector.EDSDetector id="1">
   <mDetProperties id="2">
-    <mName>NIST JXA8500F Brucker-SDD</mName>
+    <mName>Brucker 5 eV</mName>
     <mProperties id="3" serialization="custom">
       <SpectrumProperties>
         <null/>
@@ -12,9 +12,9 @@
         <string>Azimuthal angle</string>
         <double>0.0</double>
         <string>Dead layer</string>
-        <double>0.08</double>
+        <double>0.081</double>
         <string>Detector GUID</string>
-        <string>adb67ecd-3508-3991-ed7c-3214db47a276</string>
+        <string>499c2905-6e7f-d901-9ed0-1747b11d1502</string>
         <string>Detector area</string>
         <double>40.0</double>
         <string>Detector orientation</string>
@@ -25,9 +25,9 @@
         </double-array>
         <string>Detector position</string>
         <double-array id="5">
-          <double>55.15519990456644</double>
+          <double>55.15519990456643</double>
           <double>0.0</double>
-          <double>-34.280707897430844</double>
+          <double>-34.28070789743084</double>
         </double-array>
         <string>Detector thickness</string>
         <double>0.45</double>
@@ -68,7 +68,7 @@
         <string>Solid angle</string>
         <double>0.007716049382716043</double>
         <string>Specimen-to-detector distance</string>
-        <double>72.00000000000003</double>
+        <double>72.00000000000001</double>
         <string>Support grid open area</string>
         <double>77.0</double>
         <string>Support grid thickness</string>
@@ -79,7 +79,7 @@
         <double>100.0</double>
       </SpectrumProperties>
     </mProperties>
-    <mChannelCount>2048</mChannelCount>
+    <mChannelCount>4096</mChannelCount>
   </mDetProperties>
   <mCalibration class="SiLiCalibration" id="8">
     <mActiveDate id="9">1970-01-01 00:00:00.0 UTC</mActiveDate>
@@ -88,13 +88,13 @@
         <null/>
         <int>5</int>
         <string>Calibration GUID</string>
-        <string>4b093eb4-5ebe-30a6-546f-705ca5886ffc</string>
+        <string>848293c0-6f2c-b4d1-6305-5ae17c179c4e</string>
         <string>Energy offset</string>
-        <double>-475.7</double>
+        <double>-477.82416</double>
         <string>Energy scale</string>
-        <double>5.0</double>
+        <double>5.00409</double>
         <string>Resolution</string>
-        <double>125.0</double>
+        <double>128.0</double>
         <string>Resolution measurement energy</string>
         <double>5898.7</double>
       </SpectrumProperties>
@@ -114,13 +114,13 @@
       <mCoverage>1.0</mCoverage>
     </mContamination>
     <mLineshape class="BasicSiLiLineshape" id="14">
-      <mFWHMatMnKa>125.0</mFWHMatMnKa>
+      <mFWHMatMnKa>128.0</mFWHMatMnKa>
     </mLineshape>
-    <mName>125.0 eV</mName>
+    <mName>128.0 eV</mName>
     <mFudgeFactor>1.0</mFudgeFactor>
     <mFirstLElement>20</mFirstLElement>
     <mFirstKElement>5</mFirstKElement>
     <mFirstMElement>57</mFirstMElement>
-    <mFWHM>125.0</mFWHM>
+    <mFWHM>128.0</mFWHM>
   </mCalibration>
 </gov.nist.microanalysis.EPQLibrary.Detector.EDSDetector>

@@ -14,20 +14,20 @@
         <string>Dead layer</string>
         <double>0.08500000089406967</double>
         <string>Detector GUID</string>
-        <string>8bd54cba-bdb1-2809-7cdf-aba568fbcc57</string>
+        <string>21890572-d999-2cc2-9373-82d67880915a</string>
         <string>Detector area</string>
         <double>10.0</double>
         <string>Detector orientation</string>
         <double-array id="4">
-          <double>0.5792279653395693</double>
-          <double>0.5792279653395691</double>
-          <double>0.573576436351046</double>
+          <double>0.5792283973889645</double>
+          <double>0.5792283973889643</double>
+          <double>0.5735755637371801</double>
         </double-array>
         <string>Detector position</string>
         <double-array id="5">
-          <double>-27.223714370959758</double>
-          <double>-27.223714370959748</double>
-          <double>-9.858092508499162</double>
+          <double>-27.223734677281332</double>
+          <double>-27.22373467728132</double>
+          <double>-9.758051495647464</double>
         </double-array>
         <string>Detector thickness</string>
         <double>5.0</double>
@@ -127,7 +127,7 @@
                   <double>1.0</double>
                   <double>0.0</double>
                   <string>C10H8O4N</string>
-                  <string>STOICIOMETRY</string>
+                  <string>UNDETERMINED</string>
                 </Composition>
                 <Material>
                   <default>
@@ -204,7 +204,7 @@
               <double>1.0</double>
               <double>0.0</double>
               <null/>
-              <string>WEIGHT_PCT</string>
+              <string>UNDETERMINED</string>
             </Composition>
             <Material>
               <default>
@@ -215,7 +215,7 @@
           <mGridThickness>3.8E-4</mGridThickness>
         </gov.nist.microanalysis.EPQLibrary.Detector.GridMountedWindow>
         <string>Elevation</string>
-        <double>35.0</double>
+        <double>34.99993896484375</double>
         <string>Gold layer thickness</string>
         <double>8.00000037997961</double>
         <string>Moxtek window thickness</string>
@@ -223,7 +223,7 @@
         <string>Nickel layer thickness</string>
         <double>0.0</double>
         <string>Optimal working distance</string>
-        <double>17.1</double>
+        <double>17.2</double>
         <string>Solid angle</string>
         <double>0.004526935264825713</double>
         <string>Specimen-to-detector distance</string>
@@ -236,7 +236,7 @@
         <string>Ultra-thin window</string>
       </SpectrumProperties>
     </mProperties>
-    <mChannelCount>2048</mChannelCount>
+    <mChannelCount>4096</mChannelCount>
   </mDetProperties>
   <mCalibration class="SiLiCalibration" id="50">
     <mActiveDate id="51">1970-01-01 00:00:00.0 UTC</mActiveDate>
@@ -245,7 +245,7 @@
         <null/>
         <int>5</int>
         <string>Calibration GUID</string>
-        <string>82231534-7342-693c-8eef-b9164ab01570</string>
+        <string>884ead58-7014-9a65-429c-b47f4488916b</string>
         <string>Energy offset</string>
         <double>0.0</double>
         <string>Energy scale</string>
