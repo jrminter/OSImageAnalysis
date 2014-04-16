@@ -1,6 +1,6 @@
 <gov.nist.microanalysis.EPQLibrary.Detector.EDSDetector id="1">
   <mDetProperties id="2">
-    <mName>Brucker 5 eV</mName>
+    <mName>Bruker 5 eV</mName>
     <mProperties id="3" serialization="custom">
       <SpectrumProperties>
         <null/>

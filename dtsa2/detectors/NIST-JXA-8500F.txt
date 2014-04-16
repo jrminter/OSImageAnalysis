@@ -1,6 +1,7 @@
 NIST JXA-8500F
 
-Brucker 5 eV
+Bruker 5 eV
 
 import from spectra
-see the 
+see the file
+NIST-JAX-8500-Bruker-Det-cfg
