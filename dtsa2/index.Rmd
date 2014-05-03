@@ -54,9 +54,11 @@ out. To get them to work, I need to:
 3. Close this window and the menus work as expected...
 
 ### Java Exceptions from quantify claiming spectra are unequal lengths.
-I think there is a 4000 maximum length. Spectra from EDAX are 4096 observations long. I've tried clipping spectra but this only seems to work if the detector uses the initial calibration. If one uses the ``Calibration alien'' things crash again, even if the spectra have the same calibration hash. Grrr. Reported this to Nick Ritchie. For now, just use the manufacturers' routines...
+DTSA-II handles EDAX spectra with 4096 channels properly when they are opened using the GUI and the correct detector is selected. However, one one has no default detector selected in the GUI or if one opens the spectra in a python script, they are clipped to 4000 channels. 
 
-## Consistent spectrum display
+I've tried clipping spectra but this only seems to work if the detector uses the initial calibration. If one uses the ``Calibration alien'' things crash again, even if the spectra have the same calibration hash. Grrr. Reported this to Nick Ritchie. For now, just use the manufacturers' routines...
+
+### Consistent spectrum display
 
 If you have a series of Scriptable spectrum objects, ``spec[i]`` and you
 display them with ``spec[i].display()`` they will all be displayed with
