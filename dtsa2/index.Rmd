@@ -9,9 +9,42 @@ macros. The first section in this document I call
 ***Alchemy*** because they are useful tips I learned,
 often the hard way...
 
-# Alchemy
+## Next to implement
 
-## Getting main menus to work under MacOSX
+###  Getting spectra ready to play nice with Lispix
+Lispix does not seem to like zero offsets. We need to remap
+the detector, but the overloading in ``__init__.py`` doesn't
+work properly (Ticket #60 filed)
+
+This should work and saves having to define a bogus detector
+
+```
+det = findDetector("Bruker 5 eV")
+cw = det.getChannelWidth()
+cor = spec.applyLLT()
+fix = wrap(epq.SpectrumUtils.remap(wrap(cor), 0.0, cw))
+fix.rename("remapped")
+display(fix)
+```
+
+and
+
+```
+det = findDetector("Bruker 5 eV")
+cw = det.getChannelWidth()
+dp = det.getProperties()
+res = dp.getNumericProperty(epq.SpectrumProperties.Resolution)
+f=open('/Users/jrminter/foo.rpl', 'a')
+strLine = 'ev-per-chan\t%.4f\n' % (cw)
+f.write(strLine)
+strLine = 'detector-peak-width-ev\t%.1f\n' % (res)
+f.write(strLine)
+f.close()
+```
+
+## Alchemy
+
+### Getting main menus to work under MacOSX
 To get DTSA-Gemini to work on my MacOSX 10.8 (Mountain
 Lion) laptop, I use the Linux version and start with a
 shell scripts. Upon starting, the main menus are greyed
@@ -20,7 +53,7 @@ out. To get them to work, I need to:
 2. Select the first item (about) and let it open the window
 3. Close this window and the menus work as expected...
 
-## Java Exceptions from quantify claiming spectra are unequal lengths.
+### Java Exceptions from quantify claiming spectra are unequal lengths.
 I think there is a 4000 maximum length. Spectra from EDAX are 4096 observations long. I've tried clipping spectra but this only seems to work if the detector uses the initial calibration. If one uses the ``Calibration alien'' things crash again, even if the spectra have the same calibration hash. Grrr. Reported this to Nick Ritchie. For now, just use the manufacturers' routines...
 
 ## Consistent spectrum display
@@ -30,7 +63,7 @@ display them with ``spec[i].display()`` they will all be displayed with
 the same color. You typically don't want this. If you instead
 ``display(spec[i])``, they will have different colors.
 
-# Initial setup
+## Initial setup
 
 Our goal is to get ***consistent*** detectors and
 standards. At the moment, much of this is kludgy.
@@ -40,7 +73,7 @@ a reproducible environment from Jython scripts that
 set up instruments, detectors, and standards from
 version control.
 
-## Instrument/Detector setup
+### Instrument/Detector setup
 
 Note: I did try saving a 7zip archive of a base system
 set up this way. We'll see if it is a useful alternative.
@@ -96,7 +129,7 @@ seem to have trouble setting up and deleting instrument
 directly from the scripts. One ***can*** zip up the documents and database folders and restore.... I like to zip up the database folder and store and transport from system to system.
 
 
-## Convenient environment variables
+### Convenient environment variables
 
 These are useful for scripts and lets you use
 relative paths that don't break across systems.
@@ -109,7 +142,7 @@ terminated with a ``/`` .
     You ***do*** use git...
 3. ``IMG_ROOT`` root directory for image storage.
 
-## Consistent materials and standards
+### Consistent materials and standards
 I keep mine in
 ``$GIT_HOME/OSImageAnalysis/dtsa2/productionScripts/stds.py``
 
@@ -118,7 +151,7 @@ This is helpful because
 1. It is a text based file compatible with version control
 2. One can add comments in the file with the source of the information.
 
-## Odd, useful information
+### Odd, useful information
 1. On MacOSX, the preferences are stored in ``$HOME/Library/Preferences/gov.nist.microanalysis.plist`` Note: editing this file is the easiest way to move the location of the default directories.
 2. On Windows, the preferences are srored in the registry. The base key is ``[HKEY_CURRENT_USER\Software\JavaSoft\Prefs\gov]``. Note that the paths tend to use a lot of escapes. Note the Base Path key (``[HKEY_CURRENT_USER\Software\JavaSoft\Prefs\gov\nist\microanalysis\dtsa2]``) that is set to ``"/Base /Path"="/C:///Users//jrminter///My /Documents//work//dtsa"`` on crunch. One can export the whole configuration using ``regedit``
 
@@ -145,7 +178,7 @@ DataManager.removeSpectrum(niSpc)
 display(niSpc)
 ```
 
-## PhiRhoZ
+### PhiRhoZ
 
 One has several choices of algorithms:
 
@@ -175,7 +208,7 @@ det    = findDetector("FEI FIB620 EDAX-RTEM")
 compPhiRhoZ(cu, det, e0, nSteps, alg=epq.XPP1991(), base="xpp-prz", outdir="c:/temp/")
 ```
 
-## Unit fun
+### Unit fun
 
 There are wrapper classes to convert comfortable units
 to SI.
