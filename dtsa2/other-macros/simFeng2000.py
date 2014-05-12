@@ -4,7 +4,8 @@
 #
 # simFeng2000.py
 # simulate spectra to model Feng2000
-#
+# J. R. Minter 2014-05-11 - initial version. Source in git repository
+#              2014-05-12 - revised to change stored directory.
 #
 import os
 import shutil
@@ -70,6 +71,8 @@ pyrDir = wd + "/simFeng2000 Results/"
 rel = "/edsDir"
 datDir = edsDir+rel
 ensureDir(datDir)
+msaDir = datDir + "/simFeng2000"
+ensureDir(msaDir)
 
 det     = findDetector("FEI CM20UT EDAX-RTEM")
 nmThLay =    20    # thickness of the material in nm
@@ -96,35 +99,35 @@ agSpc = simSpecOnSub(ag, c, nmThLay, nmThC, det, e0, probeC, liveTim, nTraj)
 sName = "Ag on C"
 agSpc.rename(sName)
 display(agSpc)
-fos = jio.FileOutputStream("%s/%s.msa" % (datDir, sName))
+fos = jio.FileOutputStream("%s/%s.msa" % (msaDir, sName))
 ept.WriteSpectrumAsEMSA1_0.write(agSpc,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
 
 sSpc = simSpecOnSub(s, c, nmThLay, nmThC, det, e0, probeC, liveTim, nTraj)
 sName = "S on C"
 sSpc.rename(sName)
 display(sSpc)
-fos = jio.FileOutputStream("%s/%s.msa" % (datDir, sName))
+fos = jio.FileOutputStream("%s/%s.msa" % (msaDir, sName))
 ept.WriteSpectrumAsEMSA1_0.write(sSpc,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
 
 oso2Spc = simSpecOnSub(oso2, c, nmThLay, nmThC, det, e0, probeC, liveTim, nTraj)
 sName = "OsO2 on C"
 oso2Spc.rename(sName)
 display(oso2Spc)
-fos = jio.FileOutputStream("%s/%s.msa" % (datDir, sName))
+fos = jio.FileOutputStream("%s/%s.msa" % (msaDir, sName))
 ept.WriteSpectrumAsEMSA1_0.write(oso2Spc,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
 
 uo2Spc = simSpecOnSub(uo2, c, nmThLay, nmThC, det, e0, probeC, liveTim, nTraj)
 sName = "UO2 on C"
 uo2Spc.rename(sName)
 display(uo2Spc)
-fos = jio.FileOutputStream("%s/%s.msa" % (datDir, sName))
+fos = jio.FileOutputStream("%s/%s.msa" % (msaDir, sName))
 ept.WriteSpectrumAsEMSA1_0.write(uo2Spc,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
 
 pbco3Spc = simSpecOnSub(pbco3, c, nmThLay, nmThC, det, e0, probeC, liveTim, nTraj)
 sName = "PbCO3 on C"
 pbco3Spc.rename(sName)
 display(pbco3Spc)
-fos = jio.FileOutputStream("%s/%s.msa" % (datDir, sName))
+fos = jio.FileOutputStream("%s/%s.msa" % (msaDir, sName))
 ept.WriteSpectrumAsEMSA1_0.write(pbco3Spc,fos,ept.WriteSpectrumAsEMSA1_0.Mode.COMPATIBLE)
 
 # clean up cruft
