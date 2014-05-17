@@ -1,0 +1,12 @@
+Step 2: Mount using standard metallographic practice [l-3]. Either an epoxy, cold mount, Bakelite or in some cases fusible metal alloy should be employed. Although a specimen itself may be conducting (e. g., an alloy steel), it may be useful to mount the specimen in a conductive epoxy to prevent charging during examination.
+
+Step 3: Polish using standard metallographic practice [1-6] and appropriate polishing compounds. A typical grinding and polishing sequence might be 320, 400, 600 SiC papers followed by 3 um, 1 um, 0.25 um alumina or diamond polishing compounds. This work may be done by hand or by using rotating wheels. Be sure to carefully clean the entire mount in soap and water before moving to the next smaller polishing compound.
+
+References
+[1] G. F. vanderVoort, Metallography: Principles and Practice, McGraw-Hill, New York (1984).
+[2] L. E. Samuels, Metallographic Polishing by Mechanical Methods, Third Edition, American Society for Metals, Metals Park, Ohio (1982).
+[3] J. L. McCall and W. M. Mueller, Metallographic Specimen Preparation: Optical and Electron Microscopy, Plenum Press, New York (1974).
+[4] W. Tegart, Electrolytic and Chemical Polishing of Metals in Research and Industry, Second Edition, Pergammon, New York (1959).
+[5] ASM Metals Handbook, Metallography and Microstructures, 5, ASM International, Metals Park, Ohio (1985).
+[6] ASTM, Methods of Metallographic Specimen Preparation, ASTM, STP 284, American Society for Testing Materials, Philadelphia, Pennsylvania. (1960).
+
