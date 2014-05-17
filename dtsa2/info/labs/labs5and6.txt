@@ -1,0 +1,214 @@
+Laboratory 5 Energy-Dispersive X-Ray Spectrometry
+
+Purpose
+
+The modem energy-dispersive x-ray spectrometer (EDS) coupled with a computer-based multichannel analyzer (MCA) provides a powerful analytical facility in the SEM lab. The purpose of this laboratory is to introduce the student to the basic concepts of energy-dispersive x-ray spectrometry and to examine some of the spectral artifacts inherent in the technique.
+More details and references can be found in SEMXM, Chapter 5.
+
+Equipment
+1. SEM with an EDS system.
+2. Picoammeter (electrometer with high impedence) to measure beam current.
+Specimens
+
+1. Flat polished sections of copper, iron pyrite (FeS2), magnesium, and titanium.
+2. Faraday cup (platinum or molybdenum aperture over blind hole in brass, aluminum, or titanium block).
+
+Time for this lab session Three hours.
+
+5.1 Spectrometer Setup The solid-state EDS utilizes the fact that x-rays create electron-hole pairs in an intrinsic semiconductor. These electron-hole pairs are swept by the bias voltage to collection electrodes for measurement as a charge pulse--the higher the X-ray energy, the larger the charge pulse.
+The charge pulse is then amplified and registered as a count in a charmel of the appropriate energy in the MCA.
+The modern EDS-MCA has evolved into an integrated system in which many of the functions which were previously determined by the settings of potentiometers on electronic modules are now determined by software which controls circuits incorporated into the MCA.
+Operational parameters such as gain, fine energy calibration, channel width, and time constant are now often set in software rather than hardware. These concepts have thus become somewhat divorced from the apparent reality of hardware. Nevertheless, it is important for analysts to be aware of their responsibility to know the values of these and other parameters, particularly when stored spectra recorded at an earlier time are to be compared with spectra obtained under current operating conditions.
+A conventional Be window Si(Li) detector with a 1024-channel MCA, set to 10 eV per channel, gives an energy range of 0.5-10 keV. An MCA with more memory would be preferable, allowing inspection of the full x-ray range 0.5-20 keV, at 10 eV per channel.
+
+ 
+Experiment 5.1: Spectrum Acquisition. Choose a specimen of polished copper.
+Select an electron beam energy E = 20 keV to ensure an overvoltage of at least U = 2 for analytical lines in the range I -10 keV. Set the following parameters on the MCA:
+(a) Energy range - at least 0-10 keV, preferably 0-20 keV
+(b) Channel width - preferably 10 eV/channel
+(c) Resolution - lowest count rate range (longest time constant on main amplifier).
+
+The lowest count rate range corresponds to the best resolution.
+Adjust the beam current to collect a spectrum with 30% dead time. What does dead time mean?
+
+Experiment 5.2: Energy Calibration Check. Using the cursor determine the energy of the CuLa and the CuKa lines. These lines are not located at 0.93 and 8.04 keV, respectively, the spectrometer must be calibrated. Consult the manufacturers manual for the calibration procedure.
+
+
+5.2 Beam Current and Dead Time
+For a fixed beam energy and specimen type, the x-ray flux which is produced is proportional to the rate at which electrons reach the specimen. The portion of that flux which reaches the detector is determined by the detector area, distance from specimen, and take-off angle. The analyst must be aware of the rate at which the detector is processing x-ray pulses, which is usually indicated by a parameter called dead time. Although the spectrum appears to an observer to build up in parallel in all channels, only one x-ray pulse is actually processed at a time. While the analyzer is busy processing this pulse it is DOI available to process another pulse which may enter the detector. The second pulse, and sometimes the first pulse, must be discarded. Dead time can conceptually be thought of as
+
+Deadtime=(1 -31°-QL)x 100% Rin
+
+where Rin is the input count rate to the main amplifier and Rout is the output count rate from the main amplifier. In practice, manufacturers use electronic circuits to provide a measure of dead time. Many display techniques are used to show the dead time. The first task of the analyst using a new system is to discover what method has been chosen by the manufacturer to display this important parameter. In order to place all x-ray specuum measurements on a time-
+equivalent basis, all spectrometers make use of the concept of "live time." The analyst selects a live time for the spectrum measurement, e.g., 100 sec, and the dead time correction circuit automatically guarantees that the system will be available for the specified live time. Thus, the live time and the clock time (real time) will diverge significantly for high dead times (high count rates).
+ 
+Experiment 5.3: Comparing Live Time and Real Time. Place the beam on pure copper. MCAs may display both real and live times or live time only. For this exercise, a reading of real time is necessary. If clock time is not provided on your MCA, a stopwatch will be suitable. Adjust the beam current to produce an indicated dead time of 10%. (If a Faraday cup and a specimen current meter are available, measure and note the beam current.) Record a spectrum for a live time of 30 sec, and simultaneously determine the clock time with the stopwatch or MCA function. Increase the beam current to give a dead time of 40% and repeat the measurement. Finally, increase the beam current to give a dead time of 80% and repeat the measurement. Report the results of live time and clock time in the table below. How do the values compare?
+0%
+40%
+80%
+Deadtime
+
+While modem MCAS do a remarkably reliable job of correcting for dead time, occasional failures will occur. These failures may not be equipment failures but rather environmental effects such as unexpected and transient ground loops. The prudent analyst will periodically check the performance of the dead time correction. This can be readily accomplished with a specimen current meter (picoammeter). Since the x-ray count rate reaching the detector must be proportional to the current reaching the specimen, a series of spectra recorded for constant live time but with progressively increasing beam current should produce a linear plot of integrated x-ray counts (over either the entire spectrum or any energy window within the spectrum) versus beam current.
+
+Experiment 5.4: Testing the Dead Time Correction Circuit. For a live time of 50 sec, record spectra from the copper specimen for a series of beam currents, such as 0.1 nA, 0.5 nA, 1 nA, 2 nA, 4 nA, and so on, so as to span the dead time range up to 80%. Read Experiment 5.5 and measure counts after 10 sec real time as you perform Experiment 5.4.
+
+This will save considerable time. Plot the integrated intensity (e.g., 1-10 keV window) as a function of beam current. Any significant deviation from linearity, up to a dead time of 60%, should be considered possible evidence of a system problem requiring consultation with the manufacturer.
+
+Counts for Counts for 50 sec 10 SGC hve t|me real time 0 1 nA 6.0 8.0  - -
+ 
+Because of dead time, there exists a maximum input x-ray count rate, determined by the beam current, beyond which the output count rate actually decreases with further increases in the beam current. This maximum output count rate can be determined by recording a series of spectra for the same beam current choices as used in Experiment 5.4, but with the accumulation time determined by real time.
+ 
+Experiment 5.5: Maximum Output Count Rate. Select a real time of 10 sec. If the MCA does not permit the use of preset real time to terminate the accumulation, this experiment may be performed manually with a stopwatch. Determine the integrated counts in a wide energy window (e.g., 1-10 keV ) over 10 sec real time. Plot the integrated count as a function of beam current. The integrated count should increase initially, rise to a peak, and then decrease with further increases in the beam current. If necessary, to find the maximum, record additional spectra with fmer changes in the beam current near the peak in the counts.
+ 
+In those situations where the analyst requires the best possible precision (i.e., maximum count) in the shortest time, it is necessary to do this experiment to determine the optimum beam current to use. Note that the total x-ray production depends on the atomic ntunber of the specimen and the operating voltage. Consequently, the optimum beam current only applies to a given specimen type. Specimens with a higher average atomic number will produce a higher flux of x-rays and will therefore require a lower beam current to stay at or below the optimum value.
+
+The detector resolution is intimately associated with the selection of the amplifier characteristics which affect the dead time. The best resolution is obtained with the longest amplifier time constants, and therefore the lowest limiting count rate. Since both high resolution and high limiting count rate capability are desirable, the analyst is faced with an unpleasant choice. There are usually three choices of resolution, typically selected by a hardware switch on the main amplifier. The choices, high, medium, and low, refer to the count rate range, and the resolution varies in the opposite sense, i.e., high count rate range gives the lowest resolution.
+
+Experiment 5.6: Detector Resolution. Record spectra of iron pyrite for each selection of count rate range so that the height of the sulfur Ka peak is approximately 5000 counts.
+Using the sulfur Ka peak, estimate the EDS resolution by measuring the full-width-at-half maximum (FWHM) for each spectrum at 2.31 keV.
+
+Is this the guaranteed resolution stamped on the detector dewar? Why not? At what resolution setting is the SK B sufficiently resolved from the SKU to measure the ratio of peak heights? These spectra illustrate a classic example of the trade-off between the need for resolution and the need for high count rates.
+
+5.3 Spectral Artifacts Now that we have observed the general characteristics of EDS operation, it is appropriate to consider the artifacts of the detection process. Although these artifacts are, in general, second-order effects, their presence in the spectrum will influence both qualitative analysis of minor and trace constituents, possibly leading to incorrect identification of the elements present in a specimen, and quantitative analysis, possibly leading to serious errors in the concentrations calculated for some minor and trace constituents.
+
+Experiment 5.7: Stray Radiation. Using the composite Faraday cup, which consists of an electron microscope aperture of platinum pressed into a blind hole in a titanium block, obtain 50-sec spectra with the beam placed (a) On the block (b) On the aperture metal (c) In the aperture hole Examine the "in-hole" spectrum. Is there any characteristic radiation from the elements of the aperture or block? Intentionally misalign the final aperture ofthe microscope and repeat the three spectra. Is there any increase in the stray radiation reaching the specimen plane?
+ 
+ 
+Experiment 5.8: Escape Peaks, Sum Peaks, and System Peaks. Record a 100-
+sec spectrum on pure titanium with a system dead time of 60%. Examine the spectrum for the presence of titanium escape peaks, sum peaks, and peaks from elements in the specimen chamber.
+
+Experiment 5.9: False Peaks. Obtain a 20-sec spectrum on titanium at a dead time of 20%. Observe the background of the raw spectrum and compare it with the same spectrum after smoothing. Can small peaks be seen after smoothing? Determine Q’ these are true peaks by repeating the spectrum and smoothing again. Do the peaks appear in the same locations?
+
+Experiment 5.10: Pulse Pile-up (time permitting). Record a 100-sec spectrum of magnesium with a system dead time of 60%. Examine the spectrum for a magnesium sum peak and a pulse pile-up continuum. Why is the pulse pile-up continuum present?
+ 
+Experiment 5.11: Pile-up Correction Failure (time permitting). Plot the integrated intensity for the magnesium peak as a function of beam current. Why does the intensity roll over after a certain point?
+
+The phenomenon of incomplete charge is an important second-order distortion of EDS spectra. Incomplete charge is a result of a number of individual effects, and it is therefore difficult to design a single experiment to illustrate adequately the overall impact on spectra.
+Incomplete charge has a negligible effect on qualitative analysis, but becomes significant for quantitative analysis of minor constituents below major constituent peaks.
+
+Experiment 5.12: Incomplete Charge Collection (time permitting). Examine the low-energy side of the major peak for both a titanium and a copper spectrum. How would incomplete charge collection ayfect the quantitative analysis of an element? 
+
+Laboratory 6 Energy-Dispersive X-Ray Microanalysis
+
+Purpose
+
+The modem energy-dispersive x-ray spectrometer (EDS) coupled with a computer-based multichannel analyzer (MCA) provides a powerful analytical facility in the SEM lab. The purpose of this laboratory is to introduce the student to the wide range of analytical capabilities of the EDS/MCA system and to illustrate the basic appearance and characteristics of electron-
+excited x-ray spectra. Procedures for both qualitative and quantitative analysis will be examined. More detail on these subjects can be found in SEMXM, Chapters 6, 7, and 8.
+
+Equipment
+1. SEM with an EDS system. A conventional Be window Si(Li) detector with a 1024-
+channel MCA, set to 10 eV per channel, gives an energy range of 0.5-10 keV. An MCA with more memory would be preferable, allowing inspection of the full x-ray range of 0.5-20 keV at 10 eV per channel.
+2. Picoammeter (electrometer with high impedance) to measure beam current.
+
+Specimens
+
+All specimens should be metallographically polished (to 0.3 um grit) and unetched.
+1. Aluminum, copper, gold, and uranium oxide are suitable for Experiment 6.1. If uranium oxide is not available, uranyl acetate, used for staining biological specimens, may be used. If no uranium compound is available, use lead. Aluminum, silicon, iron pyrite (FeS2), titanium, copper, zirconium, silver, barium oxide, gold, tantalum, lead, and uranium oxide are used in Experiments 6.2-6.4.
+2. A metal alloy and a glass sample, both of unknown composition.
+3. Al-Ni alloy and Al and Ni pure element standards.
+
+Time for this lab session
+Three hours for Experiments 6.1 and 6.5 to 6.11.
+Four hours for Experiments 6.1 through 6.11.
+
+6.1 Families of X-Ray Spectra The analyst must be familiar with the appearance of typical x-ray spectra. In this section we will record x-ray spectra from a variety of elements and make use of the x-ray data display, of the MCA to identify each x-ray peak. The EDS/MCA system is an ideal tool to study spectral energies and relative peak intensities.
+ 
+Experiment 6.1: K, L, and M Spectra.
+
+With 20 kV electron beam record separate spectra for 50 sec live time and at 30% dead time from the elements aluminum, copper, gold, and uranium. Store the copper spectrum for Experiment 6.8. Identify all the peaks by looking up their energies in Figure 6.1 [1], in a reference table [2], or on an "energy slide rule.”
+
+Figure 6.1. Plot of the x-ray emission lines observed in the range 0.75-10 keV by energy-dispersive spectrometry [1].
+
+Record your data in Table 6.1 and compare the measured and tabulated energy values. How can you recognize the K, L, and M families of spectra? Use the KLM markers on the x-ray system to identify the peaks. Do the software markers identify all the peaks that you found yourself? Is the spectrometer energy calibration correct to within one channel?
+
+Experiment 6.2: K Family X -Rays (time permitting).
+
+Record spectra for 50 sec and at 30% dead time from the following elements and compounds: Al, Si, pyrite (FeS2), Ti, and Cu. With the MCA, locate the K family x-ray lines in each spectrum. How does the appearance of K spectra change as a function of atomic number? If possible, prepare a hard copy output of each spectrum.
+
+Table 6.1. X-Ray Spectra from Pure Elements
+
+Experiment 6.3: L Family X-Rays (time permitting). Record spectra for 50 sec and at 30% dead time from Cu, Zr, Ag, Ba (as a compound, e.g., BaO), and Au. Locate the L-family x-ray lines for each element. Prepare hardcopy output. Compare the appearance of the L family spectra as a function of atomic number.
+ 
+ 
+Experiment 6.4: M Family X-rays (time permitting). Record spectra for 50 sec and at 30% dead time from Ti, Au, B6, and U02. Locate the Mfamily lines for each element. Prepare hardcopy output. Compare the appearance of each M family. For uranium several minor M-family peaks, such as MHNIV, may not be included in the MCA data table. To identify such peaks, it may be necessary to resort to a more complete x-ray data compilation such as that of Bearden [2].
+ 
+6.2 Qualitative Analysis
+
+Qualitative analysis is defined as the identification of the elemental constituents of the specimen by recognition of the characteristic x-ray peaks associated with those elements. With a conventional beryllium-window EDS, elements with Z ge 11 (sodium) can be directly measured. With the windowless or ultra-thin-window (UTW) detector, the range is extended to Z ge 5 (boron). Qualitative analysis with the EDS involves some knowledge of basic x-ray physics, intuition, and common sense. From x-ray physics, we require such information as the energies of the x-ray lines for each element, the approximate relative intensities of the lines, and the artifacts which arise from the detection process. Intuition can be developed as a result of experience by starting with qualitative analysis of pure element spectra (Experiments 6.1-6.4), progressing to binary mixtures, and eventually attacking complex, multicomponent spectra. If this laboratory has been followed in sequence to this point, the novice has examined EDS x-ray spectra from pure elements and a binary compound (FeS2) and has also become familiar with the artifact peaks (escape peaks and sum peaks) which are associated with the high-intensity peaks (Laboratory 5). The analyst must always be ready to apply common sense to a proposed identification, whether it is done manually or is suggested by an automatic peak identification program. For example, scandium is an exceedingly rare element, and if it is identified in a spectrum, the analyst should be cautious and ascertain if the apparent scandium peak is really from that element. One should be even more cautious with technetium and promethium!
+As a general rule, it is dangerous to identify an element on the basis of a single peak.
+Sometimes one peak is all that is available, as in the case of a light element, e.g., Na or Al, even if the element is present as a major constituent. When trace or minor constituents are considered, only one peak may be observed from even the heavier elements. If it is important to identify the presence of a constituent, then multiple peaks should be identified whenever possible, and the "Golden Dictum" should be applied.
+Golden Dictum: Always accumulate an adequate number of counts in the spectrum to give statistically significant peaks. If it is difficult to decide if a peak exists against the continuum background because of noise (which can be estimated as the "thickness” of the MCA line plotted for the background), then either accumulate more counts to "develop" the peak or else forget about identifying it.
+Corollary to the Golden Dictum: EDS systems become increasingly prone to the introduction of spectral artifacts as the count rate increases. Remember that the count rate of interest is the whole spectrum count rate, including the continuum up to the beam energy.
+Qualitative Analysis Guidelines The following guidelines are provided to give some direction to the novice who wishes to solve an EDS spectrum. Most of the suggestions, excepting the Golden Dictum, are simply guidelines and not iron-clad rules. There is, unfortunately, no rote procedure which guarantees a perfect solution without careful thinking on the part of the analyst, who must be prepared to deal with unexpected situations.
+Good bookkeeping must be practiced throughout the qualitative analysis procedure. As each elemental assignment is made, all peaks and artifacts associated with that element must be marked, particularly the low-intensity peaks. If these low-intensity peaks are overlooked, they are likely to be misidentilied later in the procedure as belonging to constituents at the minor or trace level. Because of computer memory limitations, some analyzers do not allow enough markers to denote all peaks associated with a particular element (check this with a specimen of high atomic number), including all artifacts. In such cases, the analyst must note these additional peaks manually with a written list as a function of energy (as in Experiment 6.1).
+
+1. Start at High Energy. Begin with characteristic peaks at the high-energy end of the spectrum. Reason: At high energy the peaks of a given family, e.g., Ka-KB, Ll-La-Ln-LB;
+LI and M;-Ma-MB-My-MHMN, are separated by the largest differences rn energy and are most 1ikely to be resolved as separate peaks by the EDS.
+2. Try the K Family. Choose a large peak. Using the KLM markers of the MCA, check to see if it might be a Ka peak by immediately looking for the corresponding K5 peak at approximately 10% of the Ka peak height. If the energy calibration of the EDS system was confirmed in Experiment 6.1, then the peak locations should be within one channel of the correct value. For elements starting with sulfur and increasing in atomic number, the Ka-KB peaks will be resolved with an ordinary 145-eV resolution detector.
+3. Try the L Family. If a Ka-Kb pair does not fit, try various L lines with the KLM markers. If an La candidate is found, look immediately for the complete L family, La-LB-LY (three peaks of decreasing intensity). Look also for the low-intensity Ll and L lines. Be aware that some "energy slide rules" and even some MCA-generated KLM mar1i<ers may not include a complete listing of minor lines (Ll, Ln, and MHMIV).
+4. Related Families of Elements. As soon as a tentative elemental identification is assigned to a set of peaks, the analyst should seek all other lines associated with that element.
+Thus, the presence of a Ka-KB pair above 6 keV (e.g., iron and above) requires the presence of the L family for that element at a lower energy in the spectrum. Thus, if the CUKQ (8.04 keV) and CuK5 (8.90 keV) are located, the analyst should immediately look for the L family, which appears as a single peak at 0.93 keV. Similarly, the existence of L-family lines above 5 keV (neodymium and above) requires the presence of the corresponding M family at 1 keV or above. For example, locating WLC, (8.40 keV) should cause the analyst to also look for the M family, which appears as a single line W Ma (1.78 keV). Locating all of the possible lines at the correct energies establishes a high level of confidence that a tentative elemental assignment is correct. To help in identifying families of x-ray lines for various elements, Table 6.2 gives the approximate relative intensities of lines in each family.
+
+Table 6.2. Relative lntensities of X-Ray Lines (Approximate)
+X-Ray Family X-Ray Lines (relative intensity Within family)
+K Family Ka(1), K5 (0.1)
+LFarnily La (1), L51 (0.7), Ly (0.08), L32 (0.2)
+L1 (0.04), Ln (0.01)
+MFami1y Ma (1), M (0.6), M (0.06), My (0.05), transition MHNIV (0.61)m 
+
+5. Artifact Peaks. Once all of the possible x-ray families associated with a candidate element have been located, the analyst should also find and mark the artifact peaks associated with the high-intensity members of each family. The analyst should examine the positions of Si escape peaks (at 1.74 keV below the parent peak energy) and sum peaks using appropriate vertical scale expansion. Remember that the relative strength of the artifact peaks decrease as the parent peak energy increases. It is generally difficult to detect artifact peaks for parent peaks above 7 keV in energy. When sum peaks are present, particularly for low-energy (< 3 keV) parent peaks, be aware of the various possible combinations. Thus, if three large peaks EA, EB, EC exist in close energy proximity, the sum peaks can include 2EA, 2EB, 2EC and (EA+ EB), (EA+ EC), (EB +EC). Some peaks will disappear if the spectrum is recollected for a longer time at a lower count rate.
+6. Repeat for the Next Large Peak. Steps 1-5 are repeated for progressively lower peak energies until all high-intensity peaks in the spectrum have been identified. Only after all large peaks are identified should the analyst seek to identify minor and trace elements.
+7. Minor Peaks. The same strategy is followed for minor and trace constituents, i.e., the analyst begins at the high~energy end of the spectrtun and works downward in energy. It is often the case that only one line can be recognized for a minor or trace element. If it is necessary to improve the confidence with which an assignment can be made, it may be necessary to accumulate the spectrum for a much longer time to develop adequate statistics for detection of additional x-ray family members for the element of interest.
+8. Peak Overlaps. When finished with the above procedure, the analyst should always ask the following question: What other elemental constituents might be present which cannot be detected because of severe interference situations? That is, what minor or trace constituents will be missed because they are "buried" beneath major peaks of other elements?
+An excellent example is the mutual interference among SKa, MoLG, and PbMa. Such interference situations can be conveniently assessed by means of Figure 6.1 which depicts all elements which can produce an x-ray line measurable by EDS in the range 0.75-10 keV. By means of this figure, the analyst can rapidly determine what hypothetical interferences exist. If these hypothetical interferences are important, the analyst should consider what steps could be taken to find alternate x-ray lines with which to detect the elements in question. It may be necessary to increase the beam energy to efficiently excite higher-energy lines. For example, in the S-Mo-Pb situation the presence or absence of Mo may be confirmed by sufficiently exceeding the K absorption edge energy for Mo (20.0 keV) to excite the Mo K series. A beam energy of 30 keV would provide an overvoltage of 1.5 to excite this radiation.
+Experiment 6.5: Qualitative Analysis of a Simple Spectrum. Record a spectrum from the metal alloy sample for 100 live sec at S 30% dead time. Idennh all the peaks according to the procedures described above. H possible store the spectrum. Prepare the following report table noting the energies of all peaks:
+Possible interferences:
+
+Experiment 6.6: Qualitative Analysis of a Complex Spectrum. Record a spectrum from the glass sample for 100 live sec at S 30% dead time. Identify the peaks according to the procedures described above. 0' possible store the spectrum. Prepare the following report table noting the energies of all peaks:
+Major constituents Minor constituents Trace constituents:
+Specimen identification: Beam energy = keV Possible interferences:
+Experiment 6.7: Automatic Qualitative Analysis. U the MCA in use is equipped with software for automatic peak identdication, use it to determine the elements present in the stored spectra of Experiments 6 5 and 6.6. How do the automatic analyses compare with your manual analyses? Were any additional elements detected, especially minor or trace elements?
+If so, examine these peaks closely. Do the assignments appear justified? Obtain a spectrum of the glass sample for 10% ofthe time which was used previously, and apply a smoothing function to the spectrum. Repeat the automatic qualitative analysis. How do the elemental assignments compare? Are any new minor or trace elements identified? Are these identifications valid?
+
+6.3 Quantitative Analysis This section lays the groundwork for quantitative analysis in the SEM. On-line processing of EDS spectra from unknowns and simple standards can yield quantitative analysis with relative errors of the order of i'3% and detection limits of the order of 0.1 wt%. These extraordinary capabilities sometimes blind us to the limitations of these systems.
+The basis for quantitative x~ray microanalysis is that, to a first approximation:
+Cspec oc Ispec = - (6.1)
+Cstd I std K ratio where C is the mass (weight) concentration of an element, and I is the measured characteristic x-
+ray intensity for that element (corrected for background, peak overlap, and dead time). The subscript "spec" denotes the concentration or intensity of the element in the specimen, and “std" refers to the standard of known concentration. The ratio of characteristic intensities measured on the specimen and the standard is known as the "K ratio." The proportionality sign in Equation 6.1 indicates that the relationship between concentration and characteristic x-ray intensity is not exact. There exist "matrix effects," arising from the nature of the electron and x-ray interactions with matter, which modify the measured intensities, and which depend on the unknown composition of the specimen. A variety of approaches are used ("ZAF,"
+"phi(rho-z)," "empirical") to calculate correction factors for these matrix effects. Descriptions of these correction procedures are given in SEMXM, Chapter 7. This laboratory will examine two extremes: fully rigorous ZAF analysis using standards and the so-called "standardless"
+technique. ln addition, this laboratory will illustrate the errors which can arise when user-
+selected parameters are incorrectly established.
+
+When careful attention is paid to operating conditions and analysis procedures, fully rigorous analysis with standards can yield a relative accuracy of i3% for most elements. For the EDS case, optimal conditions will be considered to be the following:
+1. Element atomic numbers of 11 (sodium) and greater.
+2. Concentrations greater than 5%.
+3. No significant interelement peak overlaps.
+The precision of the concentration determination depends on the measurement statistics for the characteristic and bremsstrahlung (background) x-ray intensities.
+
+There are two key assumptions, often assumed as being obvious, which form the foundation of the x-ray microanalysis technique:
+
+1. Homogeneous Specimen. The specimen is assumed to be homogeneous in the volume sampled, which typically has dimensions of micrometers. Note that this assumption precludes "overscanning" an inhomogeneous, multiphase specimen during spectral accumulation to obtain an "average" EDS spectrum which is mistakenly thought to yield an "average" composition for the specimen after matrix correction. Such a procedure can produce relative errors of several hundred percent, rendering the results meaningless!
+2. Unknown and Standard Polished Flat. The only reason the x-ray intensity measured on the specimen differs from the x-ray intensity measured on the standard is that the concentration is different between the specimen and the standard. This situation is only achieved when both specimen and standard are polished flat (metallographic polish but no etching) and set at known and identical angles relative to the electron beam and the x-ray spectrometer. Note that this requirement precludes the direct analysis of rough surface, particle, thin foil, and thin film on substrate specimens. For these specimens, geometrical effects (size, shape) come into play and affect the measured x-ray intensities (see Laboratory 22 and SEMXM, Section 7.5). If we treat one of these special samples in the same way as an ideal flat, polished sample, relative errors of several hundred percent can occur, rendering the results meaningless!
+Fully Rigorous ZAF Analysis. The most effective strategy for EDS analysis is to record and archive spectra from standards (pure elements, simple compounds such as gallium phosphide, alloys, and glasses) under standardized electron beam and x-ray spectrometer conditions. Provided data collection conditions can be reproduced from day to day, these archived spectra from standards can be used indefmitely.
+Archived standard spectra may be used to process x-ray spectra from the specimen to extract characteristic x-ray intensities, automatically correcting for peak overlap and background. These spectra may even be used to calculate K ratios. The ZAF matrix correction method may then be applied to the K ratios to produce the final measured concentrations.
+"Standardless" Analysis. There exists some ambiguity in the field over the definition of the "standardless" concept. For this laboratory, we will assume the most extreme case: only the spectrum of the unknown is measured. The standardless analysis technique then calculates the required standard intensities for the K ratios from first principles using mathematical descriptions of x-ray generation. The analytical total is normalized to l00%. The standardless technique is extremely sensitive to changes in take-off angle, changes in kV, and to the presence of unmeasured elements.
+ 
+Experiment 6.8: Establishing Proper Working Conditions. A good procedure at the beginning of any quantitative analysis session is to record a spectrum from a pure element and compare that spectrum to the equivalent archived spectrum. In this way, possible errors can be evaluated which might arise from incorrect spectrometer settings (calibration, shaping time or count rate range, and dead time correction) or beam parameters (energy, which affects ionization efficiency, and beam current). An excellent choice for the test specimen is copper, which provides CuL, CuK,,, and CuKB, bracketing most of the energy range of analytical interest. Collect a 50 sec copper spectrum at 20 kV and use the MCA to compare the peak heights and shapes with those recorded previously in Experiment 6.1 (or other library Cu spectrum recorded at the same take-off angle and at 20 kV).
+
+Experiment 6.9: ZAF versus Standardless. For an aluminum-nickel alloy and pure element Al and Ni standards, measure and record spectra at 20 kV and at a known specimen tilt and working distance. Choose the optimum detector resolution (longest shaping time), a beam current which gives a dead time on pure Al of approximately 30%, and a live time of 100 sec.
+Measure the beam current in a Faraday cup. Process the spectra through both the ZAF and the standardless software according to the manufacturers instructions. Specify the correct values for the beam energy, the angle of beam incidence (or tilt angle), and the take-off angle.
+Examine the final report table for both techniques.
+1. Are the K ratios reported?
+2. How do the measured concentrations compare for the two techniques?
+3. Are the ZAF matrix corrections reported? What is the magnitude of the total matrix correction for each element? What are the magnitudes of the individual corrections?
+Which element requires the most significant correction in this particular situation?
+4. What is the ZAF analytical total for the two elements measured? Are the final reported concentrations normalized to 100%? Is normalization a good idea? If the specimen were oxidized, and oxygen was not measured, does the software offer the option of calculating oxygen concentration by assumed stoichiometry? Would such a calculation be better than calculating the oxygen concentration by difference?
+5. Is the precision of the measurement (of a single point) reported? How is the precision estimated? What statistical measure is used? What is the utility of this estimate of the precision?
+
+Experiment 6.10: Effect of Take-Off Angle. Change the specimen tilt by 20° and record a new spectrum on the Al-Ni alloy at the same beam energy. Calculate the composition of this unknown using the same values of the take-ojf angle and incidence angle as used for the previous ZAF and standardless measurements. How do the calculated concentrations compare between the two methods? Which method is more sensitive to operator error? Which element suffers the largest error? Note: if the electron beam instrument does not permit changes in the tilt, this effect can be simulated by altering the input take-off angle in the software.
+
+Experiment 6.11: Effect of Beam Energy. Change the beam energy to 19 keV. This simulates a possible error which can easily arise in practice. Record a spectrum for the Ni-Al alloy at the same beam current and live time as previously. Repeat the calculations for the ZAF and the standardless techniques using 20 keV instead of the correct 19 keV in the beam energy input value to the software. How do the calculated concentrations compare between the two techniques? Which method is more sensitive to operator error? Which element suffers the largest error? If the electron beam instrument does not permit small changes in beam energy, this effect can be simulated by altering the input energy to the software.
+ 
+References
+[1] C. E. Fiori and D. E. Newbury, Scanning Electron Microscopy/1978, vol. I, SEM Inc., AMF O'Hare, IL., p. 401.
+[2] J. A. Bearden, "X-Ray Wavelengths and X-Ray Atomic Energy Levels," NSRDS-NBS 14, National Bureau of Standards, Washington (1967). Also published in recent editions of the CRC Handbook of Chemistry and Physics, The Chemical Rubber Company, Cleveland, Ohio. 

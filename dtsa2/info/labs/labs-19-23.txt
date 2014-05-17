@@ -1,0 +1,426 @@
+Laboratory 19 Quantitative Energy-Dispersive X-Ray Microanalysis
+
+Purpose
+
+The purpose of this laboratory is to demonstrate quantitative X-ray microanalysis as practiced on an electron column instrument equipped with an energy-dispersive spectrometer (EDS) and a computer-based multichannel analyzer (MCA). Although the difficult calculations of quantitative X-ray microanalysis are performed automatically in the MCA, the analyst must be aware of the responsibility to select operating conditions that optimize accuracy and precision. As with the WDS, increasing the accelerating voltage will improve the X-ray count fate and peak-to-background ratio and therefore the precision and sensitivity, respectively.
+However, increasing the beam voltage will also increase the absorption of lower-energy X-ray lines such as aluminum. More details may be found in SEMXM, Chapters 3, 5, and 7.
+
+Equipment
+Electron probe microanalyzer (EPMA) or SEM equipped with an energy-dispersive spectrometer.
+
+Specimens 1. NiCrAl alloy containing 58.5 wt% Ni, 38.5 wt% Cr, and 3.0 wt% Al. The alloy was heat treated at 1135°C for 5 days to produce a single phase homogeneous alloy.
+Pure element standards of nickel, chromium, and aluminum are included in the same mount.
+2. MgO, SiO2, and A1203 polished standards. Mg3Al2Si3012, Mg2SiO4, MgSiO3, MgAl2O4, and Al2SiO5 specimens polished for analysis in a manner identical to the standards.
+Time for this lab session Two to three hours.
+
+19.1 Operating Conditions for EDS Analysis As with WDS (Laboratory 18), the selection of operating voltage and electron beam current is determined by the elements under investigation and the spatial resolution required.
+Ideally, we would like to select X-ray lines which are similar in energy for each of the analyzed elements in order to obtain similar excitation volumes from each element. The particular specimen chosen for study illustrates a frequently encountered dilemma which confronts the analyst in practical analysis situations. The analyst should always seek to optimize the selection of operating conditions to ensure adequate excitation for all of the analyzed elements.
+The excitation edge energies EC of the analyzed elements are considered, and a beam energy E0 is selected to provide an overvoltage, U = E0/EC, of approximately a factor of 2 for the highest edge energy. When this procedure is followed for the specimen under consideration, the edge 108 jrminter@gmaiI.com 
+
+Table 19.1 EDS Standards Data for 10 kV, 15 kV, and 30 kV 10 kV Measurement time (sec) Beam current nA _ Peak, N Background, NB Net Counts   ,LNB 15 KV Measurement time (sec) Beam current nA _ Peak, N Background, NB Net Counts   NNE 30 kV Measurement time = (sec) Beam current = nA _ _ Peak, N Background, NB Net Counts n 
+
+energy for nickel, E,__ = 8.33 keV, determines the minimum acceptable beam energy, 15 keV, which will adequately excite NiKa radiation. This choice of beam energy has an unfortunate consequence for aluminum where EC = 1.559 keV and U = 9.6. Such a high overvoltage results in a large absorption correction because the aluminum X-rays are produced very deep in the specimen. We will look specifically at the analytical errors as a function of beam energy.
+With EDS systems all X-ray peaks are collected simultaneously, and there is no need to worry about selecting the appropriate analyzing crystal as in the case of WDS. However, there is an issue of equivalent importance in the selection of the window width for each element.
+Since X-ray peaks statistically broaden at higher energies there is a need to collect the same proportion of a peak at each energy. This is usually done by setting the window on each X-ray peak to 1.2 x FWHM (full-width~at-half-maximum), the window width that gives the best peak-
+to-background ratio.
+Experiment 19.1 : Measurement of X -Ray Intensities. (a) Total intensity N.
+Choose a beam current at each energy which produces a dead time on the aluminum standard of approximately 20%. This choice ensures that the spectral artifacts due to count rate effects will not be significant. For this experiment, the live time should be 100 sec to obtain a reasonable integrated count on the peaks of interest. Set windows on the K 0, peaks for nickel, chromium, and aluminum. Make the width of each window about 1.2 times the full-width-at-half maximum (FWHM) of the X-ray peak.
+Collect spectra and measure X-ray intensities from the alloy (3 to 4 or more locations) and standards at 10, 15, and 30 kV. Use Tables 19.1 and 19.2 to record your data.
+(b) Background intensity N. Use the EDS background subtraction procedure which is resident in the software package of the computer to calculate the background under each peak.
+(c) Calculate net peak intensity. Record the gross peak counts N the background under the peak NB and calculate the net peak counts NP as given by Np = N -NB (19.1)
+(d) Calculate RCE. In the same tables, report the measurement statistic called the relative counting error, RCE, defined as RCE = vm/N X 100% (19.2)
+(e) Calculate the K ratio. Finally, by dividing the specimen peak intensity Np for each element by the peak intensity from the standard (Npg) for that element, we obtain the intensity ratio orK ratio K . = specimen intensity: £1 (19.3)
+mn” standard intensify Npo Report your K ratios in Table 19.3.
+Note: If your sample has to be tilted, you may find it necessary to vertically reposition the individual standards and the alloy to the same height to ensure that the collection efficiency does not vary between the standards and the sample. This can be done by using the largest objective aperture, locking the objective lens focus, and shifting the vertical sample position until a sharp image is obtained at 1000x or higher. To determine how sensitive your SEM/detector combination is to this effect, with the sample tilted to the desired angle, observe the change in count rate as the sample is displaced a few millimeters up and down from the position selected for the analysis. This change in count rate with specimen position is caused by a variation in detector geometrical collection efficiency. It is due in part to a change in shadowing of the detector crystal by the collimator.
+ 
+ 
+
+Table 19.2a EDS Specimen Data for 10 kV 10 kV Measurement time = sec Beam current = nA X-ray Peak -Average background Net counts R C E line N (counts) NB (counts) Np = N-NB (%)
+
+Table 19.2b EDS Specimen Data for 15 kV 
+
+Table 19.2c EDS Specimen Data for 30 kV
+
+Table 19.3 EDS Intensity Ratios for Ni, Cr, and A1 Calculated from Data in Tables 19.1 and 19.2 10 kv K ratio 1 K ratio 2 K ratio 3 K ratio 4 --I ww M01 M02  - _
+30 kV K ratio 1 K ratio 2 K ratio 3 K ratio 4 19.2 Calculation of Composition The X-ray intensity data (K ratios) are convened to concentrations for each element by multiplying the K ratio by the correction factors for atomic number (Z), absorption (A), and fluorescence (F). Thus, this method became known as the "ZAF method" where Measured composition = (K ratio) (Z)(A)(F) (19.4)
+ 
+Experiment 19.2: ZAF Correction of Intensities.
+
+(a) Use the ZAF quantitative analysis procedure resident in the computer to calculate concentration values from the standards and sample data in Tables 19.1 and 19.2. Report the measured concentrations in Table 19.4.
+(b) The accuracy of your measurements can be determined by comparing your calculated composition values with the known or true composition of the alloy given above. The accuracy can be described by the percent relative error:
+Percent relative error = [ (measured - true)/measured] x 100% (19.5)
+Record the percent relative error in Table 19.4. 
+(c) Calculate the ratio of net peak intensity divided by the background (Np/NB or P/B) and record this value for each element and voltage in Table 19.4. Plot (Np/NB) as a function of voltage for each element in the pure element standards and the sample.
+Inspect your report tables and your plots as you consider the following questions:
+1 _ At which beam energy is the maximum percent relative error for aluminum encountered?
+2. How do the analytical errors behave for chromium and nickel as a function of energy?
+3. How does the relative counting error, RCE, vary for nickel and chromium as a function of beam energy?
+4. How sensitive were the measured X-ray intensities to the sample height? How would neglect of the effect of height affect your quantitative analysis?
+5. In addition to sample position effects, what other factors can influence quantitative results?
+6. How does the measured concentration vary as a function of position for the several measurements? If the range (%) of the calculated concentrations is less than 3xRCE, can the sample be considered homogeneous based on this small number of sample points? Is your alloy homogeneous?
+7 . Does P/B increase with voltage for all the elements? If not, explain the phenomenon involved.
+
+Table 19.4 Summary of EDS Analysis Data Measurements for Point Analyses on the Alloy.
+
+Optional Experiment. If other methods of quantification are available, e.g., Phi(pz), "standardless," etc., repeat the above calculations and compare those calculated concentrations with the values found by ZAF. Further comparisons can be made with the WDS results obtained in Laboratory 18.
+
+19.3 Comparing "Standardless Analysis" with Quantitative Analysis Using Standards With the extreme ease of data acquisition inherent in the EDS system, it is tempting to ny to completely automate the analysis without having to measure data from standards. Many procedures of this type work well within a limited range of samples and at a single accelerating voltage; however, when flexibility is desired to change the voltage for optimizing the accuracy or the spatial resolution these "standardless" methods show their weaknesses.
+ 
+Experiment 19.3: Silicate Analysis. "Standardless" EDS analysis procedures often work well on specimens like stainless steel, where (a) the analyzed X-ray lines are well separated and are of reasonably high energy, (b) the background under these peaks is reasonably flat and the peak-to-background ratio is reasonably high, and (c) the absorption of these X-rays by the detector window and Si dead layer is minimal. Standardless procedures work less well when there are severe overlaps and when one is analyzing with low-energy x-
+ray lines, such as Na, Mg, Al ,and SiKa. In such cases, more accurate results are obtained by analyzing standards and using these for spectral deconvolution and data correction.
+This experiment will test full quantitative versus standardless quantitative analysis procedures.
+(a) Collect data from standards. Collect and store a 100-sec (live time) spectrum at 20%-30% dead time of a polished, carbon-coated specimen of Si02 (quartz). Use an accelerating potential of 15 or 20 keV and the other analytical conditions employed in Experiments 19.1 and 19.2 (making sure that you know the effective detector take-off angle).
+Taking care to keep the beam current constant, collect and store a 100-sec spectrum from polished, carbon-coated standards of Mg0 (periclase) and A1203 (corundum). Store these spectra as library standards.
+(b) Check calibration. Use your EDS system's software to determine the energies of the centroids of the Mg, Al, and SiKa peaks. Compare these with the theoretical values. If they differ, the standardless procedures will probably give larger errors than if the energy calibration were correct. Note: You should always check the energy calibration of your system before doing quantitative analysis.
+(c) Collect and store two or three 100-sec spectra of Mg3Al2(SiO4)3 (pyrope). Note how the Mg, Al, and SiKa peaks overlap and the complexity of the shape of the background in the vicinity of these peaks. U’ time permits and the materials are available, collect and store one or two 100 sec spectra of polished, carbon-coated specimens of Mg2Si04 (forsterite), MgSiO3 (enstatite), MgAl204 (spinel), and Al2Si05 (kyanite).
+(d) Process data from various silicates. Set up your system’s standardless quantitative analysis program. If you need to input the elements to be analyzed, list MgKa, AlKa, SiKa, CaKa, and FeKa. Note that calcium and iron should not be present in any of your samples; testing for them may provide information regarding the effective minimum detectability. Set your standardless program to calculate oxygen by difference or preferably by stoichiometry relative to the other elements. Read in each of the spectra for the silicates pyrope,forsterite, enstatite, spinel, and kyanite and process them. How do the results compare to the actual compositions?
+(e) Do a full quantitative analysis using standards. Read in the MgO, A1203, and SiO2 spectra to set up your system's full quantitative analysis program. Then read in and process the various silicates. How do these compare with the true compositions and the standardless results? Is true quantitative analysis possible in the SEM with an EDS detector?
+
+Laboratory 20 Light Element Microanalysis
+Purpose The light element regime traditionally defined as the elements Be through F (Z = 4 to 9) has posed many difficulties for the analyst. Poor detectability due to low count rates caused by insufficient beam current at low voltage and small spot sizes has made microanalysis very difficult Adequate matrix correction procedures are just being developed and quantification is difficult without very good standards. Contamination of the sample during analysis often makes the results questionable. These problems are slowly but surely being corrected in today's modern electron microprobes. New WDS crystals and recent ultra-thin-window (UTW) have contributed to improved detectability; modem electron columns have much better low-voltage performance; and finally, today's SEMs and microprobes are designed with anti-contamination devices. However, with all these improvements, the measurement and subsequent quantification of light elements is far from routine. This laboratory will illustrate operational aspects of light element analysis background measurements, peak overlap problems, and quantitation techniques. More details may be found in SEMXM, Chapter 8.
+
+Equipment
+Electron probe microanalyzer (EPMA) or SEM equipped with a wavelength dispersive spectrometer (WDS) and/or energy-dispersive spectrometer (EDS).
+
+Specimens
+1. A sample of pure carbon such as graphite, colloidal graphite or diamond.
+2. A steel sample containing carbides (Fe3C) that are >10 um in size.
+3. A homogeneous steel sample such as 1080 carbon steel.
+4. A set of Fe-C and Fe-Ni-C standards.
+5. A sample of pure iron.
+
+Time for this lab session Two to three hours.
+
+20.1 Data Collection for Light Element Analysis The following aspects of light element analysis should be considered in detail before measurements are made:
+
+Specimen preparation
+(a) Proper mounting media (epoxy, bakelite, etc.) to avoid contamination during polishing.
+(b) Sample cleaning to avoid contamination.
+(c) Thin conductive coating material that will minimize X-ray absorption.
+(d) Samples and standards must be coated to the same thickness.
+
+Proper instrument conditions
+(a) Low overvoltage-to minimize the absorption correction. Overvoltage must be high enough so that the analysis is not surface sensitive.
+(b) High take-off angle (EDS) to minimize absorption correction.
+(c) Pulse height analysis (WDS) to avoid peak overlaps.
+(d) Beam current/counting time to avoid contamination and sample damage.
+(e) Enlarged spot size (~1 tim) to avoid contamination and sample damage.
+(t) Anti-contamination devices (liquid nitrogen trap, air jet) to avoid surface contamination.
+
+The WDS has very high X-ray energy resolution and as such is capable of measuring wavelength shifts due to chemical bonding effects in different compounds. To observe both the wavelength shift and peak shape change, run the following set of measurements.
+ 
+Experiment 20.1 : Carbon K Peak Shape.
+Pure Carbon 
+(a) Optimize the instrument for CKa, measurement (for example: 10 voltage, lead stearate analyzing crystal, adjust detector voltage and amplifier gain).
+(b) Run a slow wavelength scan (about I sec/eV) through the entire carbon peak with proper marking of the wavelength or energy scale. Be sure to collect plenty of background on each side of the peak, e.g., 0.22 to 0.35 keV.
+(c) Measure the peak intensity with 1/N/Nx]00 <05%, where N is the mean value of the total number of counts in time t.
+(d) Measure the average of the two backgrounds on each side of the peak for a time equal to the peak measurement (record data in the data Table 20.1 and save for Experiment .2).
+(e) Collect a spectrum with a windowless or UTW EDS detector, Q” available.
+Iron Carbide, Fe3C (a) Using the same instrument conditions as above, obtain a wavelength scan through the carbon peak in F e 3C.
+(b) Compare with the pure carbon scan. Identify the additional peaks.
+(c) Measure the peak and background intensities with WV/Nx100 <05% as in (c) and (d) for pure carbon.
+(d) Collect an EDS spectrum if a light element EDS detector is available.
+
+Questions
+1. Do you observe any differences in the wave length spectra corresponding to changes in the peak positions and/or any differences in the peak shapes? If so, what are the reasons for the wavelength shift and peak shape differences?
+2. To analyze carbon in a steel sample, which standard should be chosen? Why?
+3. Are there any differences between the two EDS spectra?
+To do accurate light element analysis, the measurement of background intensity is very important. Average background can be obtained from measurements of the continuum background on either side of the peak or by using a background standard similar to the sample of interest but with none of the light element present in the sample.
+ 
+ 
+Experiment 20.2: Background Intensity.
+Method 1: Using WDS calculate the average of the two carbon backgrounds measured on either side of the carbon peak in the sample of F e3C or a time equal to the carbon peak measurement on Fe3C (use data from Experiment 20.1 recorded in Table 20.1).
+
+Table 20.1. Peak and Background Data for CK D, kV = nA Take-off angle =
+Probe current = Counting time =
+Peak (counts) Average background counts Method 2: Using WDS measure the background for carbon in pure iron at the carbon peak position determined in Experiment 20.1 for Fe3C and save in the data Table 20.1.
+
+Questions
+1. What is the difference between background measurement Methods 1 and 2?
+2. Are these methods more accurate than measuring the off-peak continuum background directly on the sample at the analysis position?
+3. Is there any advantage in using WDS for background measurements rather than EDS?
+Consider \/N/N effects.
+In WDS it is possible for peak overlaps to occur when nl for a heavier element is similar to the peak wavelength position for a light element. For example, overlap effects occur in light element analysis when the L lines of transition elements, present in the sample, are excited.
+ 
+ 
+Experiment 20.3: Peak Overlaps.
+(a) Run a slow wavelength scan through the entire carbon peak on an Fe-10Ni-C standard. Compare this scan to that obtained from Fe3C and see h‘ a Ni La peak interferes.
+Calculate the position of the nl peak from the wavelength of the Ni La line.
+(b) Using the pulse height analyzer, remove the Ni La peak from the scan. Run a slow wavelength scan through the carbon peak on the Fe-10Ni-C standard to make sure the overlapped peak is removed.
+ 
+20.2 Measurement of Light Element Concentrations
+
+The ultimate objective of this laboratory is to make a quantitative analysis of carbon. Two methods will be used, ZAF (or Phi(pz)), and the calibration curve method. Either WDS or EDS may be used.
+
+Experiment 20.4: Quantitation by the ZAF Method. Use the same experimental conditions as for Experiments 20.1 -20.3
+
+Step 1. Measure the carbon peak intensity Istd carbon and carbon background intensity Istd bg carbon from the carbide and the chosen background standard (from Experiment 202). The measured standard peak intensity is ISTD:
+td b 20.1 I STD = Ii:’b0I1 ° Iiarboix ( )
+Enter data in Table 202 below.
+
+Step 2. Measure the carbon intensity, Iwbon, from the homogeneous steel sample. Measure background intensity directly on the sample. Record the data tn Table 20.2. The measured sample peak intensity is
+ISAMPLE:,bg (20.2)
+1AMPLE = [carbon ~ carbon
+Step 3. Determine the carbon content of the homogeneous steel sample with the ZAF or Phi(pz) method using the following K-ratio:
+Kcarbon = ISAMPLUISTD (20-3)
+
+If time permits, make at least three independent measurements of the carbon concentration in the steel.
+
+Table 20.2. Data for ZAF Analysis of Carbon in Steel (5 Independent Measurements)
+
+
+Table 20.3. Data for Calibration Curve of Carbon in Iron
+
+
+Experiment 20.5: Quantitation by the Calibration Curve Method.
+Step 1. Measure Igm; [equation (20.1 )] for the four Fe-C standards, including the pure iron sample, taking the background directly from each standard. Be sure to measure all specimens at t same beam current, voltage, and take-of angle. A minimum of three measurements should be made on each sample.
+std ISTD; = [cuban - Iiigfn for each standard (20.4)
+Enter data in Table 20.3.
+Step 2. Plot 157-D; versus the carbon concentration of the standards. This is the calibration curve.
+Step 3. Measure ISAMPLE from the homogeneous steel sample. Enter data in Table 20.3.
+Step  Using [SAMPLE and the calibration plot, determine the carbon content in the steel sample.
+Questions
+1. Which carbon quantitation method is more accurate? Why?
+2. If the operating voltage were increased, would your answer to question (1) change?
+
+Laboratory 21 Trace Element Microanalysis
+Purpose
+This laboratory is designed to give you a feel for the amount of care and time that must go into any measurement involving trace elements. The trace element concentration range is often defined as concentrations below 0.5 wt% for most elements and below l wt% for the light elements. The example used here is the measurement of small amounts of phosphorus (P) in FeNi alloys. More details on these techniques may be found in SEMXM, Chapters 7 and 8.
+
+Equipment
+Electron probe microanalyzer (EPMA) or SEM equipped with a wavelength dispersive spectrometer (WDS) and/or an energy-dispersive spectrometer (EDS).
+
+Specimens
+1. (FeNi)3P, a phosphide mineral known as Schreibersite in meteorites, containing 15.5 wt% P (25 at% P).
+2. An Fe-Ni-P alloy containing 14.6 wt%Ni, 0.35 wt% P, balance Fe.
+3. An Fe-Ni binary alloy.
+4. A meteorite containing 0.08wt% P in the low nickel metal phase.
+
+Time for this lab session Two to three hours.
+
+21.1 Data Collection for Trace Element Analysis The use of X-ray microanalysis to measure trace concentrations has been a standard procedure since the electron probe microanalyzer (EPMA) was developed in the early 1950s.
+Minimum detectable concentrations of <l00 ppm for wavelength-dispersive spectrometers (WDS) and <l000 ppm for energy-dispersive spectrometers are commonly quoted in textbooks and by manufacturers. The analyst must understand, however, that these numbers represent the "best case" situations and are not trivial to achieve. Furthermore, once achieved they can only be reported as having relative errors of 100% (that is, i100 ppm for WDS and i1000 ppm for EDS).
+The following instrumental aspects of trace element analysis should be considered in detail before measurements are made:
+1. Accelerating voltage: adjust to maximize the P/B ratio, the peak (Np) over background (NB), for the element of interest.
+2. Beam current: increase to maximize peak intensity.
+
+Table 21.1. WDS Data from High-Phosphorus Standard 15 kV Beam current =
+Counting Peak position Background (counts) 
+
+3. Counting times: increase to improve detection limits.
+4. Spot size (X-ray source region): may increase as beam current is increased.
+5. Pulse height analysis (PHA) settings (for WDS): to   peak overlaps.
+6. Peak and off-peak positions (WDS): to obtain correct continuum background values.
+7. Selection of analyzing crystal (WDS): to maximize peak intensity.
+8. Region of interest settings (EDS): to minimize peak overlaps.
+In the following sections N refers to the number of counts at the peak position for an element in a given sample and NB is the average background intensity for that element in the same sample.
+For an element standard Ng and N53 refer to the number of peak and background counts, respectively.
+ 
+Experiment 21.1. Data from a High-Phosphorus Standard.
+(a) Using the phosphide standard, measure with the WDS the peak counts NS and background counts N33 for phosphorus, iron, and nickel, respectively. Note the appropriate peak and background positions. Use a beam current 2100 nA, I5 kV, and an analysis time of at least 10 sec for iron and nickel and 100 sec for phosphorus. Record your results in Table 21.1.
+(b) Repeat the experiment using the EDS. Use a current which gives <20% dead time and an analysis time of 100 sec. Peak and background intensities can be measured by using windows defined by full-width-at-half maximum (FWHM) regions. Record your results in Table 21.2.
+ 
+Table 21.2. EDS Data from High-Phosphorus Standard 15 kV Counting time = 100 live sec Deadtime = %
+
+
+Table 21.3. WDS Data from Fe-Ni-0.35 wt%P Alloy WDS, Counting time = ____. sec 
+ 
+Experiment 21.2: Establishing the Background at Low Phosphorus Concentration.
+
+Since we are looking for small peaks barely above the background, it is appropriate to more clearly delineate the method for measuring background. In EDS, the background fit or the background region of interest must be chosen carefully to avoid other peaks, absorption edges, etc. In WDS the shape of the background must be well understood.
+A choice must be made of the energy below and above the peak to obtain two background intensities which are usually averaged to determine the background.
+(a) On the Fe-Ni-P alloy containing 0.35wt%P obtain a WDS wavelength scan 30 eV wide around the PKG peak position at 2.014 keV. A counting time of 10 sec for each I eV step is suggested. Determine the continuum background positions to use for the analysis. Be sure to avoid the PK B peak. Measure the phosphorus background, NB, using these positions with a counting time of 100 sec and record your results in Table 21.3.
+(b) Obtain an EDS spectrum of the Fe-Ni-P alloy containing 0.35 wt% P for 100 sec. Is the phosphorus peak clearly distinguishable? U it is not, acquire the EDS spectrum for 400 sec. Measure the phosphorus background, NB, using either a background fitting technique or an average of background regions above and below the phosphorus peak, as used for the standards measurement in Experiment 21.1. Record your results in Table 21.4.
+(c) Measure the phosphorus background, NB, on the pure FeNi binary standard.
+comparte the values obtained here to the measurements in (a) and (b). Record these values in a e . .
+ 
+Table 21.4. EDS Data from Fe-Ni-0.35wt%P alloy EDS, Counting time = .._...._sec Ph h Background regions and pe§<sg°;’mJ§n mtensu counts Ave N keV A or mm) (counts) keV range NB kev range NB (Counts)
+
+
+Table 21.5. Comparison of Phosphorus Background Measurements Background standard NB EDS Fe-Ni-0.35P Fe-Ni binary alloy
+
+21.2 Minimum Detectability Limits Liebhafsky et al. [1] suggest that an element can be considered present if the value of N exceeds the background NB by 3(ND)1/2.
+
+Experiment 21.3 : Estimation of Minimum Detectability from Alloy Data.
+Calculate 3(ND)1/2 from your WDS and EDS measurements of NB obtained in Experiment 212. To estimate a minimum detectability limit, CDL, assume N-ND just equals 3(NB)1/2 and use the linear formula:
+C = (VN_;1Y.13__)C = [wlc (211)
+DL s-Nsn S Ns-Nsn S where CS is the concentration of phosphorus in the phosphide standard. Place your result for CDL in Table 21.6 below. A more detailed formula for CDL is given in SEMXM (p. 436).
+ 
+Experiment 21.4: Estimation of Minimum Detectability from Pure Element Standards. One can also estimate the minimum detectability limit using the following equation due to Ziebold [2]:
+CDL = (3.29A)/(tP2/B)1/2 (21.2)
+where A is a matrix factor (ZAF product) ~1.0; t is the total peak measurement time (sec); P is the peak intensity of pure element standard in counts per sec (cps) (remember to convert the phosphorus Ka intensity from that of the phosphide to that of a pure element); and B is the background intensity of the pure element standard (cps). Calculate CDL from Equation (212)
+for both WDS and EDS and place the result in Table 21.6.
+Table 21.6. Minimum Detectability Limits for Phosphorus CDL from Equation (21.1) CDL from Equation (21.2)
+ I 21 TRACE ELEMENT MICROANALYSIS 125 jrminter@gmaiI.com 
+
+Table 21.7. Data for Measurement of Phosphorus in a Meteorite Nu counts Fe xounts P counts 5 ----__
+\
+Questions
+1. Compare CDL from Experiment 21.3 with CDL from Experiment 21.4.
+2. Compare the WDS and EDS values for CDL. Why is one method so much better than the other?
+3. Can EDS can be used to measure the P concentration in the meteorite?
+ 
+21.3 Measurement of Trace Element Concentrations The metallic meteorite phase (bcc kamacite) containing 0.08 wt% phosphorus will be used to illustrate the measurement of phosphorus at low concentrations.
+ 
+Experiment 21.5: Measurement of P Content in a Meteorite.
+(a) On the low-nickel kamacite phase of the meteorite sample, measure the phosphorus peak intensity N and the background ND with WDS, and EDS U’ appropriate. Measure at least four duferent positions on the sample and record your data in Table 21.7. U” time permits measure a WDS wavelength scan as in Experiment 21 .Za around the PK a peak to demonstrate the presence of phosphorus in the meteorite.
+(b) Using a ZAF or Phi(pz) technique, calculate the phosphorus concentration in the meteorite.
+(c) Using the value of 3(ND )1/2, calculate the CDL, as in Experiment 21.3.
+(d) Express the phosphorus concentration as the value measured in (b ) iCDL  
+
+References [1] H. A. Liebhafslgy, H. G. Pfeiffer, and P. D. Zemany, in X-Ray Microscopy and X-Ray Microanalysis, eds. A. Engstrom, V. Cosslett, and H. Pattee, Elsevier/North-Holland, Amsterdam (1960) 321.
+[2] T. O. Ziebold, Anal. Chem. 39 (1967) 858. 
+
+Laboratory 22 Particle and Rough Surface Microanalysis
+Purpose
+
+There are two main objectives of this laboratory: (1) to study the differences observed in EDS and WDS X-ray spectra obtained from particles and rough surfaces as compared to bulk targets, and (2) to test the comparative accuracies of (a) conventional quantitative analysis methods, (b) the peak-to-background method, and (c) the particle ZAF method when applied to particles. More details may be found in SEMXM, Chapter 7.
+
+Equipment
+1. An SEM with EDS and/or WDS X-ray detection system.
+
+Specimens
+1. For the experiment on spherical particles or fracture surface analysis (in order of decreasing preference) either:
+(a) A spherical particle (approximately 100 um diameter) of a Ni-Al or Fe-A1 alloy mounted on a SEM stub and a flat polished specimen of the same composition.
+(b) A fractured specimen of a Ni-Al or Fe-Al alloy and a flat polished specimen of the same composition.
+(c) A fractured or roughened specimen of brass or copper alloy and a flat polished specimen of the same composition.
+(d) A carbon-coated flat polished specimen of NBS standard K411 glass and a carbon-coated dispersion of crushed-up particles from a tiny crystal of K411 glass on a smooth (e.g., pyrolitic) graphite planchet. The particles should be crushed up so they range in diameter from < 1 pm to 20 or 30 um.
+
+2. For the experiment on particle analysis (in order of decreasing preference) either:
+(a) The particle sample and polished specimen of NBS K411 glass listed in 1(d) above.
+(b) A flat polished specimen and particle dispersion of a microprobe standard containing analyzable elements with a range of atomic number of at least 10. Specimens should be prepared as those in 1(d).
+Time for this lab session Two to three hours.
+
+22.1 Microanalysis of Particles Conventional correction procedures for quantitative analysis with electron beam instruments require that the sample be infinitely thick with respect to electron penetration, be polished flat and smooth,_and be mounted normal to the electron beam. When these criteria are met, then it is possible to simply calculate the amount of X-ray emission at any given depth pz in the sample:
+
+I(pz) = Phi(pz)exp(-tt/p csc \|Ipz)
+
+where Phi(pz) is the production of X-rays at the depth z for a sample of density p, u/p is the mass absorption coeflicient of the element’s emitted X-rays by the matrix, and uf is the spectrometer take-off angle. The path length that electrons must travel to leave the sample, when they are produced at depth z, is z(csc ut). For a particle or rough surface, the path length that X-rays must travel to leave the sample hom their point of origin becomes a very complicated function of particle shape and size. Moreover, because electrons that are energetic enough to ionize inner shell electrons ir1 the sample can also scatter from the sides of the particle or through the bottom of the particle, the expression for Phi(PZ) also becomes a complicated function of sample size and shape.
+Three methods are generally employed in attempting to perform quantitative particle analysis with an electron microprobe or analytical SEM:
+
+Method 1: Ignore Particle Effects. One assumes that the effects of particle size and shape can be ignored. The particles are treated as if they were conventional thick polished specimens and the results are normalized to 100%. Then one hopes for the best.
+
+Method 2: Peak-to-Background Method. One assumes that the characteristic X-ray peak intensity and bremsstrahlung (background) intensity at the same energy were produced with the same relative spatial distribution in the sample and thus the same relative absorption. If this is the case, then the peak-to-background ratio should be independent of the sample size and shape. Then one can calculate K ratios that can be corrected by conventional ZAF procedures to obtain concentrations by measuring peak-to-background ratios in the particle (or rough surface) and in the standard [l]:
+K= P'tpS/Pstd = (P/B)piPhi X (Bkps/Paid) (22- 1)
+where B'tps = 2 Ci Bm;
+where P' S and BQPS are the calculated peak and background intensities for a hypothetical thick, pohpshed specimen with the same composition as the particle or rough surface, (P/B)ptPhi is the measured peak-to-background ratio for the particle or rough surface, PM is the measured peak intensity for the standard, and BH; is the measured (or calculated) background intensity for a pure element thick, polished specimen. In using this method for particles, care must be taken that all of the measured background comes Hom the particle and none Hom the matrix on which the particle rests.
+
+Method 3: Particle ZAF Correction Method. One measures the particle size and estimates an idealized geometric model that best matches the particle shape (e. g., cube, sphere, cylinder, etc.) and then uses the ZAF corrections developed by Armstrong and Buseck [2] to account for effects of particle geometry and size on emitted X-ray intensities. This procedure does not apply to rough surfaces and requires that the electron beam be defocused or rastered to cover the whole particle surface.
+This laboratory will provide the opportunity to test all of these ZAF corrections procedures on a rough specimen and on individual microparticles.
+
+22.2 Spherical Particles or Fracture Surfaces Experiment 22.1: The Microscope-Detector Relationship.
+(a) Determine what the X-ray take-ojfangle is for the EDS and WDS detectors on the instrument with which you are working.
+(b) Determine the relative position of the EDS and WDS detector in the image as recorded on the SEM micrograph. Determine the relative position ofthe Everhart-Thornley detector in the same image. 
+(c) Determine how to position the sample so that it is at the right height and tilt for the nominal EDS and WDS detector take-o# angle.
+ 
+ 
+Experiment 22.2: Rastered Beam and Point Analyses (Method 1).
+(a) On the flat polished Ni-Al alloy specimen record and store an EDS spectrum or obtain WDS intensities at 20 kV. Record your data in Table 22.1.
+(b) Place the particle or fracture surface of the same Ni-Al alloy in the instrument and obtain the following EDS spectra or WDS intensities at 20 kV.
+1. Overscan the particle with a rastered beam which just brackets the particle or fracture field and obtain a spectrum.
+2. With a point beam, obtain a spectrum on the side of the particle/fracture facing toward the detector.
+3. With a point beam, obtain a spectrum on the side of the particle/fracture facing away from the detector.
+(c) Process the EDS spectra or WDS intensities through the conventional ZAF or "standardless" software. How do the results compare for overscanning versus point analyses?
+ 
+ 
+Experiment 22.3: Peak-to-Background Ratios (Method 2). If the EDS or WDS software permits, compare the peak-to-background ratios for AIK w NiKw and NiLa, and record the data in Table 22.1. How similar are the ratios? Are they constant, as the peak-to-
+background method predicts ? How does the rastered analysis compare to the point analysis ?
+Use Equation 22.1 to convert the peak-to-background ratios to compositions.
+ 
+ 
+Experiment 22.4: Low Voltage. If time permits, repeat Experiments 22.2 and 22.3 for NiLa and AIKU, at 10 kV (or 5 kV). Record the data in Table 22.1. How do the results compare .with those taken at 20 keV?
+ 
+22.3 Irregular or Rough Particles  
+Experiment 22.5 : Microanalysis of Irregular Particles.
+
+(a) Mount samples of the polished K-411 glass standard and the crushed particles of K-411 on a carbon planchet. Insert the specimen into the SEM at the proper height and tilt. At 15 keV obtain an EDS spectrum or WDS intensities of the flat polished standard. Process the results through the ZAF or standardless software. The actual composition of the K-411 glass is shown in Table 22.2.
+(b) Find one or two particles smaller than 5 um, one or two about 10 um, and one or two about 20 to 30 um in diameter. Estimate the size, thickness, and shape of each particle.
+Record your data in Table 22.3. If the particle has a flat top and flat sides perpendicular to the sample-detector axis, then call it a rectangular prism (Rec.Pr.). If the particle has a flat top and angular or curved sides with respect to the sample-detector axis, call it a tetragonal prism (T etr.Pr.). If the particle has an angular or curved top, but flat sides perpendicular to the sample-detector axis, call it a triangular prism [Trig.Pr.]. If the particle has angular or curved tops and sides, call it a square pyramid (Sqr.Pyr.). Overscan each particle with a rastered beam hat just bracket the particles and collect EDS spectra or WDS intensities as in Experiment 22.2b(1). Process the EDS spectra with the conventional EDS software to obtain peak intensities above background and compositions.
+(c) Determine the K-ratios of each of the elements in the particle to those in the polished standard and then ratio the K -ratios for all of the other elements in the particles to those for silicon (R,/3; factors). Record these results in Table 22.3. 
+
+Table 22.1. Data for Spherical Particles or Fracture Surfaces  
+ 
+Flat Rastered Toward Away from specimen beam detector detector  
+ -rv  
+Table 22.2. NBS K-411 Glass Compos1t1on Wt%
+Wt% oxide 9.17 Mgo 25.52 S102 11.02 Cao 11.31 Peo 42 Take-off angle:
+20 kV Intensity: NiLa A1Ka NiKa Back- NiLa ground: AlKa NiKa Relative AIKU/NiKa intensity: AIKU/NiLa Peak/ P/B NiLa back- P/B AlKa ground: P/B NiKa 10 kV Intensity: NiLa AIKO, NiKa Back- NiLa ground: AlKa NiKa Relative A1Ka/NiKa intensity: AlKa/NiLa Peak/ P/B NiLu back- P/B A1Ka ground: P/B NiKa Element Mg Si Ca Fe O 130 15.21 54.59 15.42 14.55 Ill ADVANCED X RAY MICROANALYSIS
+
+Table 22.3. Data for Irregular Particles Rastered beam analysis Accelerating potential: kV Diameter (in tim): Thick Sha Re Pr. tc.: Fl K-ratio: MgKPhi
+
+(d) Use the R,/5; correction factors for each element to obtain particle ZAF analyses of the particles measured.
+Questions:
+1. How does the precision of an EDS measurement compare with that for a WDS measurement?
+2. When is the EDS better for particle analysis?
+3. When is the WDS superior?
+ 
+Experiment 22.6: Peak-to-Background Ratios (Method 2). If time permits, analyze some particles with a point beam and evaluate the peak-to-background results as in Experiment 22.3. Recordy our data in Table 22.3.
+ 
+References [1] J. A. Small, K. F. J. Neinrich, D. E. Newbury, and R. L. Myklebust, Scanning Electron Microscopy/1979 (SEM Inc., AMF O‘Hare, IL) 2 (1979) 807.
+[2] J. T. Armstrong and P. R. Buseck, Anal. Chem. 47 (1975) 2178. 
+
+Laboratory 23 X-Ray Images
+Purpose This laboratory demonstrates several important considerations for producing elemental distribution images using WDS and EDS. More detail can be found in SEILDKM, Chapters 5, 6, and 8; and especially in ADSEM, Chapter 5.
+
+Equipment
+1. SEM or electron microprobe equipped with EDS or WDS.
+2. Hardware and software for digital beam control to produce digital X-ray images.
+Specimens
+Basalt or Raney nickel specimen polished flat, and left unetched.
+Time for this lab session Two hours.
+23.1 Analog X-Ray Dot Maps Although computer-based X-ray imaging techniques are rapidly gaining favor, the dominant method of recording X-ray images remains the analog technique known as dot mapping (or area scanning). In this method, the output either from a wavelength-dispersive X-ray spectrometer or from an energy-dispersive X-ray spectrometer is used to modulate the brightness of the photographic recording CRT, and the dot map image is recorded on film.
+The major difference between analog image recording using X-rays compared with the more familiar electron image is the relative strength of the signals. Electron signals are generally within a factor of 10 of the electron beam current. Characteristic X-ray signals are reduced by 4 or 5 orders of magnitude, relative to the electron beam current, as a consequence of the relatively low probability of electron interactions causing inner shell ionizations, the low X-ray yield for many metals, and the small geometric efficiency of x~ray spectrometers. When the concentration of the constituent of interest is considered, the available X-ray intensity is proportionally ftuther reduced. As a result, for dilute concentrations (10 wt% or less) of an element, the characteristic X-ray signal is so low that many picture points in a single photographic image (100 sec/frame) will not record any X-ray pulse, and most picture points will only record a single X-ray pulse. It is not possible to assign a true gray scale to such an image since the signal is not continuous. The practical solution to this problem is to trigger the CRT to write a "full white" dot at any scan location where one or more X-rays are detected.
+Recording useful X-ray dot maps depends on three factors:
+
+1. Proper adjustment of the record CRT. The white "dot" written on the CRT must be sufficiently bright to record the X-ray pulse but not so bright as to bloom into adjacent pixels.
+2. An adequate number of X-ray counts must be recorded. For high-quality results, approximately 500,000 counts must be accumulated per frame if fine scale image details and low concentration regions of the image are to be discemed.
+3 . The magnification must be sufficiently high so that defocusin g effects of the wavelength-dispersive spectrometer do not dominate the image. Altematively, an analog scan correction may be used to compensate for defocusing.
+ _ .l Experiment 23.1 : Recording Dot Maps. Select a multiphase specimen such as a polished sample of basalt (or other fine-grained rock, ceramic, or metal alloy) which will produce distinct elemental contrast in an X-ray area scan. Choose a magnification (250011) and afield of view which will place an interface between a high iron and a low iron phase in the image (this may be quickly assessed using the atomic number contrast in the backscattered electron image), preferably crossing the field diagonally. Select beam conditions to produce a usejitl FeKa X-ray signal. For a wavelength-dispersive X-ray spectrometer select an accelerating voltage of 20 kV and a beam current of 20-1 00 nA. For an energy-dispersive spectrometer select 20 kV and a current that produces a dead time of <20% (about 0.1 -1 .O nA).
+(a) Adjustment of CRT recording dot. Adjust the contrast and brightness controls on the record CRT to obtain a suitable X-ray dot. Photograph a single scan sweep at 100 sec frame time. Can the interface be discerned? Reduce the dot brightness until it is barely visible and record a 100-sec image. Increase the dot brightness until blooming is evident and record a 100-
+sec image. How do the three images compare?
+(b) Effect of the number of X-ray counts. Choose the CRT dot brightness which gave the best result in (a) and record the samefield of view for 1000 sec. The best way to ith'/gtlemint this scan is to use repeated overscans of 1 00 sec each and use the film to integrate t resu t.
+(c) Wavelength-dispersive spectrometer defocusing. Repeat the 100-sec, optimum dot brightness map centered on the same field of view but with progressively lower magnifications (400x, 200x, 100x). Is the spectrometer defocusing artifact evident in the low magnification images? U” the instrument has the capability to compensate for spectrometer defocusing by adjusting the spectrometer as a function of scan position, apply this correction at 100x and compare the corrected and uncorrected images. Is there any other way to correct for defocusing?
+23.2 Digital X-Ray Images An important consideration for digital X-ray images is the proper number of pixels required to form meaningful images. Due to the relatively large volume from which X-rays are generated within solid specimens, an image formed using X-rays will always have a lower resolution than that using an electron signal such as BSES or SES. Furthermore, since the generation of X-rays is 3-4 powers of ten less efficient than for the electron signals, the resulting images will be rather noisy. One can conclude from these facts that fewer pixels should be used to form an image using an X-ray signal.
+We can estimate the number of pixels required by the following rationale. First, we calculate the X-ray range for the chosen characteristic X-ray line by use of the Anderson-Hasler equation (incorrect in SEMXM, p. 108):
+R =  (E5-53 _ Ecl.68) um (23.1)
+
+where R is the depth in um from which most of the chosen characteristic X-rays are generated, E0 is the electron beam energy, EC is the critical ionization energy for the X-ray line of interest, and p is the specimen density in g/cm3. Even though the width of the X-ray volume is generally less than its depth, the depth provides a conservative estimate of the lateral resolution.
+Using R for the X-ray range, we may calculate the minimum number of pixels needed so that each pixel is smaller than the X-ray range:
+n > (L/M-R) (23.2)
+where n is the number of pixels along a scan line; L is the width of the display or recording screen in micrometers (typically 100,000 um); M is the image magnification; andR is the x-
+ray range, in micrometers, as calculated in Equation (23.l).
+Finally, it is necessary to consider the optimal number of counts (peak + background) N required in an average pixel. For various visibility and statistical purposes, N should be greater than 8. The dwell time per pixel also affects the counts per pixel. Consequently, we choose n to satisfy both Equation (23.2) and N/pixel > 8. Often the limiting factor is the time available to obtain the image.
+The best acquisition strategy is to use the maximum number of pixels available in a particular hardware configuration and then "average" adjacent pixels until the above two conditions are satisfied. Not all systems allow reduction of pixel density by averaging, so the operator must choose a low pixel density (e. g., 128 x 128) or alter the magnification or the dwell time per pixel.
+Experiment 23.2 : Choice of Digital Image Parameters. (a ) Assuming a density of 5 5 g/cm3 for basalt, a beam voltage of 15 kV, a magnyication of I000x, and an image acquisition time of I5 minutes, determine the optimum number of pixels and the dwell time per pixel for the F eK O, line at the beam current you are using.
+(b) Setup for EDS. Take a 100-sec (live time) EDS spectrum of basalt. Create windows around the major peaks and at least one background region, say near the iron peak (low energy side) with the same number of channels as the iron peak. Use these windows, and the pixel density and dwell time determined in (a ), to take a digital X-ray image. Select a beam current that will not produce a system dead time of more than 20% at any point in the scanned area.
+Check that for the dwell time per pixel selected the counts per pixel exceed 8 in the areas of interest. Store these X-ray images. How does this digital X-ray image differ from a dot map?
+(c) Setup for WDS. Set the spectrometer for the X-ray line of interest such as F eK a.
+Increase the probe current to 20-100 nA. Route the signal from this spectrometer into the MCA computer system which controls the digital stepping of the electron beam. U” possible, collect the WDS and EDS digital images simultaneously.
+ 
+23.3 Background Removal If the X-ray spectrometer is an EDS, it is particularly important to subtract the background X-rays upon which the characteristic X-rays are added. This follows from the fact that the peak-
+to-background ratio of the energy-dispersive spectrometer is relatively low compared to the wavelength-dispersive spectrometer and that the intensity of the background is dependent upon the average atomic number of the phase analyzed. If your specimen has phases with sufficient differences in atomic number, you can scan for an element that is not present in any phase and obtain an X-ray image that contains contrast similar to that of a backscattered electron image.
+For a discussion of the various procedures to remove background see SEMXM, Chapter 8.
+
+ 
+Experiment 23.3: Background Subtraction. Choose an area on the basalt specimen where there are large atomic number variations such as a metal and silicate phase. Using the only the automatic background removal feature provided by the manufacturer of the EDS hardware, image several elements in the basalt. If background removal on-the-fly is not possible with your system take an image for an element and one for an adjacent background region. Subtract the two images (sometimes smooth before subtraction is helpful). Also, collect an image for an element not in basalt such as scandium or chromium and an image for a background region. Use a magnification of <1 000x, a pixel density of 128 x 128, and a 15-
+min frame time, and use a probe current that produces a system dead time of no more than 20%
+at any point in the scanned area.
+Can you see the element that does not exist in the specimen? What would be the practical implications of the apparent presence of this element in the X-ray image?
+ 
+23.4 Dead Time Considerations When the X-ray count rate increases the EDS dead time increases. If this happens in an image and is not corrected, the relative concentrations of an element will not be correct. In the extreme case, regions with high concentrations of an element may be shown as having little or none of that element present  
+Experiment 23.4 : Test of the Dead Time Circuit. (a) Low-dead time image.
+Choose an area on the basalt specimen which will include both a high-iron and a low-iron phase. Acquire an image at a magnification of <1 000x (store it for reference) , a beam voltage of I5 kV, iron as the analytical element, an acquisition time of 15 min, a probe current which will produce a dead time of <5 % on the metal phase, and a pixel density of 128 x 128. Make sure that the low-iron phase contains some iron or else this comparison cannot be made.
+(b) High-dead time image. Under identical conditions acquire another image but use a probe current which will produce a system dead time of 50% on the metal phase. Store the image.
+(c) Compare the ratio of the iron counts between high-iron and low-iron phases in the two images. Make sure that the low-iron phase contains some iron or else this comparison cannot be made. Use the ”image region” feature of the EDS software to average at least several hundred pixels from these phases. The ratios should be the same. Are they?
+Note: If the ratios are not the same then the dead time circuitry may not be correctly adjusted. Consult the hardware manual or the manufacturer for assistance.
+ 
+23.5 Intensity Measurement Often, the concentration of an element for which we wish to determine a spatial distribution is simply too low to fonn a meaningful image. In this case we must remove one dimension by dropping from three dimensions (X-ray intensity versus x and y) to two dimensions (X-ray intensity versus x). The two-dimensional case is called a line scan.
+Since it is difficult to correctly estimate relative intensities of pixels by viewing the X-ray image alone (see discussion on this topic in Laboratory 17), line scans are a useful supplement to X-ray images. Unambiguous assessments of intensities in a region of an X-ray image can be made by superimposing the line scan on the image.
+Experiment 23.5: X-Ray Line Scans. For an X-ray image recorded at <20% dead time that shows a strong change in elemental concentration with distance, select a locus of points in the image that runs across this elemental distribution. EDS computer systems configured for digital beam control allow the selection of this locus by mouse-selection of endpoints, coordinate specification, etc. If possible, superimpose the X-ray intensity trace (X-ray line scan) along this locus onto the X-ray image. Carefully compare the information content of the two. Does the line scan give a considerably better idea of relative concentrations along the line than the intensity image?
+
+23.6 X-Ray Image Processing Since X-ray images are relatively noisy compared to electron images, X-ray images can often benefit from digital image processing methods such as image smoothing and image coloring. There are several pitfalls that should be recognized when interpreting processed images (see the discussion of this topic in Laboratory 17).
+ 
+Experiment 23.6: Imaging Smoothing. Apply a 3x3 image smoothing kernel available in your EDS computer to one of X-ray images that you have stored. Are there worm-like artifacts in the smoothed image? Use a smoothing kernel with more elements (e.g., 17x17 or 27x27) to reduce this artifact.
+ 
+Experiment 23.7: Primary Coloring. Code the smoothed elemental images from Experiment 23 2b or 23.3 with primary colors (refer to the EDS manufacturer’s instructions).
+For example, let red = silicon, green = potassium, and blue = iron. Add these images together in pairs and all three together. How does primary coloring aid in phase identification?
