@@ -226,10 +226,10 @@ class ScriptableSpectrum(epq.BaseSpectrum):
             rr = rr + [wrap(s)]
         return rr
 
-    def totalCounts(self, applyLLD=True):
-        """s.totalCounts(applyLLD=True)
+    def totalCounts(self, lld=True):
+        """s.totalCounts([lld=True])
     Returns the total number of counts in all channels of the spectrum s."""
-        return epq.SpectrumUtils.totalCounts(self.wrapped, applyLLD)
+        return epq.SpectrumUtils.totalCounts(self.wrapped, lld)
 
     def liveTime(self):
         """s.liveTime()
