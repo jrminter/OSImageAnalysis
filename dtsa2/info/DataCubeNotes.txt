@@ -1,0 +1,12 @@
+A data cube is stack of images (as NIH Image does) or an image of vectors (a spectral image - each pixel is a vector of data). Spectrum images are data cubes recorded spectrum by spectrum and loaded by Lispix into a vector cube.
+
+In Jeff Davis' class system in R, the DataCube class has a slot named `data' that is an array. Jeff reads in data using R's `readBin' command. This takes a parameter, `what', that may be "numeric", "double", "integer", "int", "logical", "complex", "character", "raw". Jeff chose "integer" as the default for his `data.what' function argument, but we should be able to choose either "numeric" (most general) or "double" to match output from DTSA-II python scripts. I could also convert the double spectral values to integer and write integer cubes. Need to consider this. I think integer would be better for NIST Lispix 
+
+  if (record.by.image==FALSE){
+    mydim <- c(NumImages, pixelsX, pixelsY)
+    dim(Data) <- mydim
+  }
+  if (record.by.image==TRUE){
+    mydim <- c(pixelsX, pixelsY, NumImages)
+    dim(Data) <- mydim
+  }
