@@ -3,10 +3,11 @@ For CM20UT detector
 Instrument: FEI CM20UT
 20 - 200 kV
 FEI CM20UT EDAX-RTEM
+
 Moxtek AP 3.3 model
-TOA 14.1
-AZI 270
-OWD 2.7
-STD 11.8
+TOA  14.1
+AZI  90.0
+OWD   2.7
+STD  11.8
 Area 30.0 
 4096 channels

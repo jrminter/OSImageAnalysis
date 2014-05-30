@@ -1,0 +1,31 @@
+Instrument: FEI Sirion 400NC
+5 - 30 kV
+
+Oxford p4 05eV 2K
+Oxford p4 05eV 4K
+Oxford p4 10eV 2K
+
+Oxford p6 05eV 2K
+Oxford p6 05eV 4K
+Oxford p6 10eV 2K
+
+Moxtek AP 3.3 model
+TOA 35.0
+AZI 45.0
+OWD  5.0
+STD 54.265
+Area 80.0 
+Al    8.0
+DL    0.085
+th    4.5
+ZSD   100
+
+
+Import spectra
+
+
+spot  zero offset  channel width
+ 3   -203.38±1.00  10.0062±0.0019
+ 4   -203.06±0.50  10.0055±0.0009
+ 5   -203.24±0.25  10.0050±0.0005
+

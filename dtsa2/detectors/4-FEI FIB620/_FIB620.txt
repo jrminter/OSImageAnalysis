@@ -2,10 +2,11 @@ For FIB 620 detector
 
 Instrument: FEI FIB 620
 5 - 30 kV
+
 FEI FIB620 EDAX-RTEM
 Moxtek AP 3.3 model
 TOA 35
-AZI 225
+AZI 45
 OWD 17.2
 STD 47.0
 Area 10.0 

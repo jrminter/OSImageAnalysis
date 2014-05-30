@@ -1,0 +1,13 @@
+NIST JXA-8500F
+
+Bruker 5 eV
+
+import from spectra
+
+Moxtek AP 3.3 model
+TOA  40.0
+AZI 180.0
+OWD  12.0
+STD  72.0
+Area 40.0 
+4096 channels
