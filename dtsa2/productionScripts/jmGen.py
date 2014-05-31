@@ -1200,3 +1200,45 @@ def matchDet(spc, det):
   rm.setProbeCurrent(pc)
   rm.setLiveTime(lt)
   return rm
+  
+def tabulateDetCalibrations(det, outPath):
+  """tabulateDetCalibrations(det, outPath)
+  Tabulate the calibrations for the specified detector to
+  the specified output file
+  Example:
+  import dtsa2.jmGen as jmg
+  det = findDetector("FEI CM20UT EDAX-RTEM")
+  out = jmg.tabulateDetCalibrations(spc, './fei-cm20ut-det-cal.csv')
+  """
+  print(det.getName())
+  dp = det.getDetectorProperties()
+  cals = dt2.Database.getCalibrations(dp)
+  iCnt = 0
+  lDa = []
+  lCw = []
+  lZo = []
+  lRe = []
+  print(len(cals))
+  for cal in cals:
+    ad = cal.getActiveDate()
+    lDa.append(ad.toString())
+    cw = cal.getChannelWidth()
+    lCw.append(cw)
+    zo = cal.getZeroOffset()
+    lZo.append(zo)
+    cp = cal.getProperties()
+    res = cp.getNumericProperty(cp.Resolution)
+    lRe.append(res)
+    lin = cp.getTextProperty(cp.ResolutionLine)
+    iCnt += 1
+  # write out results
+  f = open(outPath, 'w')
+  strLine = 'active.date, channel.width.eV, zero.offset.eV, resolution.eV\n'
+  f.write(strLine)
+  for i in range(iCnt):
+    strLine = "%s" % lDa[i] + ","
+    strLine = strLine + "%.5f" % lCw[i]   + ","
+    strLine = strLine + "%.5f" % lZo[i]  + ","
+    strLine = strLine + "%.2f" % lRe[i]  + "\n"
+    f.write(strLine)
+  f.close()

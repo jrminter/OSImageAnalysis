@@ -64,6 +64,8 @@ dtsa2/index.html
 # some msa files I generate on the fly and don't want to track...
 dtsa2/msa/Cu-15-Std.msa
 dtsa2/msa/Cu-15-Unk.msa
+# some stuff for test scripts
+dtsa2/other-macros/testScripts/*.csv
 
 .Rproj.user
 .Rhistory
