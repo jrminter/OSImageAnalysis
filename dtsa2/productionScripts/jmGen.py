@@ -6,13 +6,16 @@
 # ----------  --- -----  -------------------------------------------------
 # 2014-01-11  JRM 1.1.00  added measProbeCurrentFromCu
 # 2014-01-16  JRM 1.1.01  updated doc for avgSpectra, makeStdSpcSpectra,
-#                         getSpcAcqTime, getSpcAcqTimeDT and measRefProbeCur
+#                         getSpcAcqTime, getSpcAcqTimeDT and
+#                         measRefProbeCur
 # 2014-01-22  JRM 1.1.02  added makeAvgRefSpectra and measRefProbeCurMsa
 # 2014-02-06  JRM 1.1.03  added simAnaStdSpc
 # 2014-02-07  JRM 1.1.04  added simMcStdSpc
 # 2014-02-12  JRM 1.1.05  added compareBulkSpc
-# 2014-02-13  JRM 1.1.06  added readEdaxSpc. gets rid of some problems w opening
-# 2014-02-24  JRM 1.1.07  Updated compPhiRhoZ for more control over transitions
+# 2014-02-13  JRM 1.1.06  added readEdaxSpc. gets rid of some problems
+#                         w opening
+# 2014-02-24  JRM 1.1.07  Updated compPhiRhoZ for more control over
+#                         transitions
 #                         need to verify on a PAP example...
 # 2014-02-25  JRM 1.1.08  Updated compPhiRhoZ left as mg/cm2.
 #                         Test showed it matched
@@ -22,19 +25,22 @@
 # 2014-03-07  JRM 1.1.11  Updated getCurrentDetectorCalibration for more param
 # 2014-03-07  JRM 1.1.12  Added estimateProbeCurrentFromCu using an
 #                         analytical sim
-# 2014-03-10  JRM 1.1.13  Added makeStdMsaSpectra to make standards corrected
-#                         for prove current.
-# 2014-03-10  JRM 1.1.14  Updated makeStdSpcSpectra to make it work more like
-#                         makeStdMsaSpectra and added listCalibrations
+# 2014-03-10  JRM 1.1.13  Added makeStdMsaSpectra to make standards
+#                         corrected for probe current.
+# 2014-03-10  JRM 1.1.14  Updated makeStdSpcSpectra to make it work
+#                         more like makeStdMsaSpectra and added
+#                         listCalibrations
 # 2014-03-13  JRM 1.1.14  Moved some functions around. Need to do some
 #                         refactoring...
-# 2014-03-24  JRM 1.1.15  Fix to cropSpc to get the zero offset right when we
-#                         use a start value...
-# 2014-03-30  JRM 1.1.16  Worked on cropSpec again and two versions of clipSpc.
+# 2014-03-24  JRM 1.1.15  Fix to cropSpc to get the zero offset right
+#                         when we use a start value...
+# 2014-03-30  JRM 1.1.16  Worked on cropSpec again and two versions of
+#                         clipSpc.
 # 2014-04-01  JRM 1.1.17  Added function matchDet
 # 2014-04-02  JRM 1.1.18  Incorporated matchDet into relevant functions
-# 2014-04-02  JRM 1.1.19  Incorporated deleteDetector and dumpMaterials from
-#                         NIST for convenience.
+# 2014-04-02  JRM 1.1.19  Incorporated deleteDetector and dumpMaterials
+#                         from NIST for convenience.
+# 2014-05-31  JRM 1.1.20  Added tabulateDetCalibrations and elapsedTime
 
 import sys
 import os
@@ -1242,3 +1248,23 @@ def tabulateDetCalibrations(det, outPath):
     strLine = strLine + "%.2f" % lRe[i]  + "\n"
     f.write(strLine)
   f.close()
+  
+def elapsedTime(startTime):
+  """elapsedTime(startTime)
+  A convenience funtion to compute and print the elapsed time. Useful
+  for long scripts we want to run in sequence. startTime is the starting
+  time.
+  Example
+  import time
+  import dtsa2.jmGen as jmg
+  start = time.time()
+  # other commands...
+  jmg.elapsedTime(start)
+  """
+  end = time.time()
+  delta = (end-startTime)/60
+  msg = "Total computation time required %.3f min" % delta
+  print msg
+  if (delta > 60):
+    delta = delta / 60
+    msg = "...or %.2f hrs..." % delta
