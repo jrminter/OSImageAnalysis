@@ -1,0 +1,69 @@
+Notes on using ij to view DERBY database
+
+> connect 'jdbc:derby:C:\Documents and Settings\nritchie\My Documents\DTSA2 Reports\Database v2';
+
+connect 'jdbc:derby:/Users/jrminter/Documents/Database v2'
+
+show TABLES;
+show INDEXES from CALIBRATION;
+show INDEXES from DETECTOR;
+describe DETECTOR;
+
+DELETING DETECTOR ID=4
+
+> delete from spectrum where DETECTOR=4;
+> delete from calibration where DETECTOR=4;
+> delete from detector where ID=4;
+
+
+LISTING THE DETECTORS
+
+> select ID, CREATED, RETIRED, NAME, INSTRUMENT_KEY from DETECTOR;
+
+> select ID, DISPLAY_NAME from SPECTRUM where DETECTOR=4;
+
+
+DISCONNECT and QUIT
+> disconnect;
+> exit;
+
+APP                 |CALIBRATION                   |                    
+APP                 |DETECTOR                      |                    
+APP                 |ELECTRONPROBE                 |                    
+APP                 |ELEMENT_DATA                  |                    
+APP                 |PERSON                        |                    
+APP                 |PROJECT                       |                    
+APP                 |QC_DATUM                      |                    
+APP                 |QC_ENTRY                      |                    
+APP                 |QC_ITEM                       |                    
+APP                 |QC_PROJECT                    |                    
+APP                 |SPECTRUM                      |                    
+APP                 |STANDARD                      |     
+
+
+Installation notes
+Get Derby
+http://db.apache.org/derby/releases/release-10.10.2.0.cgi
+
+Installation and Tutorial
+http://db.apache.org/derby/papers/DerbyTut/install_software.html
+
+
+
+export CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
+Verify Derby
+Run the sysinfo command, as shown below, to output Derby system information:
+
+java org.apache.derby.tools.sysinfo
+
+
+Start up ij with this command:
+
+java org.apache.derby.tools.ij
+
+You should see the output shown below:
+
+
+See
+http://db.apache.org/derby/papers/DerbyTut/ij_intro.html
+for tutorial
