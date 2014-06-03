@@ -41,6 +41,7 @@
 # 2014-04-02  JRM 1.1.19  Incorporated deleteDetector and dumpMaterials
 #                         from NIST for convenience.
 # 2014-05-31  JRM 1.1.20  Added tabulateDetCalibrations and elapsedTime
+# 2014-06-03  JRM 1.1.21  Added intCuK and intCuL functions
 
 import sys
 import os
@@ -1268,3 +1269,33 @@ def elapsedTime(startTime):
   if (delta > 60):
     delta = delta / 60
     msg = "...or %.2f hrs..." % delta
+
+def intCuK(spc):
+  """intCuK(spc)
+  A convenience function to generate the background-subtracted peak
+  integral of CuK and return in counts/per sec. This is to help to
+  standardize beam measurement a la Oxford. Returns a list with the
+  mean cps and the standard deviation"""
+  spc = spc.applyLLT()
+  lt  = spc.liveTime()
+  # use the Ka and Kb peaks
+  int = spc.peakIntegral(7661, 9331)
+  piMuCps = int.doubleValue()/lt
+  piSdCps = int.uncertainty()/lt
+  ret = [piMuCps, piSdCps]
+  return ret
+  
+def intCuL(spc):
+  """intCuL(spc)
+  A convenience function to generate the background-subtracted peak
+  integral of CuL and return in counts/per sec. This is to help to
+  standardize beam measurement a la Oxford. Returns a list with the
+  mean cps and the standard deviation"""
+  spc = spc.applyLLT()
+  lt  = spc.liveTime()
+  # use the Ka and Kb peaks
+  int = spc.peakIntegral(633, 1147)
+  piMuCps = int.doubleValue()/lt
+  piSdCps = int.uncertainty()/lt
+  ret = [piMuCps, piSdCps]
+  return ret
