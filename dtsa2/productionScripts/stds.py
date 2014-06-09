@@ -23,8 +23,8 @@ defineStd(("Fe",),(1.000000,),"Fe standard",7.880000)
 defineStd(("Mn",),(1.000000,),"Mn standard",7.410000)
 # NaCl data from Wikipedia
 defineStd(("Na","Cl",),(0.393372,0.606628,),"NaCl",2.160000)
-# K496 data from Fournelle and SPI
-defineStd(("O","Mg","Al","P",),(0.387175,0.054458,0.072548,0.485816,),"K496",3.018000)
+# K496 data from Fournelle and SP260-112.pdf
+defineStd(("O","Mg","Al","P",),(0.5390,0.0665,0.0647,0.3298,),"K496",3.018000)
 defineStd(("O","Mg","Si","Ca","Fe",),(0.423667,0.088465,0.253817,0.110563,0.112087,),"K411",5.000000)
 defineStd(("O","Mg","Al","Si","Ca","Fe",),(0.427580,0.116567,0.049062,0.211982,0.108990,0.077420,),"K412")
 defineStd(("O","Al",),(0.470749,0.529251,),"Al2O3",3.950000)
