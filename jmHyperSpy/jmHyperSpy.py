@@ -1,0 +1,135 @@
+"""
+jmHyperSpy: Convenience functions for working with HyperSpy
+==============================================================
+
+The :mod:`~jmHyperSpy` module is imported for use by:
+
+  import jmHyperSpy as jmh
+  
+Ver    Date      Who  Comments
+===  ==========  ===  =================================================
+0.1  2014-06-10  JRM  Initial prototype
+"""
+# -*- coding: utf-8 -*-
+
+# get the key imports
+import os
+import hyperspy.hspy as hs
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from IPython import display, core
+from IPython.core.pylabtools import *
+
+def makeAvgSlice(ar, begin, end):
+  """makeAvgSlice(ar, begin, end)
+  Make an average slice image from a 3-d data cube array
+  Parameters
+  ----------
+  ar    : array  a 3-d numpy array from hyperspy
+  begin : int    beginning channel to average (zero based)
+  end   : int    ending channel
+
+  Returns
+  -------
+  Numpy array with averaged slice
+  """
+  x = ar.copy()
+  x = x.astype(float)  
+  h = x.shape[0]
+  w = x.shape[1]
+  d = x.shape[2]
+  if (end > d-1):
+    end = d-1
+  delta = float(end) - float(begin)
+  sl = x[0:h-1,0:w-1,begin:end]
+  bl = sl.sum(axis=2)/delta
+  return(bl)
+
+def cropSlice(sl, t, b, l, r):
+  """cropSlice(sl, t, b, l, r)
+  Crop the input slice to remove blank info
+  
+  Parameters
+  ----------
+  sl  : array  a 3-d numpy array from hyperspy
+  t   : int    number of channels to crop from top
+  b   : int    number of channels to crop from bottom
+  l   : int    number of channels to crop from left
+  l   : int    number of channels to crop from right
+
+  Returns
+  -------
+  Numpy array with averaged slice
+  """
+  h = sl.shape[0]
+  w = sl.shape[1]
+  print(h)
+  print(w)
+  cr = sl[t:h-b-1,l:r-1]
+  print(t)
+  print(b)
+  return(cr)
+  
+def makeBksAvgSlice(ar, elRange, bkgRange1, bkgRange2=None):
+  """makeBksAvgSlice(ar, elRange, bkgRange1, bkgRange2=None)
+  Make a background-subtracted averaged slice from a 3-d data-cube
+  for specified element and background ranges.
+  
+  Parameters
+  ----------
+  ar        : array  a 3-d numpy array from hyperspy
+  elRange   : int list [start, end] channel for element
+  bkgRange1 : int list [start, end] channel for bkg region 1
+  bkgRange2 : int list [start, end] channel for bkg region 2
+              Defaults to 'none'
+  Returns
+  -------
+  Numpy array with averaged slice for the element
+  """
+  el = makeAvgSlice(ar, elRange[0], elRange[1])
+  delta = float(elRange[1]) - float(elRange[0])
+  if (bkgRange2==None):
+    bkg =  makeAvgSlice(ar, bkgRange1[0], bkgRange1[1])
+    bks = el - bkg
+    bks = delta * bks
+    bks = bks.clip(0)
+    return(bks)
+  else:
+    bkg1 = makeAvgSlice(ar, bkgRange1[0], bkgRange1[1])
+    bkg2 = makeAvgSlice(ar, bkgRange2[0], bkgRange2[1])
+    bkg = 0.5*(bkg1+bkg2)
+    bks = el - bkg
+    bks = delta * bks
+    bks = bks.clip(0)
+    return(bks)
+    
+def plotSlice(sl, title, umPerPx, xinch = 9.0):
+  """ plotSlice(sl, title, umPerPx)
+  Make a matplotlib plot of a slice with a title and a
+  gray color bar. The full width of the image is appended
+  to the title.
+  
+  Parameters
+  ----------
+  sl        : array  a 2-d numpy array to plot
+  title     : string A base title for the plot
+  umPerPx   : float  The scale in microns/px for the data
+  xinch     : float The width of the figure (in)
+              Defaults to 9.0
+  Returns
+  -------
+  Numpy array with averaged slice for the element
+  """
+  h, w = sl.shape
+  aspR = float(h)/float(w)
+  scale = umPerPx * float(w)
+  yinch = aspR * xinch
+  # plot and save in the same size as the original
+  plt.figure(figsize=(xinch,yinch))
+  caption = "%s (w = %.1f $\mu$ m)" % (title, scale)
+  plt.imshow(sl)
+  plt.title(caption)
+  plt.axis('off')
+  plt.colorbar()
+  plt.show()
