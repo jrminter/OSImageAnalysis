@@ -14,6 +14,8 @@ Ver    Date      Who  Comments
 
 # get the key imports
 import os
+import os.path
+from StringIO import StringIO
 import hyperspy.hspy as hs
 import numpy as np
 import matplotlib.pyplot as plt
@@ -66,7 +68,7 @@ def cropSlice(sl, t, b, l, r):
   w = sl.shape[1]
   print(h)
   print(w)
-  cr = sl[t:h-b-1,l:r-1]
+  cr = sl[t:h-b-1,l:w-r-1]
   print(t)
   print(b)
   return(cr)
@@ -133,3 +135,42 @@ def plotSlice(sl, title, umPerPx, xinch = 9.0):
   plt.axis('off')
   plt.colorbar()
   plt.show()
+
+def fixIncaRpl(path):
+  """correct_INCA_format(path)
+  Updates the Inca .rpl file to the new Lispix format
+    Parameters
+  ----------
+  path: a string with the path to the file
+  """
+  fp = open(path, "r+")
+  fp_list = list()
+  fp.seek(0)
+  if '(' in fp.readline():
+    for line in fp:
+      line = line.replace(
+        "(MLX::",
+        "").replace(
+        " : ",
+        "\t").replace(
+        " :",
+        "\t").replace(
+        " ",
+        "\t").lower().strip().replace(
+        ")",
+        "\n")
+      if "record-by" in line:
+        if "image" in line:
+          line = "record-by\timage"
+        if "vector" in line:
+          line = "record-by\tvector"
+        if "dont-care" in line:
+          line = "record-by\tdont-care"
+      fp_list.append(line)
+    fp.close()
+    fp = open(path, "w")
+    fp.write("key\tvalue\n");
+    fp.writelines(fp_list)
+  fp.seek(0)
+  fp.close()
+  return
