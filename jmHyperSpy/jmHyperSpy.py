@@ -23,6 +23,59 @@ import matplotlib as mpl
 from IPython import display, core
 from IPython.core.pylabtools import *
 
+def makeEdsMaxPixSpc(si, edsEvCh, edsZeOf, npChan=0):
+  """makeEDSMaxPixSpc(si, edsEvCh, edsZeOf, npChan=0)
+  Make a maximum pixel spectrum from an EDS spectrum image
+  
+  Parameters
+  ----------
+  si      : spectrum image  A hyperspy spectrum image
+  edsEvCh : float           The eV per channel for the detector.
+                            will be converted to keV internally.
+  edsZeOf : float           The zero offset for the detector in eV
+                            Will be converted to keV internally.
+  npChan  : int             Number of channels to set to zero for
+                            the noise peak. Defaults to zero. 
+  Returns
+  -------
+  A hyperspy EDS spectrum
+  
+  Note: one can get the parameters for a DTSA-II detector easily from 
+  the command line.
+  
+  1> listDetectors()
+  ...
+  d2  Oxford p4 05eV 2K
+  ...
+  2>  d2.getChannelWidth()
+  4.9943077562795395
+  3>  d2.getZeroOffset()
+  -94.48424156889702
+  """
+  spc = si.to_spectrum()
+  dat = spc.data
+  dat = dat.astype(float)
+  print dat.shape
+  sl1 = dat.sum(axis=0)
+  print sl1.shape # (256, 1024)
+  sl2 = sl1.sum(axis=0)
+  print sl2.shape # (1024,)
+  for i in range(npChan):
+    sl2[i] = 0.1
+  s = hs.signals.Spectrum(sl2)
+  # Define the axis properties
+  s.axes_manager.signal_axes[0].name = 'Energy'
+  s.axes_manager.signal_axes[0].units = 'keV'
+  s.axes_manager.signal_axes[0].scale = edsEvCh/1000.
+  s.axes_manager.signal_axes[0].offset = edsZeOf/1000.
+  s.metadata.General.title = 'Max Pixel Spectrum'
+  s.metadata.Signal.signal_origin = si.metadata.Signal.signal_origin
+  s.metadata.Signal.signal_type = si.metadata.Signal.signal_type
+  return(s)
+  
+
+  
+
 def makeAvgSlice(ar, begin, end):
   """makeAvgSlice(ar, begin, end)
   Make an average slice image from a 3-d data cube array
