@@ -9,6 +9,8 @@ The :mod:`~jmHyperSpy` module is imported for use by:
 Ver    Date      Who  Comments
 ===  ==========  ===  =================================================
 0.1  2014-06-10  JRM  Initial prototype
+0.2  2014-06-11  JRM  Added functions plotEdsSpc, makeEdsMaxPxSpc, and 
+                      makeEdsSumSpc.
 """
 # -*- coding: utf-8 -*-
 
@@ -23,9 +25,95 @@ import matplotlib as mpl
 from IPython import display, core
 from IPython.core.pylabtools import *
 
-def makeEdsMaxPixSpc(si, edsEvCh, edsZeOf, npChan=0):
-  """makeEDSMaxPixSpc(si, edsEvCh, edsZeOf, npChan=0)
+def plotEdsSpc(ss, logY=True, crL=22, crR=2):
+  """plotEdsSpc(ss, logY=True, crL=22, crR=2)
+  Plot a sum spectrum or  max pixel from an EDS spectrum image
+  
+  Parameters
+  ----------
+  ss    : spectrum   A hyperspy EDS sum spectrum returned from makeEdsSumSpc
+                     or a max pixel spectrum from makeEdsMaxPxSpc
+  logY  : boolean    Plot y axis as log. Default is True.
+  crL   : int        Crop channels from the left. Default is 22.
+  crR   : int        Crop channels from the right. Default is 2.
+  
+  Returns
+  -------
+  A matplotlib plot
+  """
+  gain = ss.axes_manager[0].scale
+  off = ss.axes_manager[0].offset
+  y = ss.data
+  l = y.shape[0]
+  x = gain*(np.arange(l).astype(float))+off
+  x = x[crL:l-1-crR]
+  y = y[crL:l-1-crR]
+  plt.plot(x,y)
+  plt.xscale('linear', nonposx='mask')
+  if logY:
+    plt.yscale('log', nonposy='mask')
+  else:
+    plt.yscale('linear', nonposy='mask')
+  plt.xlabel('keV')
+  plt.ylabel('counts')
+  plt.title(ss.metadata.General.title)
+  
+def makeEdsMaxPxSpc(si, edsEvCh, edsZeOf, npChan=0):
+  """makeEdsMaxPxSpc(si, edsEvCh, edsZeOf, npChan=0)
   Make a maximum pixel spectrum from an EDS spectrum image
+  
+  Parameters
+  ----------
+  si      : spectrum image  A hyperspy spectrum image
+  edsEvCh : float           The eV per channel for the detector.
+                            will be converted to keV internally.
+  edsZeOf : float           The zero offset for the detector in eV
+                            Will be converted to keV internally.
+  npChan  : int             Number of channels to set to zero for
+                            the noise peak. Defaults to zero. 
+  Returns
+  -------
+  A hyperspy EDS spectrum
+  
+  Note: one can get the parameters for a DTSA-II detector easily from 
+  the command line.
+  
+  1> listDetectors()
+  ...
+  d2  Oxford p4 05eV 2K
+  ...
+  2>  d2.getChannelWidth()
+  4.9943077562795395
+  3>  d2.getZeroOffset()
+  -94.48424156889702
+  """
+  spc = si.to_spectrum()
+  dat = spc.data
+  dat = dat.astype(float)
+  print dat.shape
+  y = np.arange(dat.shape[2]).astype(float)
+  for k in range(dat.shape[2]):
+    a = dat[:, :, k]
+    maxV = float(np.amax(a))
+    y[k] = maxV
+  lV = min(y)
+  for i in range(npChan):
+    y[i] = lV
+  s = hs.signals.Spectrum(y)
+  # Define the axis properties
+  s.axes_manager.signal_axes[0].name = 'Energy'
+  s.axes_manager.signal_axes[0].units = 'keV'
+  s.axes_manager.signal_axes[0].scale = edsEvCh/1000.
+  s.axes_manager.signal_axes[0].offset = edsZeOf/1000.
+  caption = "%s Max Pix Spectrum" % si.metadata.General.title
+  s.metadata.General.title = caption
+  s.metadata.Signal.signal_origin = si.metadata.Signal.signal_origin
+  s.metadata.Signal.signal_type = si.metadata.Signal.signal_type
+  return(s)
+
+def makeEdsSumSpc(si, edsEvCh, edsZeOf, npChan=0):
+  """makeEdsSumSpc(si, edsEvCh, edsZeOf, npChan=0)
+  Make a sum spectrum from an EDS spectrum image
   
   Parameters
   ----------
@@ -60,15 +148,17 @@ def makeEdsMaxPixSpc(si, edsEvCh, edsZeOf, npChan=0):
   print sl1.shape # (256, 1024)
   sl2 = sl1.sum(axis=0)
   print sl2.shape # (1024,)
+  lV = min(sl2)
   for i in range(npChan):
-    sl2[i] = 0.1
+    sl2[i] = lV
   s = hs.signals.Spectrum(sl2)
   # Define the axis properties
   s.axes_manager.signal_axes[0].name = 'Energy'
   s.axes_manager.signal_axes[0].units = 'keV'
   s.axes_manager.signal_axes[0].scale = edsEvCh/1000.
   s.axes_manager.signal_axes[0].offset = edsZeOf/1000.
-  s.metadata.General.title = 'Max Pixel Spectrum'
+  caption = "%s Sum Spectrum" % si.metadata.General.title
+  s.metadata.General.title = caption
   s.metadata.Signal.signal_origin = si.metadata.Signal.signal_origin
   s.metadata.Signal.signal_type = si.metadata.Signal.signal_type
   return(s)
