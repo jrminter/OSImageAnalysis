@@ -6,11 +6,14 @@ The :mod:`~jmHyperSpy` module is imported for use by:
 
   import jmHyperSpy as jmh
   
-Ver    Date      Who  Comments
-===  ==========  ===  =================================================
-0.1  2014-06-10  JRM  Initial prototype
-0.2  2014-06-11  JRM  Added functions plotEdsSpc, makeEdsMaxPxSpc, and 
-                      makeEdsSumSpc.
+ Ver     Date      Who  Comments
+=====  ==========  ===  =================================================
+0.1.0  2014-06-10  JRM  Initial prototype
+0.2.0  2014-06-11  JRM  Added functions plotEdsSpc, makeEdsMaxPxSpc, and 
+                        makeEdsSumSpc.
+0.2.1  2014-06-11  JRM  Changed makeEdsMaxPxSpc and makeEdsSumSpc to
+                        return hs.signals.EDSSEMSpectrum. Added tweaks to
+                        plotEdsSpc.
 """
 # -*- coding: utf-8 -*-
 
@@ -73,7 +76,7 @@ def makeEdsMaxPxSpc(si, edsEvCh, edsZeOf, npChan=0):
                             the noise peak. Defaults to zero. 
   Returns
   -------
-  A hyperspy EDS spectrum
+  A hyperspy EDS SEM spectrum
   
   Note: one can get the parameters for a DTSA-II detector easily from 
   the command line.
@@ -99,7 +102,7 @@ def makeEdsMaxPxSpc(si, edsEvCh, edsZeOf, npChan=0):
   lV = min(y)
   for i in range(npChan):
     y[i] = lV
-  s = hs.signals.Spectrum(y)
+  s = hs.signals.EDSSEMSpectrum(y)
   # Define the axis properties
   s.axes_manager.signal_axes[0].name = 'Energy'
   s.axes_manager.signal_axes[0].units = 'keV'
@@ -126,7 +129,7 @@ def makeEdsSumSpc(si, edsEvCh, edsZeOf, npChan=0):
                             the noise peak. Defaults to zero. 
   Returns
   -------
-  A hyperspy EDS spectrum
+  A hyperspy EDS SEM spectrum
   
   Note: one can get the parameters for a DTSA-II detector easily from 
   the command line.
@@ -151,7 +154,7 @@ def makeEdsSumSpc(si, edsEvCh, edsZeOf, npChan=0):
   lV = min(sl2)
   for i in range(npChan):
     sl2[i] = lV
-  s = hs.signals.Spectrum(sl2)
+  s = hs.signals.EDSSEMSpectrum(sl2)
   # Define the axis properties
   s.axes_manager.signal_axes[0].name = 'Energy'
   s.axes_manager.signal_axes[0].units = 'keV'
