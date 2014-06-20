@@ -5,7 +5,7 @@
 
  Script Function:
  Export 25 spectra Spectrum from INCA
- 
+
  To do: figure out how to change directories
 
 #ce ----------------------------------------------------------------------------
@@ -17,6 +17,7 @@
 ; Activate window
 WinActivate("INCA")
 WinWaitActive("INCA")
+$nToExp = 38 ; max 38 spectra
 
 ; $x0 = 214 ; spec 2
 ; $y0 = 297
@@ -42,7 +43,7 @@ $y0 = $s0[1]
 
 
 
-For $i = 0 To 24 Step 1
+For $i = 0 To ($nToExp - 1) Step 1
    ;MsgBox($MB_SYSTEMMODAL, "Inca Pos x, y:", $a[0] & ", " & $a[1]) ;
    MouseClick("right", $x0, $y0+$i*$ysp)
    Sleep(50)
