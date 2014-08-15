@@ -24,7 +24,8 @@ relImg  = "/test/suite/"
 # fName = 'fib620.tif'
 # fName = 'anaFiveDM.tif'
 # fName = 'sirionSisBSE.tif'
-fName = 'sirionXHD.tif'
+# fName = 'sirionXHD.tif'
+fName = 'clumpedAgX.dm3'
 filePath = imgDir + relImg + fName
 
 r = ImageProcessorReader(ChannelSeparator(LociPrefs.makeImageReader()))
