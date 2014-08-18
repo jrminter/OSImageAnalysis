@@ -14,6 +14,7 @@ import os
 import tifffile
 import matplotlib.pyplot as plt
 import skimage.io as io
+import string
 
 home=os.environ['HOME']
 imgRoot=os.environ['IMG_ROOT']
@@ -30,6 +31,12 @@ im = tif[0].asarray()
 io.imshow(im, cmap=plt.cm.gray)
 plt.show()
 
+det = 0
+mag = 0.0
+ht = 0.0
+fwd = 0.0
+cap = ""
+
 for page in tif:
   for tag in page.tags.values():
     t = tag.name, tag.value
@@ -38,5 +45,17 @@ for page in tif:
       myStr = tag.value.decode()
       ary = myStr.split('\r\n')
       for i in range(len(ary)):
-        print(ary[i])
+        tst = ary[i].split(" = ")
+        if( tst[0] == "lDetName"):
+          det = int(tst[1])
+        if( tst[0] == "Magnification"):
+          mag = float(tst[1])
+        if( tst[0] == "HighTension"):
+          ht = float(tst[1])/1000.
+        if( tst[0] == "FWD"):
+          fwd = float(tst[1])
+        if( tst[0] == "szUserText"):
+          cap = str(tst[1])
+        # print(ary[i])
+print(det, mag, ht, fwd, cap)
       
