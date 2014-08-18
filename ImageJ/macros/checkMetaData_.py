@@ -25,6 +25,7 @@ import os
 imgDir = os.environ['IMG_ROOT']
 relImg  = "/test/suite/"
 
+# n.b. 17.56 and 17.57 - this gets it wrong both 24.3889
 fName = 'fib620.tif'
 # fName = 'anaFiveDM.tif'
 # fName = 'sirionSisBSE.tif'
@@ -58,6 +59,9 @@ pSizeX = meta.getPixelsPhysicalSizeX(0)
 pSizeY = meta.getPixelsPhysicalSizeY(0)
 imageReader.close()
 print(pSizeX, pSizeY)
+print(meta.getPixelsSizeX(0))
+print(meta.getPixelsSizeY(0))
+
 
 
 
