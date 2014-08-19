@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-testReadTifMetadata.py
+testReadTifMetadataFIB.py
 
 Read the metadata from an FEI FIB 620 TIF image using the Christoph Gohlke
 tifffile code. A work in progress.
