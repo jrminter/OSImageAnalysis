@@ -42,6 +42,7 @@
 #                         from NIST for convenience.
 # 2014-05-31  JRM 1.1.20  Added tabulateDetCalibrations and elapsedTime
 # 2014-06-03  JRM 1.1.21  Added intCuK and intCuL functions
+# 2014-08-27  JRM 1.1.22  Updated avgSpectra
 
 import sys
 import os
@@ -578,6 +579,7 @@ def measProbeCurrentFromCu(thisCu, stdCu, det, e0, digits=4):
   # return a dictionary
   ret = {"pcMu": pcMu, "pcSE": pcSE, "optTS": optTS, "ffMet": ffMet }
   return ret
+
   
 def avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False):
   """avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False)
@@ -602,21 +604,24 @@ def avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False):
   # use the live time and acquisition time of the first spectrum for the average
   liveTime = props.getNumericProperty(epq.SpectrumProperties.LiveTime)
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
-  updateCommonSpecProps(sum, det, name="", probeCur=pc, e0=e0, wrkDist=wrkDist)
-  sum = matchDet(sum, det)
+
   for i in range(1, nSpec):
     sPath = dir+names[i]
     tmp = dt2.wrap(ept.SpectrumFile.open(sPath)[0])
-    updateCommonSpecProps(tmp, det, name="",  probeCur=pc, e0=e0, wrkDist=wrkDist)
-    tmp = matchDet(tmp, det)
     sum += tmp
   avg=factor*sum
-  updateCommonSpecProps(avg, det, name=resName, liveTime=liveTime, probeCur=pc, e0=e0, wrkDist=wrkDist)
+  
   props = avg.getProperties()
+  props.setDetector(det)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
+  props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+  props.setNumericProperty(epq.SpectrumProperties.WorkingDistance, wrkDist)
+  props.setTextProperty(epq.SpectrumProperties.SpecimenDesc, "Averaged " + resName)
+  props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, resName)
   props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
   return avg
 
-      
 def getSpcAcqTime(spc):
   """getSpcAcqTime(spc)
   Return a string representation of the the local acquisition date and time for the input spectrum.
