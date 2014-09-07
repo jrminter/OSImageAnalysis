@@ -43,6 +43,7 @@
 # 2014-05-31  JRM 1.1.20  Added tabulateDetCalibrations and elapsedTime
 # 2014-06-03  JRM 1.1.21  Added intCuK and intCuL functions
 # 2014-08-27  JRM 1.1.22  Updated avgSpectra
+# 2014-09-06  JRM 1.1.23  Added reportComps and reportAtmPct
 
 import sys
 import os
@@ -71,6 +72,53 @@ import dtsa2.mcSimulate3 as mc3
 """A series of wrapper scripts to make DTSA-II automation easy
 Place this file in DTSA_ROOT/lib/dtsa2/  call with
 import dtsa2.jmGen as jmg"""
+
+
+def reportComps(comps,path):
+  """reportComps(comps,path)
+  Outputs a collection of compositions (as weight fraction) to a .csv file.
+  Example:
+  import dtsa2.jmGen as jmg
+  jmg.reportComps(comps,"C:/Temp/fooWf.csv")
+  """
+  f = open(path, 'w')
+  all = set()
+  for comp in comps:
+    all = all | set(comp.getElementSet())
+  tmp = "Material"
+  for elm in all:
+    tmp = "%s,%s" % (tmp, elm.toAbbrev())
+  f.write(tmp+"\n")
+  for comp in comps:
+    tmp = str(comp)
+    for elm in all:
+      tmp = "%s,%6.5f" % (tmp, comp.weightFraction(elm, False))
+    f.write(tmp+"\n")
+  # close the file
+  f.close()
+  
+def reportAtmPct(comps,path):
+  """reportAtmPct(comps,path)
+  Outputs a collection of compositions (as atm pct) to a .csv file.
+  Example:
+  import dtsa2.jmGen as jmg
+  jmg.reportAtmPct(comps,"C:/Temp/fooWf.csv")
+  """
+  f = open(path, 'w')
+  all = set()
+  for comp in comps:
+    all = all | set(comp.getElementSet())
+  tmp = "Material"
+  for elm in all:
+    tmp = "%s,%s" % (tmp, elm.toAbbrev())
+  f.write(tmp+"\n")
+  for comp in comps:
+    tmp = str(comp)
+    for elm in all:
+      tmp = "%s,%6.5f" % (tmp, comp.atomicPercent(elm))
+    f.write(tmp+"\n")
+  # close the file
+  f.close()
 
 def isNaN(num):
   """isNaN(num)
