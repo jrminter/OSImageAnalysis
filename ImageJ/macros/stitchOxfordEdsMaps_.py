@@ -1,10 +1,12 @@
-# stitchOxfordEdsMaps.py
+# stitchOxfordEdsMaps_.py
 #
 # Stitch Oxford EDS maps and burn scale bars
 #  Modifications
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
 # 2014-09-11  JRM 0.1.00  initial prototype development.
+# 2014-09-15  JRM 0.1.10  added cropping and saving output
+
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
@@ -17,16 +19,33 @@ from ij import WindowManager
 
 edsDir  = os.environ['EDS_ROOT']
 rptDir  = os.environ['RPT_ROOT']
-relImg  = "/testMap/png/ij"
+# for uncropped images
+# relImg  = "/testMap/png/ij"
+# for cropped images
+relImg  = "/testMap/tile"
+relOut  = "/testMap/out"
+outNam = "445005-248-Pd8-1-FIB-7kV-m01-3x2.png"
 
 imgDir = edsDir + relImg
 
 print(imgDir)
 
-x      = 2
-y      = 3
+# 2X3
+# x      = 2
+# y      = 3
+# 3X2
+x      = 3
+y      = 2
 scale  = 2.822
-units   = "nm"
+units  = "nm"
+pts    = 32
+barCol = "Black"
+
+def ensureDir(d):
+  """ensureDir(d)
+  Check if the directory, d, exists, and if not create it."""
+  if not os.path.exists(d):
+    os.makedirs(d)
 
 def stitchMaps(tifDir, cols, rows, scaFac, scaUni, barWid, barHt, barFnt, barCol, barLoc ):
   """stitchMaps(tifDir, cols, rows)
@@ -63,4 +82,12 @@ def stitchMaps(tifDir, cols, rows, scaFac, scaUni, barWid, barHt, barFnt, barCol
   s4 = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barWid, barHt, barFnt, barCol, barLoc)
   IJ.run("Add Scale Bar", s4) 
 
-stitchMaps(imgDir, x, y, scale, units, 100, 9, 48, "White", "Lower Right")
+stitchMaps(imgDir, x, y, scale, units, 100, 9, pts, barCol, "Lower Right")
+
+# Get the final map 
+imp = WindowManager.getCurrentImage()
+outDir = edsDir + relOut
+ensureDir(outDir)
+outPth = outDir + "/" + outNam
+print(outPth)
+IJ.saveAs(imp, "PNG", outPth)
