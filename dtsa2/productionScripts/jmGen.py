@@ -44,6 +44,7 @@
 # 2014-06-03  JRM 1.1.21  Added intCuK and intCuL functions
 # 2014-08-27  JRM 1.1.22  Updated avgSpectra
 # 2014-09-06  JRM 1.1.23  Added reportComps and reportAtmPct
+# 2014-09-23  JRM 1.1.24  Added getSirionSiCpsPerNa
 
 import sys
 import os
@@ -73,6 +74,27 @@ import dtsa2.mcSimulate3 as mc3
 Place this file in DTSA_ROOT/lib/dtsa2/  call with
 import dtsa2.jmGen as jmg"""
 
+def getSirionSiCpsPerNa(e0):
+  """getSirionSiCpsPerNa(e0)
+  Output the cps per nA for the Sirion Oxford EDS detector for a given e0.
+  These values were determined for PT 6, 5 eV/ch, 2K channels
+  Example:
+  import dtsa2.jmGen as jmg
+  a = jmg.getSirionSiCpsPerNa(7.0)"""
+  val = 0.0
+  if(e0 == 5.0):
+    val = 1832.4
+  if(e0 == 7.0):
+    val = 3884.2
+  if(e0 == 10.0):
+    val = 7573.1
+  if(e0 == 15.0):
+    val = 13921.0
+  if(e0 == 20.0):
+    val = 20059.1
+  if(e0 == 30.0):
+    val = 29362.6
+  return val
 
 def reportComps(comps,path):
   """reportComps(comps,path)
