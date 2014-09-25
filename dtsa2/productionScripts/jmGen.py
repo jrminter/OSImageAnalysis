@@ -45,6 +45,7 @@
 # 2014-08-27  JRM 1.1.22  Updated avgSpectra
 # 2014-09-06  JRM 1.1.23  Added reportComps and reportAtmPct
 # 2014-09-23  JRM 1.1.24  Added getSirionSiCpsPerNa
+# 2014-09-24  JRM 1.1.25  Added getSirionCuCpsPerNa
 
 import sys
 import os
@@ -78,6 +79,7 @@ def getSirionSiCpsPerNa(e0):
   """getSirionSiCpsPerNa(e0)
   Output the cps per nA for the Sirion Oxford EDS detector for a given e0.
   These values were determined for PT 6, 5 eV/ch, 2K channels
+  in 2014-09-12-Cu-Si.
   Example:
   import dtsa2.jmGen as jmg
   a = jmg.getSirionSiCpsPerNa(7.0)"""
@@ -95,9 +97,31 @@ def getSirionSiCpsPerNa(e0):
   if(e0 == 30.0):
     val = 29362.6
   return val
+  
+def getSirionCuCpsPerNa(e0):
+  """getSirionCuCpsPerNa(e0)
+  Output the cps per nA for the Sirion Oxford EDS detector for a given e0.
+  These values were determined for PT 6, 5 eV/ch, 2K channels in 2014-09-12-QC
+  Example:
+  import dtsa2.jmGen as jmg
+  a = jmg.getSirionCuCpsPerNa(7.0)"""
+  val = 0.0
+  if(e0 == 5.0):
+    val = 2525.7
+  if(e0 == 7.0):
+    val = 3890.7
+  if(e0 == 10.0):
+    val = 5391.1
+  if(e0 == 15.0):
+    val = 6786.4
+  if(e0 == 20.0):
+    val = 7145.9
+  if(e0 == 30.0):
+    val = 6702.2
+  return val
 
-def reportComps(comps,path):
-  """reportComps(comps,path)
+def reportComps(comps,path,fString="%s,%6.5f"):
+  """reportComps(comps,path,,fString="%s,%6.5f")
   Outputs a collection of compositions (as weight fraction) to a .csv file.
   Example:
   import dtsa2.jmGen as jmg
@@ -114,7 +138,7 @@ def reportComps(comps,path):
   for comp in comps:
     tmp = str(comp)
     for elm in all:
-      tmp = "%s,%6.5f" % (tmp, comp.weightFraction(elm, False))
+      tmp = fString % (tmp, comp.weightFraction(elm, False))
     f.write(tmp+"\n")
   # close the file
   f.close()
