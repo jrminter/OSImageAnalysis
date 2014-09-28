@@ -26,10 +26,15 @@ imgName = "6-line.png"
 
 inImg = inDir + "/" + imgName
 
-x  = 300
-y  = 50
+# x  = 300
+# y  = 50
+# wd = 400
+# ht = 500
+
+x  = 350
+y  = 70
 wd = 400
-ht = 500
+ht = 400
 
 cropPar = [x,y,wd,ht]
 
