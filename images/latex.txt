@@ -1,0 +1,5 @@
+latex.tif
+120 kV cryotem image of a soft latex in vitreous ice
+recorded on the CM20T at an indicated mag of 8800X
+1994-03-12 1:34 pm
+2.02 nm/px

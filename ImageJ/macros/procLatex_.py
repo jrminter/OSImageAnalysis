@@ -5,7 +5,7 @@
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
 # 2014-09-28  JRM 0.1.00  Translated from .ijm file and updated
-#                         TO DO: Get the px calib factor
+#
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -24,6 +24,7 @@ from ij.plugin.frame import RoiManager
 from ij.plugin.filter import ParticleAnalyzer
 
 from java.lang import Double
+import java.io as jio
 
 import jmFijiGen as jmg
 
@@ -32,7 +33,11 @@ relImg = "/OSImageAnalysis/images"
 bDoWatershed = False
 imgPath = gitDir + relImg + "/latex.tif"
 print(imgPath)
+rptPath = gitDir + relImg + "/latex-size.csv"
+print(rptPath)
+
 raw = IJ.openImage(imgPath)
+nmPerPx = 2.02
 # delta = 250
 delta = 0
 ball  = 25
@@ -67,7 +72,10 @@ IJ.run("Analyze Particles...", s)
 rt = ResultsTable.getResultsTable()
 nMeas = rt.getCounter()
 print(nMeas)
-aPx = rt.getColumn(0)
+aPx  = rt.getColumn(ResultsTable.AREA)
+cPx  = rt.getColumn(ResultsTable.CIRCULARITY)
+arPx = rt.getColumn(ResultsTable.ASPECT_RATIO)
+sPx  = rt.getColumn(ResultsTable.SOLIDITY)
 
 ecdPx = []
 for i in range(len(aPx)):
@@ -84,9 +92,18 @@ def computeStdDev(ar, mean):
   return sqrt(s / float(len(ar) -1))
 
 
-meanPxECD = round(computeMean(ecdPx), 2)
-sdPxECD = round(computeStdDev(ecdPx, meanPxECD), 2)
+meanPxECD = nmPerPx * round(computeMean(ecdPx), 2)
+sdPxECD = nmPerPx * round(computeStdDev(ecdPx, meanPxECD), 2)
 print(meanPxECD, sdPxECD)
 
+# prepare the output file
+f=open(rptPath, 'w')
+strLine = 'ecd.nm, circ, a.r, solidity\n'
+f.write(strLine)
+for i in range(len(ecdPx)):
+  strLine = "%.2f, %.4f, %.4f, %.4f\n" % (nmPerPx*ecdPx[i], cPx[i], arPx[i], sPx[i] )
+  f.write(strLine)
+
+f.close()
 
 
