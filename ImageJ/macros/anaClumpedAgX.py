@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # anaClumpedAgX.py
 #  Modifications
 #   Date      Who  Ver                       What
@@ -6,15 +5,16 @@
 # 2014-07-26  JRM 0.1.00  initial prototype development. Note that Fiji 
 #                         can read .dm3 files directly. N.B. This version
 #                         adds the environment variable 'RPT_ROOT'
+# 2014-09-30  JRM 0.1.10  Moved some code to jmFijiGen and edit for ImageJ2
+from org.python.core import codecs
+codecs.setDefaultEncoding('utf-8')
 import os
 import glob
 import time
+from ij import IJ
+from ij import ImagePlus
+import jmFijiGen as jmg
 
-def ensureDir(d):
-  """ensureDir(d)
-  Check if the directory, d, exists, and if not create it."""
-  if not os.path.exists(d):
-    os.makedirs(d)
 
 imgDir  = os.environ['IMG_ROOT']
 rptDir  = os.environ['RPT_ROOT']
@@ -31,7 +31,7 @@ strAna   = "size=%g-%g circularity=%.3f-1.00 show=[Overlay Outlines] display exc
 
 sImgPath = imgDir + relImg + "/" + sampID + "/"
 sRptPath = rptDir + "/" + sampID + "/"
-ensureDir(sRptPath)
+jmg.ensureDir(sRptPath)
 
 query = sImgPath + "*.dm3"
 lFiles = glob.glob(query)
