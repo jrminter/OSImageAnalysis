@@ -31,10 +31,12 @@ import jmFijiGen as jmg
 gitDir = os.environ['GIT_HOME']
 relImg = "/OSImageAnalysis/images"
 bDoWatershed = False
-imgPath = gitDir + relImg + "/blobs.gif"
+# imgPath = gitDir + relImg + "/blobs.gif"
+imgPath = gitDir + relImg + "/model-agglomerates.tif"
 print(imgPath)
 rptPath = gitDir + relImg + "/"
-rptName = "blobs-size.csv"
+# rptName = "blobs-size.csv"
+rptName = "model-agglomerate-size.csv"
 print(rptPath)
 
 minArea = 10
