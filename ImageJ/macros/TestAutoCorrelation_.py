@@ -10,17 +10,20 @@
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
+from math import sqrt
 from ij import IJ
 from ij import ImagePlus
 from ij.plugin.filter import Analyzer
 from ij.process import ImageStatistics as IS
 from ij.process import FloatProcessor
 from ij.measure import Measurements as IM
+from ij.measure import ResultsTable
 import ij.WindowManager as WM
 import os
 
-bVerbose = True
+bVerbose = False
 bMakeBinary = True
+iDigits = 4
 
 # N.B. this expects an environment variable with the path
 # to images in the git repository.
@@ -32,8 +35,17 @@ strName="cross-grating"
 strExt=".tif"
 
 halfWidth = 64 # how far out we crop the autocorrelation
+space = 1000.0/2160. # microns
+print("space = %.4f microns" % space)
+
+# a = [0xCE, 0xBC]
+# mu = "".join([chr(c) for c in a]).decode('UTF-8')
+# units  = mu+"m/px"
+units = "microns/px"
+iUnits = "px/micron"
 
 strFile=strPath+strName+strExt
+strRpt=strPath+strName+".csv"
 strMath="image1=" + strName + " operation=Correlate image2=" + strName + " result=Result do"
 # print(strFile)
 imp = IJ.openImage(strFile)
@@ -79,8 +91,56 @@ Analyzer.setOption("BlackBackground", False)
 if bMakeBinary:
   IJ.run("Make Binary")
   IJ.run("Convert to Mask")
-  IJ.run("Set Measurements...", "area centroid redirect=None decimal=3");
-  IJ.run("Analyze Particles...", "display exclude clear include");
+  IJ.run("Set Measurements...", "area centroid redirect=None decimal=3")
+  IJ.run("Analyze Particles...", "display exclude clear include")
+  rt = ResultsTable.getResultsTable()
+  nMeas = rt.getCounter()
+  print(nMeas)
+  cntX  = rt.getColumn(ResultsTable.X_CENTROID)
+  cntY  = rt.getColumn(ResultsTable.Y_CENTROID)
+  cntA  = rt.getColumn(ResultsTable.AREA)
+  # find the center - will be closest to half width
+  fHw = float(halfWidth)
+  minDelta = 1000000.
+  X0 = 0.
+  Y0 = 0.
+  iMin = 0
+  
+  for i in range(len(cntX)):
+    dX = cntX[i] - fHw
+    dY = cntY[i] - fHw
+    delta = sqrt(dX*dX+dY*dY)
+    if (delta < minDelta):
+      minDelta = delta
+      X0 = cntX[i]
+      Y0 = cntY[i]
+      iMin = i
+
+  for i in range(len(cntX)):
+    cntX[i] -= X0
+    cntY[i] -= Y0
+
+  # write output file
+  f=open(strRpt, 'w')
+  strLine = 'X0,Y0,Area\n'
+  f.write(strLine)
+  for i in range(len(cntX)):
+    strLine = "%.4f, %.4f, %.4f\n" % (cntX[i], cntY[i], cntA[i] )
+    f.write(strLine)
+  f.close()
+  
+  dX = cntX[iMin-1] 
+  dY = cntY[iMin-1]
+  R1 = round(space/sqrt(dX*dX+dY*dY), iDigits+2)
+  iR1 = round(sqrt(dX*dX+dY*dY)/space, iDigits)
+  dX = cntX[iMin+1] 
+  dY = cntY[iMin+1]
+  R2 = round(space/sqrt(dX*dX+dY*dY), iDigits+2)
+  iR2 = round(sqrt(dX*dX+dY*dY)/space, iDigits)
+    
+  
+  print(R1, R2, units)
+  print(iR1, iR2, iUnits)
 
 
 
