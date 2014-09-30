@@ -26,6 +26,10 @@ Thumbs.db
 # For this module
 config
 
+# images
+# don't track output .csv files
+images/*.csv
+
 # py3
 py3/dna/features.csv
 py3/dna/output.png
