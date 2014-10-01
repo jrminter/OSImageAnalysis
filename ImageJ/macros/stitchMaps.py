@@ -1,70 +1,70 @@
+# stitchTilesMap_.py
+#
+# Stitch Oxford EDS maps and calibrate final image
+#  Modifications
+#   Date      Who  Ver                       What
+# ----------  --- ------  -------------------------------------------------
+# 2014-10-01  JRM 0.1.00  Stitch map exemplars. This version just
+#                         calibrates the map so the scale bar can be more
+#                         precisely placed and then the map may be annotated
+
+from org.python.core import codecs
+codecs.setDefaultEncoding('utf-8')
+
 import os
 import glob
 import time
-from ij import IJ as IJ
-
-dOrigScale = 57.9/256.0
-sUnit = "um"
-edsDir = os.environ['EDS_ROOT']
-relDir = "/Oxford/QM14-04-02H-Armstrong/reports/maps/S1-uhr-7kV-map-02/"
-# opening this got it right so I could set type to RGB...
-# convert 4-line.png -set colorspace RGB 4-lineRGB.png
-
-fMag = 2.0
-sPath = edsDir + relDir
-sPath = sPath.replace("/","\\")
-print(sPath)
-query = sPath + "*.png"
-lFiles = glob.glob(query)
-lW = []
-lH = []
-for fi in lFiles:
-  imp = IJ.openImage(fi)
-  imp.show()
-  ip = imp.getProcessor()
-  lW.append(ip.width)
-  lH.append(ip.height)
-  # time.sleep(1)
-  IJ.run("Close")
-
-minW = float(min(lW))
-maxW = float(max(lW))
-scFa = maxW/minW
-print(scFa)
-
-hMain = 0
-hBig = 0
-
-for fi in lFiles:
-  imp = IJ.openImage(fi)
-  imp.show()
-  ip = imp.getProcessor()
-  if (ip.width < maxW):
-    # time.sleep(1)
-    strName = os.path.basename(fi).strip(".png")
-    strCmd = "x=%.3lf y=%.3lf interpolation=Bicubic create title=%s" % (fMag*scFa, fMag*scFa, strName)
-    IJ.run("Scale...", strCmd)
-    # IJ.run("Close")
-    imp.close()
-    hMain = float(ip.height)*fMag*scFa
-    strScale = "distance=1 known=%.3f pixel=1 unit=%s global" % (dOrigScale*fMag*scFa, sUnit)
-    IJ.run("Set Scale...", strScale)
-  else:
-    strName = os.path.basename(fi).strip(".png")
-    strCmd = "x=%.3lf y=%.3lf interpolation=Bicubic create title=%s" % (fMag, fMag, strName)
-    IJ.run("Scale...", strCmd)
-    # IJ.run("Close")
-    imp.close()
-    strScale = "distance=1 known=%.3f pixel=1 unit=%s global" % (dOrigScale*fMag, sUnit)
-    IJ.run("Set Scale...", strScale)
-    hBig = float(ip.height)*fMag
-    wBig = float(ip.width)*fMag
+from ij import IJ
+from ij import ImagePlus
+from ij import WindowManager
+import jmFijiGen as jmg
 
 
-print(int(hMain), int(hBig))
-delta = hBig-hMain + 1
-IJ.makeRectangle(0, 0, wBig, hBig - delta )
-IJ.run("Crop")
-# to-do: crop the line
-# print(lW)
-# print(lH)
+gitDir  = os.environ['GIT_HOME']
+edsDir  = os.environ['EDS_ROOT']
+relMap  = "/OSImageAnalysis/images/map"
+# rptDir  = os.environ['RPT_ROOT']
+# this exemplar in the GIT root tree
+basDir = gitDir
+relImg  = relMap + "/tile"
+relOut  = relMap
+
+outNam = "exemplar-3x2-map.png"
+
+imgDir = basDir + relImg
+
+print(imgDir)
+
+# 2X3
+# x      = 2
+# y      = 3
+# 3X2
+x      = 3
+y      = 2
+scale  = 2.832
+# Here is how one does a mu...
+# a = [0xCE, 0xBC]
+# mu = "".join([chr(c) for c in a]).decode('UTF-8')
+# units  = mu+"m"
+units = "nm"
+pts    = 24
+barCol = "White"
+
+myImp = jmg.stitchMaps(imgDir, x, y)
+myImp.show()
+# in this case we want to add by hand so we can position to selection
+#                                  scale  sz
+# jmg.addScaleBar(myImp, scale, units, 100,  8, pts, barCol, "Lower Right")
+
+
+# Get the final map 
+imp = WindowManager.getCurrentImage()
+strSca = "distance=1 known=%.3f unit=%s" % (scale, units)
+IJ.run("Set Scale...", strSca)
+
+outDir = basDir + relOut
+jmg.ensureDir(outDir)
+outPth = outDir + "/" + outNam
+print(outPth)
+IJ.saveAs(imp, "PNG", outPth)
+

@@ -29,6 +29,10 @@ config
 # images
 # don't track output .csv files
 images/*.csv
+# don't track tiles or output for stitched map
+images/map/tile/*.tif
+images/map/tile/TileConfiguration.txt
+images/map/exemplar-3x2-map.png
 
 # py3
 py3/dna/features.csv
