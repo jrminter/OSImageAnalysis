@@ -5,7 +5,8 @@
 #  Modifications
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
-# 2014-01-11  JRM 1.1.00  First test ensureDir
+# 2014-09-11  JRM 1.1.00  First test ensureDir
+# 2014-10-02  JRM 1.1.10  Added flatField
 
 
 import sys
@@ -25,6 +26,10 @@ import java.util as ju
 from ij import IJ
 from ij import ImagePlus
 from ij import WindowManager
+
+from script.imglib.math import Compute, Divide, Multiply, Subtract  
+from script.imglib.algorithm import Gauss, Scale2D, Resample  
+from script.imglib import ImgLib 
 
 
 
@@ -141,3 +146,49 @@ def addScaleBar(theImp, scaFac, scaUni, barWid, barHt, barFnt, barCol, barLoc):
   IJ.run("Set Scale...", s1)
   s2 = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barWid, barHt, barFnt, barCol, barLoc)
   IJ.run("Add Scale Bar", s2) 
+
+def flatField(theImp, scaFac=0.25, bShowIntermediate=False):
+  """flatField(theImp, scaFac=0.25, bShowIntermediate=False)
+  Do a flat field correction by generating a gain reference image.
+  Uses ideas from: http://www.ini.uzh.ch/~acardona/fiji-tutorial/
+  Input Parameters:
+  theImp - the ImagePlus of the input image
+  scaFac - scale factor ... default = 0.25
+  bShowIntermediate - show work ... default = False
+  Return:
+  an ImagePlus with the flat field corrected image
+  """
+  # 1. wrap the ImagePlus to an ImgLib1 image
+  img = ImgLib.wrap(theImp)
+  if bShowIntermediate:
+    # theImp.setTitle("raw")
+    theImp.show()
+    
+  
+  # 2. Simulate a gain image from a Gauss with a large radius  
+  # (First scale down by 1/scalefac X, then gauss of radius=20, then scale up)  
+  # Faster than a big median filter
+  gain = Resample(Gauss(Scale2D(img, scaFac), 20), img.getDimensions())  
+  
+  # 3. Simulate a perfect dark current  
+  darkcurrent = 0  
+  
+  # 4. Compute the mean pixel intensity value of the image  
+  mean = reduce(lambda s, t: s + t.get(), img, 0) / img.size()  
+
+  impGain = ImgLib.wrap(gain)
+  if bShowIntermediate:
+    impGain.setTitle("gain")
+    impGain.show()
+    IJ.run("Enhance Contrast", "saturated=0.35") 
+  
+  # 5. Correct the illumination  
+  corrected = Compute.inFloats(Multiply(Divide(Subtract(img, gain),  
+                                               Subtract(gain, darkcurrent)), mean))  
+  
+  # 6. ... and show it in ImageJ  
+  impCor = ImgLib.wrap(corrected)
+  impCor.setTitle(theImp.getTitle() + "-sc")
+  impCor.show()
+  IJ.run("Enhance Contrast", "saturated=0.35")
+  return impCor
