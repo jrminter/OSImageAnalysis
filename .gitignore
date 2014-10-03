@@ -84,3 +84,6 @@ jrm-r-pkgs/tikzDevice/src/symbols.rds
 jrm-r-pkgs/tikzDevice/src/tikzDevice.dll
 jrm-r-pkgs/tikzDevice/src/tikzDevice.so
 jrm-r-pkgs/tikzDevice/src/tikzDevice.o
+
+# Rmd
+Rmd/Rickert-caret-demo/Rickert-caret-demo_files/*
