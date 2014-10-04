@@ -7,6 +7,7 @@
 # ----------  --- ------  -------------------------------------------------
 # 2014-09-11  JRM 1.1.00  First test ensureDir
 # 2014-10-02  JRM 1.1.10  Added flatField
+# 2014-10-04  JRM 1.1.11  Added median and removeOutliers filters from tutorial
 
 
 import sys
@@ -26,6 +27,8 @@ import java.util as ju
 from ij import IJ
 from ij import ImagePlus
 from ij import WindowManager
+
+from ij.plugin import Duplicator
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract  
 from script.imglib.algorithm import Gauss, Scale2D, Resample  
@@ -192,3 +195,21 @@ def flatField(theImp, scaFac=0.25, bShowIntermediate=False):
   impCor.show()
   IJ.run("Enhance Contrast", "saturated=0.35")
   return impCor
+
+def median(imp, radius):
+  """ Apply a median filter to a copy
+      of the given ImagePlus, and return it.
+      from: http://fiji.sc/Jython_Scripting"""
+  copy = Duplicator().run(imp)
+  IJ.run(copy, "Median...", "radius=" + str(radius))
+  return copy
+ 
+def removeOutliers(imp, radius, threshold, bright):
+  """ Apply a remove outliers filter to a copy
+      of the given ImagePlus, and return it.
+      from: http://fiji.sc/Jython_Scripting"""
+  copy = Duplicator().run(imp)
+  which = "Bright" if bright else "Dark"
+  IJ.run(copy, "Remove Outliers...", "radius=" + str(radius) \
+      + " threshold=" + str(threshold) + " which=" + which)
+  return copy
