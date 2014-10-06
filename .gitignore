@@ -33,6 +33,7 @@ images/*.csv
 images/map/tile/*.tif
 images/map/tile/TileConfiguration.txt
 images/map/exemplar-3x2-map.png
+images/George.txt
 
 # py3
 py3/dna/features.csv
