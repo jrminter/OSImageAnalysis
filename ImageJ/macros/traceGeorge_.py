@@ -36,8 +36,8 @@ impRaw.changes=False
 impRaw.close()
 resWin = WindowManager.getWindow("Results")
 resWin.dispose()
-# logWin = WindowManager.getWindow("Log")
-# logWin.dispose()
+logWin = WindowManager.getWindow("Log")
+logWin.dispose()
 if bCleanup:
   impCon.changes=False
   impCon.close()
