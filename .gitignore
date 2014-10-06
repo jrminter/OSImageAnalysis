@@ -39,6 +39,7 @@ py3/dna/features.csv
 py3/dna/output.png
 py3/russCircles/features.csv
 py3/russCircles/output.png
+py3/tifffile/build/*
 
 
 # magCalD692
