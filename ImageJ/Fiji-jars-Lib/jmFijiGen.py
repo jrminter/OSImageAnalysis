@@ -75,8 +75,8 @@ def makeTmpDir():
     os.unlink(file)
   return tmpDir
   
-def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], bDebug=False):
-  """makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], bDebug=False)
+def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], lCr=None, bDebug=False):
+  """makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], lCr=None, bDebug=False)
   Make a montage from a list of file names
   Parameters:
   lNames  - a list of file names
@@ -86,9 +86,11 @@ def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], b
   inExt   - input extension for images - default = .png
   sca     - scale factor, default = 1.0
   lCal    - an optional list of calibration info: [fullWidth, baseImgWidthPx, -6]
+  lCr     - an optional list of prameters for a crop [x0,y0,w, h], default is None
   bDebug  - a flag, default = False, to print diagnostic info"""
   l = len(lNames)
   l2 = len(lCal)
+  IJ.run("Close All")
   for i in range(l):
     if bDebug:
       print(lNames[i])
@@ -99,9 +101,14 @@ def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], b
     raw.show()
   IJ.run("Images to Stack")
   impSeq = WindowManager.getCurrentImage()
+  if(lCr != None):
+    IJ.makeRectangle(lCr[0], lCr[1], lCr[2], lCr[3])
+    IJ.run("Crop")
+    impSeq = WindowManager.getCurrentImage()
   strMon = "columns=%g rows=%g scale=%f first=1 last=%d increment=1 border=0 font=12" % (columns, rows, sca, l)
   IJ.run("Make Montage...", strMon)
   if (bDebug==False):
+    impSeq.changes = False
     impSeq.close()
   imp = WindowManager.getCurrentImage()
   if (l2 == 3):

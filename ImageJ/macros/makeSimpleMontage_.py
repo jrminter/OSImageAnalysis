@@ -25,9 +25,9 @@ inDir  = gitDir + relImg
 lNames  = ["2-OK","3-CuL","4-PK","5-PdL","6-AgL","7-ROI"]
 
 lCal = [1.45, 512, -6]
-# lCal=[]
+lCr  = [100,0,256,200]
 
-impMont = jmg.makeMontage(lNames, 3, 2, inDir, lCal=lCal, sca=1.0)
+impMont = jmg.makeMontage(lNames, 3, 2, inDir, lCal=lCal, lCr=lCr, sca=1.0)
 # impMont = jmg.calibAZtecImage(impMont, 1.45, 512)
 impMont.show()
 
