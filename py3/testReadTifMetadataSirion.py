@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-testReadTifMetadata.py
+testReadTifMetadataSirion.py
 
-Read the metadata from an FEI FIB 620 TIF image using the Christoph Gohlke
+Read the metadata from an Sirion TIF image using the Christoph Gohlke
 tifffile code. A work in progress.
 
-Created on Mon Aug 18 15:47:33 2014
+Created   JRM 2014-08-18
+Modified  JRM 2014-10-10 Move images into test suite dir. Note neither
+                         read the metadata corectly. Grrrr.... 
 
 @author: John Minter
 """
@@ -16,25 +18,19 @@ import matplotlib.pyplot as plt
 import skimage.io as io
 import string
 
-home=os.environ['HOME']
-imgRoot=os.environ['IMG_ROOT']
-bIonBeam = True
+
+gitDir = os.environ['GIT_HOME']
+bXHD = True
 bVerbose = False
 
-relImg  = "/test/suite/"
-# e-beam
-# n.b. 17.56 and 17.57 scale X and Y by analySIS Five.
+relImg  = "/OSImageAnalysis/images/suite/"
 
-# ion beam
-# n.b. 17.56 and 17.57 scale X and Y by analySIS Five.
-# doesn't distinguish e-beam and ion beam
-
-if bIonBeam:
-  fName = 'fib620ib'
+if bXHD:
+  fName = 'sirionXHD'
 else:
-  fName = 'fib620eb' 
+  fName = 'sirionSisBSE' 
   
-filePath = imgRoot + relImg + fName + '.tif'
+filePath = gitDir + relImg + fName + '.tif'
 
 print(filePath)
 tif = tifffile.TiffFile(filePath)
@@ -52,12 +48,15 @@ ss = 0
 cap = ""
 
 # an ini file for the image
-filePath = imgRoot + relImg + fName + '.ini'
+filePath = gitDir + relImg + fName + '.ini'
 f = open(filePath, 'w')
 
 for page in tif:
   for tag in page.tags.values():
     t = tag.name, tag.value
+    if bVerbose:
+        print(tag.name)
+        print(tag.value)
     # what I want is in tag 34680
     if(tag.name == '34680'):
       myStr = tag.value.decode()

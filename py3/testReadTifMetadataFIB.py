@@ -5,7 +5,8 @@ testReadTifMetadataFIB.py
 Read the metadata from an FEI FIB 620 TIF image using the Christoph Gohlke
 tifffile code. A work in progress.
 
-Created on Mon Aug 18 15:47:33 2014
+Created   JRM 2014-08-18
+Modified  JRM 2014-10-10 Move images into test suite dir
 
 @author: John Minter
 """
@@ -16,12 +17,11 @@ import matplotlib.pyplot as plt
 import skimage.io as io
 import string
 
-home=os.environ['HOME']
-imgRoot=os.environ['IMG_ROOT']
+gitDir = os.environ['GIT_HOME']
 bIonBeam = True
 bVerbose = False
 
-relImg  = "/test/suite/"
+relImg  = "/OSImageAnalysis/images/suite/"
 # e-beam
 # n.b. 17.56 and 17.57 scale X and Y by analySIS Five.
 
@@ -34,7 +34,7 @@ if bIonBeam:
 else:
   fName = 'fib620eb' 
   
-filePath = imgRoot + relImg + fName + '.tif'
+filePath = gitDir + relImg + fName + '.tif'
 
 print(filePath)
 tif = tifffile.TiffFile(filePath)
@@ -52,7 +52,7 @@ ss = 0
 cap = ""
 
 # an ini file for the image
-filePath = imgRoot + relImg + fName + '.ini'
+filePath = gitDir + relImg + fName + '.ini'
 f = open(filePath, 'w')
 
 for page in tif:
