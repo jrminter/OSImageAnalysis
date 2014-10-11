@@ -22,10 +22,10 @@ import jmFijiGen as jmg
 gitDir = os.environ['GIT_HOME']
 relImg = "/OSImageAnalysis/images/map/png"
 inDir  = gitDir + relImg
-lNames  = ["2-OK","3-CuL","4-PK","5-PdL","6-AgL","7-ROI"]
+lNames  = ["2-OK","3-CuL","6-PK","7-PdL","8-AgL","9-ROI"]
 
 lCal = [1.45, 512, -6]
-lCr  = [100,0,256,200]
+lCr  = [200,30,200,220]
 
 impMont = jmg.makeMontage(lNames, 3, 2, inDir, lCal=lCal, lCr=lCr, sca=1.0)
 # impMont = jmg.calibAZtecImage(impMont, 1.45, 512)
