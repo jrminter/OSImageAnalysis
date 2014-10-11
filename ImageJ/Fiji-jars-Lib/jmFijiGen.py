@@ -9,6 +9,7 @@
 # 2014-10-02  JRM 1.1.10  Added flatField
 # 2014-10-04  JRM 1.1.11  Added median and removeOutliers filters from tutorial
 # 2014-10-10  JRM 1.1.12  Added calibImage
+# 2014-10-11  JRM 1.1.13  Added makeTmpDir, makeMontage and calibAZtecImage
 
 
 import sys
@@ -61,7 +62,52 @@ def ensureDir(d):
   Check if the directory, d, exists, and if not create it."""
   if not os.path.exists(d):
     os.makedirs(d)
-
+    
+def makeTmpDir():
+  """makeTmpDir()
+  Make a working directory in $IMG_ROOT and make sure it is clean."""
+  imgDir  = os.environ['IMG_ROOT']
+  tmpDir = imgDir + "/tmp"
+  ensureDir(tmpDir)
+  strPath = tmpDir + "/*.*"
+  files = glob.glob(strPath)
+  for file in files:
+    os.unlink(file)
+  return tmpDir
+  
+def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], bDebug=False):
+  """makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], bDebug=False)
+  Make a montage from a list of file names
+  Parameters:
+  lNames  - a list of file names
+  columns - number of columns in the montage
+  rows    - number of rows in the montage
+  inDir   - input directory for images
+  inExt   - input extension for images - default = .png
+  sca     - scale factor, default = 1.0
+  lCal    - an optional list of calibration info: [fullWidth, baseImgWidthPx, -6]
+  bDebug  - a flag, default = False, to print diagnostic info"""
+  l = len(lNames)
+  l2 = len(lCal)
+  for i in range(l):
+    if bDebug:
+      print(lNames[i])
+    inImg = inDir + "/" + lNames[i] + inExt
+    if bDebug:
+      print(inImg)
+    raw = IJ.openImage(inImg)
+    raw.show()
+  IJ.run("Images to Stack")
+  impSeq = WindowManager.getCurrentImage()
+  strMon = "columns=%g rows=%g scale=%f first=1 last=%d increment=1 border=0 font=12" % (columns, rows, sca, l)
+  IJ.run("Make Montage...", strMon)
+  if (bDebug==False):
+    impSeq.close()
+  imp = WindowManager.getCurrentImage()
+  if (l2 == 3):
+      imp = calibAZtecImage(imp, lCal[0], lCal[1], units=lCal[2])
+  return imp
+  
 def calibImage(theImp, fullWidth, units=-6):
   """calibImage(theImp, fullWidth, units=-6)
   Calibrate the ImagePlus
@@ -85,6 +131,35 @@ def calibImage(theImp, fullWidth, units=-6):
     scaUni  = "km"
   w = theImp.getWidth()
   s1 = "distance=%d known=%f unit=%s" % (w, fullWidth, scaUni)
+  IJ.run("Set Scale...", s1)
+  theImp.show()
+  return theImp
+
+def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
+  """calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6)
+  Calibrate the ImagePlus using the AZtec convention of a full
+  width in sample space and a base image width. This lets one
+  calibrate montages from uncalibrated png images...
+  Inputs
+  theImp       - the ImagePlus to calibrate
+  fullWidth    - the full width of the image, typically in microns
+  baseImgWidth -  the width, in px, of the base image
+  units        - the exponent w.r.t. meters. Defaults to -6 (microns)
+  Returns      - the ImagePlus of the calibrated image"""
+  theImp.show()
+  if(units == -6):
+    a = [0xCE, 0xBC]
+    mu = "".join([chr(c) for c in a]).decode('UTF-8')
+    scaUni  = mu+"m"
+  if(units == -3):
+    scaUni  = "mm"
+  if(units == -9):
+    scaUni  = "nm"
+  if(units == 0):
+    scaUni  = "m"
+  if(units == 3):
+    scaUni  = "km"
+  s1 = "distance=%d known=%f unit=%s" % (baseImgWidth, fullWidth, scaUni)
   IJ.run("Set Scale...", s1)
   theImp.show()
   return theImp
