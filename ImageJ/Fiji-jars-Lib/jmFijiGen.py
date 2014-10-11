@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # jmFijiGen.py
-# ImageJ Jython - J. R. Minter - 2014-09-17
+# ImageJ Jython - J. R. Minter - 2014-09-11
 #
 #  Modifications
 #   Date      Who  Ver                       What
@@ -8,6 +8,7 @@
 # 2014-09-11  JRM 1.1.00  First test ensureDir
 # 2014-10-02  JRM 1.1.10  Added flatField
 # 2014-10-04  JRM 1.1.11  Added median and removeOutliers filters from tutorial
+# 2014-10-10  JRM 1.1.12  Added calibImage
 
 
 import sys
@@ -60,7 +61,34 @@ def ensureDir(d):
   Check if the directory, d, exists, and if not create it."""
   if not os.path.exists(d):
     os.makedirs(d)
-    
+
+def calibImage(theImp, fullWidth, units=-6):
+  """calibImage(theImp, fullWidth, units=-6)
+  Calibrate the ImagePlus
+  Inputs
+  theImp    - the ImagePlus to calibrate
+  fullWidth - the full width of the image, typically in microns
+  units     - the exponent w.r.t. meters. Defaults to -6 (microns)
+  Returns   - the ImagePlus of the calibrated image"""
+  theImp.show()
+  if(units == -6):
+    a = [0xCE, 0xBC]
+    mu = "".join([chr(c) for c in a]).decode('UTF-8')
+    scaUni  = mu+"m"
+  if(units == -3):
+    scaUni  = "mm"
+  if(units == -9):
+    scaUni  = "nm"
+  if(units == 0):
+    scaUni  = "m"
+  if(units == 3):
+    scaUni  = "km"
+  w = theImp.getWidth()
+  s1 = "distance=%d known=%f unit=%s" % (w, fullWidth, scaUni)
+  IJ.run("Set Scale...", s1)
+  theImp.show()
+  return theImp
+
 def doCrop(theImp, lPar):
   """doCrop(theImp, lPar)
   Crop an ImagePlus to a rectangle with the parameter list, lPar
