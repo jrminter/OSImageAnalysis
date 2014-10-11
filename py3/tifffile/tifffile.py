@@ -58,13 +58,13 @@ For command line usage run ``python tifffile.py --help``
 :Organization:
   Laboratory for Fluorescence Dynamics, University of California, Irvine
 
-:Version: 2014.08.10
+:Version: 2014.08.24
 
 Requirements
 ------------
 * `CPython 2.7 or 3.4 <http://www.python.org>`_
 * `Numpy 1.8.2 <http://www.numpy.org>`_
-* `Matplotlib 1.3.1 <http://www.matplotlib.org>`_ (optional for plotting)
+* `Matplotlib 1.4 <http://www.matplotlib.org>`_ (optional for plotting)
 * `Tifffile.c 2013.11.05 <http://www.lfd.uci.edu/~gohlke/>`_
   (recommended for faster decoding of PackBits and LZW encoded strings)
 
@@ -114,26 +114,18 @@ References
 
 Examples
 --------
->>> data = numpy.random.rand(301, 219)
+>>> data = numpy.random.rand(5, 301, 219)
 >>> imsave('temp.tif', data)
->>> image = imread('temp.tif')
->>> assert numpy.all(image == data)
 
->>> tif = TiffFile('test.tif')
->>> images = tif.asarray()
->>> image0 = tif[0].asarray()
->>> for page in tif:
-...     for tag in page.tags.values():
-...         t = tag.name, tag.value
-...     image = page.asarray()
-...     if page.is_rgb: pass
-...     if page.is_palette:
-...         t = page.color_map
-...     if page.is_stk:
-...         t = page.uic_tags.number_planes
-...     if page.is_lsm:
-...         t = page.cz_lsm_info
->>> tif.close()
+>>> image = imread('temp.tif')
+>>> numpy.testing.assert_array_equal(image, data)
+
+>>> with TiffFile('temp.tif') as tif:
+...     images = tif.asarray()
+...     for page in tif:
+...         for tag in page.tags.values():
+...             t = tag.name, tag.value
+...         image = page.asarray()
 
 """
 
@@ -165,22 +157,16 @@ except ImportError:
         "Loading of some compressed images will be slow.\n"
         "Tifffile.c can be obtained at http://www.lfd.uci.edu/~gohlke/")
 
-__version__ = '2014.08.10'
+__version__ = '2014.08.24'
 __docformat__ = 'restructuredtext en'
-__all__ = 'imsave', 'imread', 'imshow', 'TiffFile', 'TiffSequence'
+__all__ = ('imsave', 'imread', 'imshow', 'TiffFile', 'TiffWriter',
+           'TiffSequence')
 
 
-def imsave(filename, data, photometric=None, planarconfig=None,
-           resolution=None, description=None, software='tifffile.py',
-           byteorder=None, bigtiff=False, compress=0, volume=False,
-           extratags=()):
+def imsave(filename, data, **kwargs):
     """Write image data to TIFF file.
 
-    Image data are written in one stripe per plane.
-    Dimensions larger than 2 to 4 (depending on photometric mode, planar
-    configuration, and SGI mode) are flattened and saved as separate pages.
-    The 'sample_format' and 'bits_per_sample' TIFF tags are derived from
-    the data type.
+    Refer to the TiffWriter class and member functions for documentation.
 
     Parameters
     ----------
@@ -189,177 +175,53 @@ def imsave(filename, data, photometric=None, planarconfig=None,
     data : array_like
         Input image. The last dimensions are assumed to be image depth,
         height, width, and samples.
-    photometric : {'minisblack', 'miniswhite', 'rgb'}
-        The color space of the image data.
-        By default this setting is inferred from the data shape.
-    planarconfig : {'contig', 'planar'}
-        Specifies if samples are stored contiguous or in separate planes.
-        By default this setting is inferred from the data shape.
-        'contig': last dimension contains samples.
-        'planar': third last dimension contains samples.
-    resolution : (float, float) or ((int, int), (int, int))
-        X and Y resolution in dots per inch as float or rational numbers.
-    description : str
-        The subject of the image. Saved with the first page only.
-    software : str
-        Name of the software used to create the image.
-        Saved with the first page only.
-    byteorder : {'<', '>'}
-        The endianness of the data in the file.
-        By default this is the system's native byte order.
-    bigtiff : bool
-        If True, the BigTIFF format is used.
-        By default the standard TIFF format is used for data less than 2000 MB.
-    compress : int
-        Values from 0 to 9 controlling the level of zlib compression.
-        If 0, data are written uncompressed (default).
-    volume : bool
-        If True, volume data are stored in one tile (if applicable) using
-        the SGI image_depth and tile_depth tags.
-        Image width and depth must be multiple of 16.
-        Few software can read this format, e.g. MeVisLab.
-    extratags: sequence of tuples
-        Additional tags as [(code, dtype, count, value, writeonce)].
-
-        code : int
-            The TIFF tag Id.
-        dtype : str
-            Data type of items in 'value' in Python struct format.
-            One of B, s, H, I, 2I, b, h, i, f, d, Q, or q.
-        count : int
-            Number of data values. Not used for string values.
-        value : sequence
-            'Count' values compatible with 'dtype'.
-        writeonce : bool
-            If True, the tag is written to the first page only.
+    kwargs : dict
+        Parameters 'byteorder', 'bigtiff', and 'software' are passed to
+        the TiffWriter class.
+        Parameters 'photometric', 'planarconfig', 'resolution',
+        'description', 'compress', 'volume', and 'extratags' are passed to
+        the TiffWriter.save function.
 
     Examples
     --------
-    >>> data = numpy.ones((2, 5, 3, 301, 219), 'float32') * 0.5
-    >>> imsave('temp.tif', data, compress=6)
-
-    >>> data = numpy.ones((5, 301, 219, 3), 'uint8') + 127
-    >>> value = u'{"shape": %s}' % str(list(data.shape))
-    >>> imsave('temp.tif', data, extratags=[(270, 's', 0, value, True)])
+    >>> data = numpy.random.rand(2, 5, 3, 301, 219)
+    >>> description = u'{"shape": %s}' % str(list(data.shape))
+    >>> imsave('temp.tif', data, compress=6,
+    ...        extratags=[(270, 's', 0, description, True)])
 
     """
-    if photometric not in (None, 'minisblack', 'miniswhite', 'rgb'):
-        raise ValueError("invalid photometric %s" % photometric)
-    if planarconfig not in (None, 'contig', 'planar'):
-        raise ValueError("invalid planarconfig %s" % planarconfig)
-    if byteorder not in (None, '<', '>'):
-        raise ValueError("invalid byteorder %s" % byteorder)
-    if not 0 <= compress <= 9:
-        raise ValueError("invalid compression level %s" % compress)
+    tifargs = {}
+    for key in ('byteorder', 'bigtiff', 'software', 'writeshape'):
+        if key in kwargs:
+            tifargs[key] = kwargs[key]
+            del kwargs[key]
 
-    if byteorder is None:
-        byteorder = '<' if sys.byteorder == 'little' else '>'
+    if 'writeshape' not in kwargs:
+        kwargs['writeshape'] = True
+    if 'bigtiff' not in tifargs and data.size*data.dtype.itemsize > 2000*2**20:
+        tifargs['bigtiff'] = True
 
-    data = numpy.asarray(data, dtype=byteorder+data.dtype.char, order='C')
-    data_shape = shape = data.shape
-    data = numpy.atleast_2d(data)
+    with TiffWriter(filename, **tifargs) as tif:
+        tif.save(data, **kwargs)
 
-    if not bigtiff and data.size * data.dtype.itemsize < 2000*2**20:
-        bigtiff = False
-        offset_size = 4
-        tag_size = 12
-        numtag_format = 'H'
-        offset_format = 'I'
-        val_format = '4s'
-    else:
-        bigtiff = True
-        offset_size = 8
-        tag_size = 20
-        numtag_format = 'Q'
-        offset_format = 'Q'
-        val_format = '8s'
 
-    # normalize shape of data
-    samplesperpixel = 1
-    extrasamples = 0
-    if volume and data.ndim < 3:
-        volume = False
-    if photometric is None:
-        if planarconfig:
-            photometric = 'rgb'
-        elif data.ndim > 2 and shape[-1] in (3, 4):
-            photometric = 'rgb'
-        elif volume and data.ndim > 3 and shape[-4] in (3, 4):
-            photometric = 'rgb'
-        elif data.ndim > 2 and shape[-3] in (3, 4):
-            photometric = 'rgb'
-        else:
-            photometric = 'minisblack'
-    if planarconfig and len(shape) <= (3 if volume else 2):
-        planarconfig = None
-        photometric = 'minisblack'
-    if photometric == 'rgb':
-        if len(shape) < 3:
-            raise ValueError("not a RGB(A) image")
-        if len(shape) < 4:
-            volume = False
-        if planarconfig is None:
-            if shape[-1] in (3, 4):
-                planarconfig = 'contig'
-            elif shape[-4 if volume else -3] in (3, 4):
-                planarconfig = 'planar'
-            elif shape[-1] > shape[-4 if volume else -3]:
-                planarconfig = 'planar'
-            else:
-                planarconfig = 'contig'
-        if planarconfig == 'contig':
-            data = data.reshape((-1, 1) + shape[(-4 if volume else -3):])
-            samplesperpixel = data.shape[-1]
-        else:
-            data = data.reshape((-1, ) + shape[(-4 if volume else -3):] + (1,))
-            samplesperpixel = data.shape[1]
-        if samplesperpixel > 3:
-            extrasamples = samplesperpixel - 3
-    elif planarconfig and len(shape) > (3 if volume else 2):
-        if planarconfig == 'contig':
-            data = data.reshape((-1, 1) + shape[(-4 if volume else -3):])
-            samplesperpixel = data.shape[-1]
-        else:
-            data = data.reshape((-1, ) + shape[(-4 if volume else -3):] + (1,))
-            samplesperpixel = data.shape[1]
-        extrasamples = samplesperpixel - 1
-    else:
-        planarconfig = None
-        # remove trailing 1s
-        while len(shape) > 2 and shape[-1] == 1:
-            shape = shape[:-1]
-        if len(shape) < 3:
-            volume = False
-        if False and (
-                len(shape) > (3 if volume else 2) and shape[-1] < 5 and
-                all(shape[-1] < i for i in shape[(-4 if volume else -3):-1])):
-            # DISABLED: non-standard TIFF, e.g. (220, 320, 2)
-            planarconfig = 'contig'
-            samplesperpixel = shape[-1]
-            data = data.reshape((-1, 1) + shape[(-4 if volume else -3):])
-        else:
-            data = data.reshape(
-                (-1, 1) + shape[(-3 if volume else -2):] + (1, ))
+class TiffWriter(object):
+    """Write image data to TIFF file.
 
-    if samplesperpixel == 2:
-        warnings.warn("writing non-standard TIFF (samplesperpixel 2)")
+    TiffWriter instances must be closed using the close method, which is
+    automatically called when using the 'with' statement.
 
-    if volume and (data.shape[-2] % 16 or data.shape[-3] % 16):
-        warnings.warn("volume width or length are not multiple of 16")
-        volume = False
-        data = numpy.swapaxes(data, 1, 2)
-        data = data.reshape((data.shape[0] * data.shape[1],) + data.shape[2:])
+    Examples
+    --------
+    >>> data = numpy.random.rand(2, 5, 3, 301, 219)
+    >>> with TiffWriter('temp.tif', bigtiff=True) as tif:
+    ...     for i in range(data.shape[0]):
+    ...         tif.save(data[i], compress=6)
 
-    # data.shape is now normalized 5D or 6D, depending on volume
-    # (pages, planar_samples, (depth,) height, width, contig_samples)
-    assert len(data.shape) in (5, 6)
-    shape = data.shape
-
-    bytestr = bytes if sys.version[0] == '2' else (
-        lambda x: bytes(x, 'utf-8') if isinstance(x, str) else x)
-    tifftypes = {'B': 1, 's': 2, 'H': 3, 'I': 4, '2I': 5, 'b': 6,
-                 'h': 8, 'i': 9, 'f': 11, 'd': 12, 'Q': 16, 'q': 17}
-    tifftags = {
+    """
+    TYPES = {'B': 1, 's': 2, 'H': 3, 'I': 4, '2I': 5, 'b': 6,
+             'h': 8, 'i': 9, 'f': 11, 'd': 12, 'Q': 16, 'q': 17}
+    TAGS = {
         'new_subfile_type': 254, 'subfile_type': 255,
         'image_width': 256, 'image_length': 257, 'bits_per_sample': 258,
         'compression': 259, 'photometric': 262, 'fill_order': 266,
@@ -371,158 +233,364 @@ def imsave(filename, data, photometric=None, planarconfig=None,
         'tile_width': 322, 'tile_length': 323, 'tile_offsets': 324,
         'tile_byte_counts': 325, 'extra_samples': 338, 'sample_format': 339,
         'image_depth': 32997, 'tile_depth': 32998}
-    tags = []  # list of (code, ifdentry, ifdvalue, writeonce)
 
-    if volume:
-        # use tiles to save volume data
-        tag_byte_counts = tifftags['tile_byte_counts']
-        tag_offsets = tifftags['tile_offsets']
-    else:
-        # else strips
-        tag_byte_counts = tifftags['strip_byte_counts']
-        tag_offsets = tifftags['strip_offsets']
+    def __init__(self, filename, bigtiff=False, byteorder=None,
+                 software='tifffile.py'):
+        """Create a new TIFF file for writing.
 
-    def pack(fmt, *val):
-        return struct.pack(byteorder+fmt, *val)
+        Use bigtiff=True when creating files greater than 2 GB.
 
-    def addtag(code, dtype, count, value, writeonce=False):
-        # compute ifdentry and ifdvalue bytes from code, dtype, count, value
-        # append (code, ifdentry, ifdvalue, writeonce) to tags list
-        code = tifftags[code] if code in tifftags else int(code)
-        if dtype not in tifftypes:
-            raise ValueError("unknown dtype %s" % dtype)
-        tifftype = tifftypes[dtype]
-        rawcount = count
-        if dtype == 's':
-            value = bytestr(value) + b'\0'
-            count = rawcount = len(value)
-            value = (value, )
-        if len(dtype) > 1:
-            count *= int(dtype[:-1])
-            dtype = dtype[-1]
-        ifdentry = [pack('HH', code, tifftype),
-                    pack(offset_format, rawcount)]
-        ifdvalue = None
-        if count == 1:
-            if isinstance(value, (tuple, list)):
-                value = value[0]
-            ifdentry.append(pack(val_format, pack(dtype, value)))
-        elif struct.calcsize(dtype) * count <= offset_size:
-            ifdentry.append(pack(val_format, pack(str(count)+dtype, *value)))
-        else:
-            ifdentry.append(pack(offset_format, 0))
-            ifdvalue = pack(str(count)+dtype, *value)
-        tags.append((code, b''.join(ifdentry), ifdvalue, writeonce))
+        Parameters
+        ----------
+        filename : str
+            Name of file to write.
+        bigtiff : bool
+            If True, the BigTIFF format is used.
+        byteorder : {'<', '>'}
+            The endianness of the data in the file.
+            By default this is the system's native byte order.
+        software : str
+            Name of the software used to create the image.
+            Saved with the first page only.
 
-    def rational(arg, max_denominator=1000000):
-        # return nominator and denominator from float or two integers
-        try:
-            f = Fraction.from_float(arg)
-        except TypeError:
-            f = Fraction(arg[0], arg[1])
-        f = f.limit_denominator(max_denominator)
-        return f.numerator, f.denominator
+        """
+        if byteorder not in (None, '<', '>'):
+            raise ValueError("invalid byteorder %s" % byteorder)
+        if byteorder is None:
+            byteorder = '<' if sys.byteorder == 'little' else '>'
 
-    if software:
-        addtag('software', 's', 0, software, writeonce=True)
-    if description:
-        addtag('image_description', 's', 0, description, writeonce=True)
-    elif shape != data_shape:
-        addtag('image_description', 's', 0,
-               "shape=(%s)" % (",".join('%i' % i for i in data_shape)),
-               writeonce=True)
-    addtag('datetime', 's', 0,
-           datetime.datetime.now().strftime("%Y:%m:%d %H:%M:%S"),
-           writeonce=True)
-    addtag('compression', 'H', 1, 32946 if compress else 1)
-    addtag('orientation', 'H', 1, 1)
-    addtag('image_width', 'I', 1, shape[-2])
-    addtag('image_length', 'I', 1, shape[-3])
-    if volume:
-        addtag('image_depth', 'I', 1, shape[-4])
-        addtag('tile_depth', 'I', 1, shape[-4])
-        addtag('tile_width', 'I', 1, shape[-2])
-        addtag('tile_length', 'I', 1, shape[-3])
-    addtag('new_subfile_type', 'I', 1, 0 if shape[0] == 1 else 2)
-    addtag('sample_format', 'H', 1,
-           {'u': 1, 'i': 2, 'f': 3, 'c': 6}[data.dtype.kind])
-    addtag('photometric', 'H', 1,
-           {'miniswhite': 0, 'minisblack': 1, 'rgb': 2}[photometric])
-    addtag('samples_per_pixel', 'H', 1, samplesperpixel)
-    if planarconfig and samplesperpixel > 1:
-        addtag('planar_configuration', 'H', 1, 1 if planarconfig == 'contig'
-               else 2)
-        addtag('bits_per_sample', 'H', samplesperpixel,
-               (data.dtype.itemsize * 8, ) * samplesperpixel)
-    else:
-        addtag('bits_per_sample', 'H', 1, data.dtype.itemsize * 8)
-    if extrasamples:
-        if photometric == 'rgb' and extrasamples == 1:
-            addtag('extra_samples', 'H', 1, 1)  # associated alpha channel
-        else:
-            addtag('extra_samples', 'H', extrasamples, (0, ) * extrasamples)
-    if resolution:
-        addtag('x_resolution', '2I', 1, rational(resolution[0]))
-        addtag('y_resolution', '2I', 1, rational(resolution[1]))
-        addtag('resolution_unit', 'H', 1, 2)
-    addtag('rows_per_strip', 'I', 1, shape[-3] * (shape[-4] if volume else 1))
+        self._byteorder = byteorder
+        self._software = software
 
-    # use one strip or tile per plane
-    strip_byte_counts = (data[0, 0].size * data.dtype.itemsize, ) * shape[1]
-    addtag(tag_byte_counts, offset_format, shape[1], strip_byte_counts)
-    addtag(tag_offsets, offset_format, shape[1], (0, ) * shape[1])
+        self._fh = open(filename, 'wb')
+        self._fh.write({'<': b'II', '>': b'MM'}[byteorder])
 
-    # add extra tags from users
-    for t in extratags:
-        addtag(*t)
-
-    # the entries in an IFD must be sorted in ascending order by tag code
-    tags = sorted(tags, key=lambda x: x[0])
-
-    with open(filename, 'wb') as fh:
-        seek = fh.seek
-        tell = fh.tell
-
-        def write(arg, *args):
-            fh.write(pack(arg, *args) if args else arg)
-
-        write({'<': b'II', '>': b'MM'}[byteorder])
         if bigtiff:
-            write('HHH', 43, 8, 0)
+            self._bigtiff = True
+            self._offset_size = 8
+            self._tag_size = 20
+            self._numtag_format = 'Q'
+            self._offset_format = 'Q'
+            self._val_format = '8s'
+            self._fh.write(struct.pack(byteorder+'HHH', 43, 8, 0))
         else:
-            write('H', 42)
-        ifd_offset = tell()
-        write(offset_format, 0)  # first IFD
+            self._bigtiff = False
+            self._offset_size = 4
+            self._tag_size = 12
+            self._numtag_format = 'H'
+            self._offset_format = 'I'
+            self._val_format = '4s'
+            self._fh.write(struct.pack(byteorder+'H', 42))
+
+        # first IFD
+        self._ifd_offset = self._fh.tell()
+        self._fh.write(struct.pack(byteorder+self._offset_format, 0))
+
+    def save(self, data, photometric=None, planarconfig=None, resolution=None,
+             description=None, volume=False, writeshape=False, compress=0,
+             extratags=()):
+        """Write image data to TIFF file.
+
+        Image data are written in one stripe per plane.
+        Dimensions larger than 2 to 4 (depending on photometric mode, planar
+        configuration, and SGI mode) are flattened and saved as separate pages.
+        The 'sample_format' and 'bits_per_sample' TIFF tags are derived from
+        the data type.
+
+        Parameters
+        ----------
+        data : array_like
+            Input image. The last dimensions are assumed to be image depth,
+            height, width, and samples.
+        photometric : {'minisblack', 'miniswhite', 'rgb'}
+            The color space of the image data.
+            By default this setting is inferred from the data shape.
+        planarconfig : {'contig', 'planar'}
+            Specifies if samples are stored contiguous or in separate planes.
+            By default this setting is inferred from the data shape.
+            'contig': last dimension contains samples.
+            'planar': third last dimension contains samples.
+        resolution : (float, float) or ((int, int), (int, int))
+            X and Y resolution in dots per inch as float or rational numbers.
+        description : str
+            The subject of the image. Saved with the first page only.
+        compress : int
+            Values from 0 to 9 controlling the level of zlib compression.
+            If 0, data are written uncompressed (default).
+        volume : bool
+            If True, volume data are stored in one tile (if applicable) using
+            the SGI image_depth and tile_depth tags.
+            Image width and depth must be multiple of 16.
+            Few software can read this format, e.g. MeVisLab.
+        writeshape : bool
+            If True, write the data shape to the image_description tag
+            if necessary and no other description is given.
+        extratags: sequence of tuples
+            Additional tags as [(code, dtype, count, value, writeonce)].
+
+            code : int
+                The TIFF tag Id.
+            dtype : str
+                Data type of items in 'value' in Python struct format.
+                One of B, s, H, I, 2I, b, h, i, f, d, Q, or q.
+            count : int
+                Number of data values. Not used for string values.
+            value : sequence
+                'Count' values compatible with 'dtype'.
+            writeonce : bool
+                If True, the tag is written to the first page only.
+
+        """
+        if photometric not in (None, 'minisblack', 'miniswhite', 'rgb'):
+            raise ValueError("invalid photometric %s" % photometric)
+        if planarconfig not in (None, 'contig', 'planar'):
+            raise ValueError("invalid planarconfig %s" % planarconfig)
+        if not 0 <= compress <= 9:
+            raise ValueError("invalid compression level %s" % compress)
+
+        fh = self._fh
+        byteorder = self._byteorder
+        numtag_format = self._numtag_format
+        val_format = self._val_format
+        offset_format = self._offset_format
+        offset_size = self._offset_size
+        tag_size = self._tag_size
+
+        data = numpy.asarray(data, dtype=byteorder+data.dtype.char, order='C')
+        data_shape = shape = data.shape
+        data = numpy.atleast_2d(data)
+
+        # normalize shape of data
+        samplesperpixel = 1
+        extrasamples = 0
+        if volume and data.ndim < 3:
+            volume = False
+        if photometric is None:
+            if planarconfig:
+                photometric = 'rgb'
+            elif data.ndim > 2 and shape[-1] in (3, 4):
+                photometric = 'rgb'
+            elif volume and data.ndim > 3 and shape[-4] in (3, 4):
+                photometric = 'rgb'
+            elif data.ndim > 2 and shape[-3] in (3, 4):
+                photometric = 'rgb'
+            else:
+                photometric = 'minisblack'
+        if planarconfig and len(shape) <= (3 if volume else 2):
+            planarconfig = None
+            photometric = 'minisblack'
+        if photometric == 'rgb':
+            if len(shape) < 3:
+                raise ValueError("not a RGB(A) image")
+            if len(shape) < 4:
+                volume = False
+            if planarconfig is None:
+                if shape[-1] in (3, 4):
+                    planarconfig = 'contig'
+                elif shape[-4 if volume else -3] in (3, 4):
+                    planarconfig = 'planar'
+                elif shape[-1] > shape[-4 if volume else -3]:
+                    planarconfig = 'planar'
+                else:
+                    planarconfig = 'contig'
+            if planarconfig == 'contig':
+                data = data.reshape((-1, 1) + shape[(-4 if volume else -3):])
+                samplesperpixel = data.shape[-1]
+            else:
+                data = data.reshape(
+                    (-1,) + shape[(-4 if volume else -3):] + (1,))
+                samplesperpixel = data.shape[1]
+            if samplesperpixel > 3:
+                extrasamples = samplesperpixel - 3
+        elif planarconfig and len(shape) > (3 if volume else 2):
+            if planarconfig == 'contig':
+                data = data.reshape((-1, 1) + shape[(-4 if volume else -3):])
+                samplesperpixel = data.shape[-1]
+            else:
+                data = data.reshape(
+                    (-1,) + shape[(-4 if volume else -3):] + (1,))
+                samplesperpixel = data.shape[1]
+            extrasamples = samplesperpixel - 1
+        else:
+            planarconfig = None
+            # remove trailing 1s
+            while len(shape) > 2 and shape[-1] == 1:
+                shape = shape[:-1]
+            if len(shape) < 3:
+                volume = False
+            if False and (
+                    len(shape) > (3 if volume else 2) and shape[-1] < 5 and
+                    all(shape[-1] < i
+                        for i in shape[(-4 if volume else -3):-1])):
+                # DISABLED: non-standard TIFF, e.g. (220, 320, 2)
+                planarconfig = 'contig'
+                samplesperpixel = shape[-1]
+                data = data.reshape((-1, 1) + shape[(-4 if volume else -3):])
+            else:
+                data = data.reshape(
+                    (-1, 1) + shape[(-3 if volume else -2):] + (1,))
+
+        if samplesperpixel == 2:
+            warnings.warn("writing non-standard TIFF (samplesperpixel 2)")
+
+        if volume and (data.shape[-2] % 16 or data.shape[-3] % 16):
+            warnings.warn("volume width or length are not multiple of 16")
+            volume = False
+            data = numpy.swapaxes(data, 1, 2)
+            data = data.reshape(
+                (data.shape[0] * data.shape[1],) + data.shape[2:])
+
+        # data.shape is now normalized 5D or 6D, depending on volume
+        # (pages, planar_samples, (depth,) height, width, contig_samples)
+        assert len(data.shape) in (5, 6)
+        shape = data.shape
+
+        bytestr = bytes if sys.version[0] == '2' else (
+            lambda x: bytes(x, 'utf-8') if isinstance(x, str) else x)
+        tags = []  # list of (code, ifdentry, ifdvalue, writeonce)
+
+        if volume:
+            # use tiles to save volume data
+            tag_byte_counts = TiffWriter.TAGS['tile_byte_counts']
+            tag_offsets = TiffWriter.TAGS['tile_offsets']
+        else:
+            # else use strips
+            tag_byte_counts = TiffWriter.TAGS['strip_byte_counts']
+            tag_offsets = TiffWriter.TAGS['strip_offsets']
+
+        def pack(fmt, *val):
+            return struct.pack(byteorder+fmt, *val)
+
+        def addtag(code, dtype, count, value, writeonce=False):
+            # Compute ifdentry & ifdvalue bytes from code, dtype, count, value.
+            # Append (code, ifdentry, ifdvalue, writeonce) to tags list.
+            code = int(TiffWriter.TAGS.get(code, code))
+            try:
+                tifftype = TiffWriter.TYPES[dtype]
+            except KeyError:
+                raise ValueError("unknown dtype %s" % dtype)
+            rawcount = count
+            if dtype == 's':
+                value = bytestr(value) + b'\0'
+                count = rawcount = len(value)
+                value = (value, )
+            if len(dtype) > 1:
+                count *= int(dtype[:-1])
+                dtype = dtype[-1]
+            ifdentry = [pack('HH', code, tifftype),
+                        pack(offset_format, rawcount)]
+            ifdvalue = None
+            if count == 1:
+                if isinstance(value, (tuple, list)):
+                    value = value[0]
+                ifdentry.append(pack(val_format, pack(dtype, value)))
+            elif struct.calcsize(dtype) * count <= offset_size:
+                ifdentry.append(pack(val_format,
+                                     pack(str(count)+dtype, *value)))
+            else:
+                ifdentry.append(pack(offset_format, 0))
+                ifdvalue = pack(str(count)+dtype, *value)
+            tags.append((code, b''.join(ifdentry), ifdvalue, writeonce))
+
+        def rational(arg, max_denominator=1000000):
+            # return nominator and denominator from float or two integers
+            try:
+                f = Fraction.from_float(arg)
+            except TypeError:
+                f = Fraction(arg[0], arg[1])
+            f = f.limit_denominator(max_denominator)
+            return f.numerator, f.denominator
+
+        if self._software:
+            addtag('software', 's', 0, self._software, writeonce=True)
+            self._software = None  # only save to first page
+        if description:
+            addtag('image_description', 's', 0, description, writeonce=True)
+        elif writeshape and shape[0] > 1 and shape != data_shape:
+            addtag('image_description', 's', 0,
+                   "shape=(%s)" % (",".join('%i' % i for i in data_shape)),
+                   writeonce=True)
+        addtag('datetime', 's', 0,
+               datetime.datetime.now().strftime("%Y:%m:%d %H:%M:%S"),
+               writeonce=True)
+        addtag('compression', 'H', 1, 32946 if compress else 1)
+        addtag('orientation', 'H', 1, 1)
+        addtag('image_width', 'I', 1, shape[-2])
+        addtag('image_length', 'I', 1, shape[-3])
+        if volume:
+            addtag('image_depth', 'I', 1, shape[-4])
+            addtag('tile_depth', 'I', 1, shape[-4])
+            addtag('tile_width', 'I', 1, shape[-2])
+            addtag('tile_length', 'I', 1, shape[-3])
+        addtag('new_subfile_type', 'I', 1, 0 if shape[0] == 1 else 2)
+        addtag('sample_format', 'H', 1,
+               {'u': 1, 'i': 2, 'f': 3, 'c': 6}[data.dtype.kind])
+        addtag('photometric', 'H', 1,
+               {'miniswhite': 0, 'minisblack': 1, 'rgb': 2}[photometric])
+        addtag('samples_per_pixel', 'H', 1, samplesperpixel)
+        if planarconfig and samplesperpixel > 1:
+            addtag('planar_configuration', 'H', 1, 1
+                   if planarconfig == 'contig' else 2)
+            addtag('bits_per_sample', 'H', samplesperpixel,
+                   (data.dtype.itemsize * 8, ) * samplesperpixel)
+        else:
+            addtag('bits_per_sample', 'H', 1, data.dtype.itemsize * 8)
+        if extrasamples:
+            if photometric == 'rgb' and extrasamples == 1:
+                addtag('extra_samples', 'H', 1, 1)  # associated alpha channel
+            else:
+                addtag('extra_samples', 'H', extrasamples, (0,) * extrasamples)
+        if resolution:
+            addtag('x_resolution', '2I', 1, rational(resolution[0]))
+            addtag('y_resolution', '2I', 1, rational(resolution[1]))
+            addtag('resolution_unit', 'H', 1, 2)
+        addtag('rows_per_strip', 'I', 1,
+               shape[-3] * (shape[-4] if volume else 1))
+
+        # use one strip or tile per plane
+        strip_byte_counts = (data[0, 0].size * data.dtype.itemsize,) * shape[1]
+        addtag(tag_byte_counts, offset_format, shape[1], strip_byte_counts)
+        addtag(tag_offsets, offset_format, shape[1], (0, ) * shape[1])
+
+        # add extra tags from users
+        for t in extratags:
+            addtag(*t)
+        # the entries in an IFD must be sorted in ascending order by tag code
+        tags = sorted(tags, key=lambda x: x[0])
+
+        if not self._bigtiff and (fh.tell() + data.size*data.dtype.itemsize
+                                  > 2**31-1):
+            raise ValueError("data too large for non-bigtiff file")
 
         for pageindex in range(shape[0]):
             # update pointer at ifd_offset
-            pos = tell()
-            seek(ifd_offset)
-            write(offset_format, pos)
-            seek(pos)
+            pos = fh.tell()
+            fh.seek(self._ifd_offset)
+            fh.write(pack(offset_format, pos))
+            fh.seek(pos)
 
             # write ifdentries
-            write(numtag_format, len(tags))
-            tag_offset = tell()
-            write(b''.join(t[1] for t in tags))
-            ifd_offset = tell()
-            write(offset_format, 0)  # offset to next IFD
+            fh.write(pack(numtag_format, len(tags)))
+            tag_offset = fh.tell()
+            fh.write(b''.join(t[1] for t in tags))
+            self._ifd_offset = fh.tell()
+            fh.write(pack(offset_format, 0))  # offset to next IFD
 
             # write tag values and patch offsets in ifdentries, if necessary
             for tagindex, tag in enumerate(tags):
                 if tag[2]:
-                    pos = tell()
-                    seek(tag_offset + tagindex*tag_size + offset_size + 4)
-                    write(offset_format, pos)
-                    seek(pos)
+                    pos = fh.tell()
+                    fh.seek(tag_offset + tagindex*tag_size + offset_size + 4)
+                    fh.write(pack(offset_format, pos))
+                    fh.seek(pos)
                     if tag[0] == tag_offsets:
                         strip_offsets_offset = pos
                     elif tag[0] == tag_byte_counts:
                         strip_byte_counts_offset = pos
-                    write(tag[2])
+                    fh.write(tag[2])
 
             # write image data
-            data_offset = tell()
+            data_offset = fh.tell()
             if compress:
                 strip_byte_counts = []
                 for plane in data[pageindex]:
@@ -535,37 +603,47 @@ def imsave(filename, data, photometric=None, planarconfig=None,
                 fh.flush()
 
             # update strip and tile offsets and byte_counts if necessary
-            pos = tell()
+            pos = fh.tell()
             for tagindex, tag in enumerate(tags):
                 if tag[0] == tag_offsets:  # strip or tile offsets
                     if tag[2]:
-                        seek(strip_offsets_offset)
+                        fh.seek(strip_offsets_offset)
                         strip_offset = data_offset
                         for size in strip_byte_counts:
-                            write(offset_format, strip_offset)
+                            fh.write(pack(offset_format, strip_offset))
                             strip_offset += size
                     else:
-                        seek(tag_offset + tagindex*tag_size + offset_size + 4)
-                        write(offset_format, data_offset)
+                        fh.seek(tag_offset + tagindex*tag_size +
+                                offset_size + 4)
+                        fh.write(pack(offset_format, data_offset))
                 elif tag[0] == tag_byte_counts:  # strip or tile byte_counts
                     if compress:
                         if tag[2]:
-                            seek(strip_byte_counts_offset)
+                            fh.seek(strip_byte_counts_offset)
                             for size in strip_byte_counts:
-                                write(offset_format, size)
+                                fh.write(pack(offset_format, size))
                         else:
-                            seek(tag_offset + tagindex*tag_size +
-                                 offset_size + 4)
-                            write(offset_format, strip_byte_counts[0])
+                            fh.seek(tag_offset + tagindex*tag_size +
+                                    offset_size + 4)
+                            fh.write(pack(offset_format, strip_byte_counts[0]))
                     break
-            seek(pos)
+            fh.seek(pos)
             fh.flush()
             # remove tags that should be written only once
             if pageindex == 0:
                 tags = [t for t in tags if not t[-1]]
 
+    def close(self):
+        self._fh.close()
 
-def imread(files, *args, **kwargs):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+
+def imread(files, **kwargs):
     """Return image data from TIFF file(s) as numpy array.
 
     The first image series is returned if no arguments are provided.
@@ -583,10 +661,13 @@ def imread(files, *args, **kwargs):
     pattern : str
         Regular expression pattern that matches axes names and indices in
         file names.
+    kwargs : dict
+        Additional parameters passed to the TiffFile or TiffSequence asarray
+        function.
 
     Examples
     --------
-    >>> im = imread('test.tif', 0)
+    >>> im = imread('test.tif', key=0)
     >>> im.shape
     (256, 256, 4)
     >>> ims = imread(['test.tif', 'test.tif'])
@@ -614,10 +695,10 @@ def imread(files, *args, **kwargs):
 
     if isinstance(files, basestring):
         with TiffFile(files, **kwargs_file) as tif:
-            return tif.asarray(*args, **kwargs)
+            return tif.asarray(**kwargs)
     else:
         with TiffSequence(files, **kwargs_seq) as imseq:
-            return imseq.asarray(*args, **kwargs)
+            return imseq.asarray(**kwargs)
 
 
 class lazyattr(object):
@@ -656,13 +737,10 @@ class TiffFile(object):
 
     Examples
     --------
-    >>> tif = TiffFile('test.tif')
-    ... try:
-    ...     images = tif.asarray()
-    ... except Exception as e:
-    ...     print(e)
-    ... finally:
-    ...     tif.close()
+    >>> with TiffFile('test.tif') as tif:
+    ...     data = tif.asarray()
+    ...     data.shape
+    (256, 256, 4)
 
     """
     def __init__(self, arg, name=None, offset=None, size=None,
@@ -866,6 +944,7 @@ class TiffFile(object):
             series = [Record(pages=self.pages, shape=shape, axes=axes,
                              dtype=numpy.dtype(page0.dtype))]
         elif page0.is_shaped:
+            # TODO: shaped files can contain multiple series
             shape = page0.tags['image_description'].value[7:-1]
             shape = tuple(int(i) for i in shape.split(b','))
             series = [Record(pages=self.pages, shape=shape,
@@ -900,7 +979,7 @@ class TiffFile(object):
         return series
 
     def asarray(self, key=None, series=None, memmap=False):
-        """Return image data of multiple TIFF pages as numpy array.
+        """Return image data from multiple TIFF pages as numpy array.
 
         By default the first image series is returned.
 
@@ -964,22 +1043,23 @@ class TiffFile(object):
 
             class KeepOpen:
                 # keep Tiff files open between consecutive pages
-                def __init__(self, parent):
+                def __init__(self, parent, close):
                     self.master = parent
                     self.parent = parent
+                    self._close = close
 
                 def open(self, page):
-                    if page and page.parent != self.parent:
+                    if self._close and page and page.parent != self.parent:
                         if self.parent != self.master:
                             self.parent.filehandle.close()
                         self.parent = page.parent
                         self.parent.filehandle.open()
 
                 def close(self):
-                    if self.parent != self.master:
+                    if self._close and self.parent != self.master:
                         self.parent.filehandle.close()
 
-            keep = KeepOpen(self)
+            keep = KeepOpen(self, self._multifile_close)
             for page in pages:
                 keep.open(page)
                 if page:
@@ -1001,9 +1081,14 @@ class TiffFile(object):
             try:
                 result.shape = self.series[series].shape
             except ValueError:
-                warnings.warn("failed to reshape %s to %s" % (
-                              result.shape, self.series[series].shape))
-                result.shape = (-1,) + pages[0].shape
+                try:
+                    warnings.warn("failed to reshape %s to %s" % (
+                                  result.shape, self.series[series].shape))
+                    # try series of expected shapes
+                    result.shape = (-1,) + self.series[series].shape
+                except ValueError:
+                    # revert to generic shape
+                    result.shape = (-1,) + pages[0].shape
         else:
             result.shape = (-1,) + pages[0].shape
         return result
@@ -1018,7 +1103,7 @@ class TiffFile(object):
         result = []
         for element in root:
             if element.tag.endswith('BinaryOnly'):
-                warnings.warn("not an ome-tiff master file")
+                warnings.warn("ome-xml: not an ome-tiff master file")
                 break
             if element.tag.endswith('StructuredAnnotations'):
                 for annot in element:
@@ -1616,8 +1701,6 @@ class TiffPage(object):
         image_depth = self.image_depth
         typecode = self.parent.byteorder + dtype
         bits_per_sample = self.bits_per_sample
-        byteorder_is_native = ({'big': '>', 'little': '<'}[sys.byteorder] ==
-                               self.parent.byteorder)
 
         if self.is_tiled:
             if 'tile_offsets' in self.tags:
@@ -1644,17 +1727,12 @@ class TiffPage(object):
         if any(o < 2 for o in offsets):
             raise ValueError("corrupted page")
 
-        if self.is_contiguous:
-            if (memmap and fh.is_file and
-                not (self.predictor or
-                     ('extra_samples' in self.tags) or
-                     (colormapped and self.is_palette) or
-                     (not byteorder_is_native))):
-                result = numpy.memmap(fh, typecode, 'r', offsets[0], shape)
-            else:
-                fh.seek(offsets[0])
-                result = fh.read_array(typecode, product(shape))
-                result = result.astype('=' + dtype)
+        if memmap and self._is_memmappable(rgbonly, colormapped):
+            result = fh.memmap_array(typecode, shape, offset=offsets[0])
+        elif self.is_contiguous:
+            fh.seek(offsets[0])
+            result = fh.read_array(typecode, product(shape))
+            result = result.astype('=' + dtype)
         else:
             if self.is_contig:
                 runlen *= self.samples_per_pixel
@@ -1774,6 +1852,16 @@ class TiffPage(object):
             # TODO: file remains open if an exception occurred above
             fh.close()
         return result
+
+    def _is_memmappable(self, rgbonly, colormapped):
+        """Return if image data in file can be memory mapped."""
+        if not self.parent.filehandle.is_file or not self.is_contiguous:
+            return False
+        return not (self.predictor or
+                    (rgbonly and 'extra_samples' in self.tags) or
+                    (colormapped and self.is_palette) or
+                    ({'big': '>', 'little': '<'}[sys.byteorder] !=
+                     self.parent.byteorder))
 
     @lazyattr
     def is_contiguous(self):
@@ -1947,8 +2035,8 @@ class TiffPage(object):
 
     @lazyattr
     def is_sgi(self):
-        """True if page contains SGI image_depth tag."""
-        return 'image_depth' in self.tags
+        """True if page contains SGI image and tile depth tags."""
+        return 'image_depth' in self.tags and 'tile_depth' in self.tags
 
     @lazyattr
     def is_ome(self):
@@ -2132,6 +2220,8 @@ class TiffSequence(object):
     Examples
     --------
     >>> tifs = TiffSequence("test.oif.files/*.tif")
+    >>> tifs.shape, tifs.axes
+    ((2, 100), 'CT')
     >>> data = tifs.asarray()
     >>> data.shape
     (2, 100, 256, 256)
@@ -2179,6 +2269,7 @@ class TiffSequence(object):
         self.files = files
 
         if hasattr(imread, 'asarray'):
+            # redefine imread
             _imread = imread
 
             def imread(fname, *args, **kwargs):
@@ -2462,6 +2553,14 @@ class FileHandle(object):
         if size < 0 and self._offset:
             size = self._size
         return self._fh.read(size)
+
+    def memmap_array(self, dtype, shape, offset=0, mode='r', order='C'):
+        """Return numpy.memmap of data stored in file."""
+        if not self.is_file:
+            raise ValueError("Can not memory map file without fileno.")
+        return numpy.memmap(self._fh, dtype=dtype, mode=mode,
+                            offset=self._offset + offset,
+                            shape=shape, order=order)
 
     def read_array(self, dtype, count=-1, sep=""):
         """Return numpy array from file.
@@ -3290,7 +3389,8 @@ def squeeze_axes(shape, axes, skip='XY'):
     ((5, 2, 1), 'TYX')
 
     """
-    assert len(shape) == len(axes)
+    if len(shape) != len(axes):
+        raise ValueError("dimensions of axes and shape don't match")
     shape, axes = zip(*(i for i in zip(shape, axes)
                         if i[0] > 1 or i[1] in skip))
     return shape, ''.join(axes)
@@ -3780,16 +3880,20 @@ NIH_IMAGE_HEADER = [
 NIH_COLORTABLE_TYPE = (
     'CustomTable', 'AppleDefault', 'Pseudo20', 'Pseudo32', 'Rainbow',
     'Fire1', 'Fire2', 'Ice', 'Grays', 'Spectrum')
+
 NIH_LUTMODE_TYPE = (
     'PseudoColor', 'OldAppleDefault', 'OldSpectrum', 'GrayScale',
     'ColorLut', 'CustomGrayscale')
+
 NIH_CURVEFIT_TYPE = (
     'StraightLine', 'Poly2', 'Poly3', 'Poly4', 'Poly5', 'ExpoFit',
     'PowerFit', 'LogFit', 'RodbardFit', 'SpareFit1', 'Uncalibrated',
     'UncalibratedOD')
+
 NIH_UNITS_TYPE = (
     'Nanometers', 'Micrometers', 'Millimeters', 'Centimeters', 'Meters',
     'Kilometers', 'Inches', 'Feet', 'Miles', 'Pixels', 'OtherUnits')
+
 NIH_STACKTYPE_TYPE = (
     'VolumeStack', 'RGBStack', 'MovieStack', 'HSVStack')
 
@@ -4597,7 +4701,7 @@ def main(argv=None):
     opt('--test', dest='test', action='store_true', default=False,
         help="try read all images in path")
     opt('--doctest', dest='doctest', action='store_true', default=False,
-        help="runs the internal tests")
+        help="runs the docstring examples")
     opt('-v', '--verbose', dest='verbose', action='store_true', default=True)
     opt('-q', '--quiet', dest='verbose', action='store_false')
 

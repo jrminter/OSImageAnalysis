@@ -43,7 +43,7 @@ py3/dna/output.png
 py3/russCircles/features.csv
 py3/russCircles/output.png
 py3/tifffile/build/*
-
+py3/tifffile/_tifffile.pyd
 
 # magCalD692
 magCalD692/.Rhistory
