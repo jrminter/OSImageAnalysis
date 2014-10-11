@@ -19,7 +19,7 @@ import jmFijiGen as jmg
 
 gitDir  = os.environ['GIT_HOME']
 relImg  = "/OSImageAnalysis/images/EC-bse-10kV.png"
-fw      = 4.45 # microns
+fw      = 4.45 # microns. Can read this from AZtec details dialog for image.
 
 imgPath = gitDir + relImg
 print(imgPath)
