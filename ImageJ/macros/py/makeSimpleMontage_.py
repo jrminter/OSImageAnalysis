@@ -17,6 +17,7 @@ import jmFijiGen as jmg
 gitDir = os.environ['GIT_HOME']
 relImg = "/OSImageAnalysis/images/map/png"
 inDir  = gitDir + relImg
+# Note: this fills row by row
 lNames  = ["1-CK","2-AlK","3-SiK","4-CrK","5-MnK","6-FeK","7-NiK","8-MoK","9-ROI"]
 
 #        sz   w-px  um

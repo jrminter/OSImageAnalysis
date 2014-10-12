@@ -22,6 +22,7 @@ outNamFull = "qm-04157-445005-248-Pd8-1-FIB-7kV-map-full.png"
 outNamTmp  = "qm-04157-445005-248-Pd8-1-FIB-7kV-map-full.tif"
 outNamCrop = "qm-04157-445005-248-Pd8-1-FIB-7kV-map-crop.png"
 
+# Note: this fills row by row
 lNames  = ["2-OK","3-CuL","6-PK","7-PdL","8-AgL","9-ROI"]
 #        sz   w-px  um
 lCal = [1.45, 512, -6]
