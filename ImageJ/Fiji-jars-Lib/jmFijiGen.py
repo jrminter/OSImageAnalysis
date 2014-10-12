@@ -39,6 +39,7 @@ from script.imglib import ImgLib
 
 
 """A series of wrapper scripts to make ImageJ Jython automation easy
+and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
 
@@ -86,7 +87,7 @@ def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], l
   inExt   - input extension for images - default = .png
   sca     - scale factor, default = 1.0
   lCal    - an optional list of calibration info: [fullWidth, baseImgWidthPx, -6]
-  lCr     - an optional list of prameters for a crop [x0,y0,w, h], default is None
+  lCr     - an optional list of parameters for a crop [x0,y0,w, h], default is None
   bDebug  - a flag, default = False, to print diagnostic info"""
   l = len(lNames)
   l2 = len(lCal)
@@ -186,6 +187,7 @@ def makeTiles(inpDir, outDir, lNames, inExt='.png', cropPar=None, bDebug=False):
   """makeTiles(inDir, outDir, lNames, inExt='.png', cropPar=None, bDebug=False)
   Construct tile-#.tif files from a list of file names with default extension
   png, cropping if a list is supplied.
+  This function is deprecated. Use makeMontage instead
   Input parameters:
   inpDir  - input directory (with / separators, no terminating)
   outDir  - output directory ...
@@ -217,6 +219,7 @@ def makeTiles(inpDir, outDir, lNames, inExt='.png', cropPar=None, bDebug=False):
 def stitchMaps(tifDir, cols, rows):
   """stitchMaps(tifDir, cols, rows)
   stitch images from an Oxford Map
+  This function is deprecated. Use makeMontage instead
   Input Parameters:
   tifDir - directory with tif files
   cols   - number of columns ... e.g. 2
