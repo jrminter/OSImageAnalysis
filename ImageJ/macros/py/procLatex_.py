@@ -5,7 +5,7 @@
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
 # 2014-09-28  JRM 0.1.00  Translated from .ijm file and updated
-#
+# 2014-10.11  JRM 0.1.10  Make sure unexpected scale is removed
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -36,7 +36,8 @@ print(imgPath)
 rptPath = gitDir + relImg + "/latex-size.csv"
 print(rptPath)
 
-raw = IJ.openImage(imgPath)
+
+
 nmPerPx = 2.02
 # delta = 250
 delta = 0
@@ -45,6 +46,11 @@ minPx = 25
 maxPx = 6000
 minCr = 0.80
 maxCr = 1.0
+
+raw = IJ.openImage(imgPath)
+raw.show()
+# clear any unexpected scale
+IJ.run("Set Scale...", "distance=0 known=0 pixel=1 unit=pixel")
 w = raw.getWidth()
 h = raw.getHeight()
 raw.show()
