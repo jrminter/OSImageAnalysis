@@ -125,7 +125,7 @@ def calibImage(theImp, fullWidth, units=-6):
   Returns   - the ImagePlus of the calibrated image"""
   theImp.show()
   if(units == -6):
-    a = [0xCE, 0xBC]
+    a = [0xC2, 0xB5]
     mu = "".join([chr(c) for c in a]).decode('UTF-8')
     scaUni  = mu+"m"
   if(units == -3):
@@ -155,7 +155,7 @@ def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
   Returns      - the ImagePlus of the calibrated image"""
   theImp.show()
   if(units == -6):
-    a = [0xCE, 0xBC]
+    a = [0xC2, 0xB5]
     mu = "".join([chr(c) for c in a]).decode('UTF-8')
     scaUni  = mu+"m"
   if(units == -3):
