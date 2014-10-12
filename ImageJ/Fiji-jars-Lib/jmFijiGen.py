@@ -143,6 +143,33 @@ def calibImage(theImp, fullWidth, units=-6):
   theImp.show()
   return theImp
 
+def calibImageDirect(theImp, unPerPx, units=-6):
+  """calibImage(theImp, unPerPx, units=-6)
+  Directly calibrate the ImagePlus
+  Inputs
+  theImp  - the ImagePlus to calibrate
+  unPerPx - the spacing between pixels in units
+  units   - the exponent w.r.t. meters. Defaults to -6 (microns)
+  Returns - the ImagePlus of the calibrated image"""
+  theImp.show()
+  if(units == -6):
+    a = [0xC2, 0xB5]
+    mu = "".join([chr(c) for c in a]).decode('UTF-8')
+    scaUni  = mu+"m"
+  if(units == -3):
+    scaUni  = "mm"
+  if(units == -9):
+    scaUni  = "nm"
+  if(units == 0):
+    scaUni  = "m"
+  if(units == 3):
+    scaUni  = "km"
+  w = theImp.getWidth()
+  s1 = "distance=1 known=%f unit=%s" % (unPerPx, scaUni)
+  IJ.run("Set Scale...", s1)
+  theImp.show()
+  return theImp
+
 def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
   """calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6)
   Calibrate the ImagePlus using the AZtec convention of a full
