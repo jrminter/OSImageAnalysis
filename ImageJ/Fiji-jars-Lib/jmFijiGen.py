@@ -10,6 +10,8 @@
 # 2014-10-04  JRM 1.1.11  Added median and removeOutliers filters from tutorial
 # 2014-10-10  JRM 1.1.12  Added calibImage
 # 2014-10-11  JRM 1.1.13  Added makeTmpDir, makeMontage and calibAZtecImage
+# 2014-10-14  JRM 1.1.14  Added computeStats to compute mu,s, and count for a
+#                         list 
 
 
 import sys
@@ -57,7 +59,24 @@ def checkNaN(x):
   if isNaN(x):
     x = 0.0
   return x
+
+def computeStats(lis):
+  """computeStats(lis)
+  Compute key statistics for a 1-d array (list)
+  Input:
+  lis - a 1-d vector (list)
+  Returns:
+  [mu, sd, count] as a vector"""
+  count = len(lis)
+  mu = sum(lis) / float(count)
+  s = 0
+  for i in range(count):
+    s += pow(lis[i] - mu, 2)
+  sd = math.sqrt(s / float(count -1))
+  res = [mu, sd, count]
+  return res
   
+
 def ensureDir(d):
   """ensureDir(d)
   Check if the directory, d, exists, and if not create it."""
