@@ -12,7 +12,7 @@
 
 # for java 
 *.class
-*.jar
+
 
 # From Wayne Rasband...
 *~
