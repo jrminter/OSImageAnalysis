@@ -12,6 +12,7 @@
 # 2014-10-11  JRM 1.1.13  Added makeTmpDir, makeMontage and calibAZtecImage
 # 2014-10-14  JRM 1.1.14  Added computeStats to compute mu,s, and count for a
 #                         list 
+# 2014-10-20  JRM 1.1.15  Added makeStackFromDir
 
 
 import sys
@@ -261,6 +262,20 @@ def makeTiles(inpDir, outDir, lNames, inExt='.png', cropPar=None, bDebug=False):
       print(outImg)
     IJ.saveAsTiff(cr, outImg)
     cr.close()
+
+def makeStackFromDir(inpDir, inExt='.tif', bDebug=False):
+  """makeStackFromDir(inpDir, inExt='.tif', bDebug=False)
+  Make a stack from all files in a directory
+  """
+  for file in os.listdir(inpDir):
+    if file.endswith(inExt):
+      path = inpDir + "\\" + file
+      raw = IJ.openImage(path)
+      raw.show()
+  IJ.run("Images to Stack")
+  impStack = WindowManager.getCurrentImage()
+  return impStack
+
 
 def stitchMaps(tifDir, cols, rows):
   """stitchMaps(tifDir, cols, rows)
