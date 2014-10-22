@@ -16,7 +16,7 @@ from ij import IJ
 from ij import WindowManager
 
 # full width in microns
-fw = 14.5
+fw = 57.9
 
 impCal = WindowManager.getCurrentImage()
 impCal = jmg.calibImage(impCal, fw, units=-6)
