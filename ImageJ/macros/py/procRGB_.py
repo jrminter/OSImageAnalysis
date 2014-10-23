@@ -6,97 +6,103 @@
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
 # 2014-10-21  JRM 0.1.00  Initial prototype
+# 2014-10-22  JRM 0.1.10  Finally got to work
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
 import os
+import time
 import jmFijiGen as jmg
 from ij import IJ
 from ij import WindowManager
 from ij.plugin import ChannelSplitter
-
-from script.imglib.math import Compute, Divide, Multiply, Subtract  
-from script.imglib.algorithm import Gauss, Scale2D, Resample  
-from script.imglib import ImgLib 
+from ij.plugin import ImageCalculator
 
 
-def flatFieldCorrectRGB(impImg, impFF, scaFac=0.5):
+def flatFieldCorrectRGB(impImg, impFF, sigma=100):
+  strSigma = "sigma=%g" % sigma
+  name = impImg.getShortTitle()
   cs = ChannelSplitter()
   impImg.show()
   [rImg, gImg, bImg] = cs.split(impImg)
   impImg.changes = False
   impImg.close()
-  rImg.hide()
-  gImg.hide()
-  bImg.hide()
-  
-  
-  rImg.show()
-  IJ.run("32-bit")
-  # rImg = WindowManager.getCurrentImage()
-  rImg.hide()
-  
-  gImg.show()
-  IJ.run("32-bit")
-  # gImg = WindowManager.getCurrentImage()
-  gImg.hide()
-  
-  bImg.show()
-  IJ.run("32-bit")
-  # bImg = WindowManager.getCurrentImage()
-  bImg.hide()
+  rImg.setProcessor(rImg.getProcessor().convertToFloat()) 
+  gImg.setProcessor(gImg.getProcessor().convertToFloat()) 
+  bImg.setProcessor(bImg.getProcessor().convertToFloat()) 
 
   impFF.show()
   [rBkg, gBkg, bBkg] = cs.split(impFF)
   impFF.changes = False
   impFF.close()
-  rBkg.hide()
-  gBkg.hide()
-  bBkg.hide()
-  
+  rBkg.setProcessor(rBkg.getProcessor().convertToFloat())
   rBkg.show()
-  img = ImgLib.wrap(rBkg)
-  
-  gain = Resample(Gauss(Scale2D(img, scaFac), 20), img.getDimensions())
-  rBkg = ImgLib.wrap(gain)
-  IJ.run("32-bit")
+  IJ.run("Gaussian Blur...", strSigma)
   rBkg.hide()
-
+  
+  gBkg.setProcessor(gBkg.getProcessor().convertToFloat())
   gBkg.show()
-  img = ImgLib.wrap(gBkg)
-  gBkg.changes = False
-  gBkg.close()
-  gain = Resample(Gauss(Scale2D(img, scaFac), 20), img.getDimensions())
-  gBkg = ImgLib.wrap(gain)
-  IJ.run("32-bit")
+  IJ.run("Gaussian Blur...", strSigma)
   gBkg.hide()
+  
+  bBkg.setProcessor(bBkg.getProcessor().convertToFloat())
+  bBkg.show()
+  IJ.run("Gaussian Blur...", strSigma)
+  bBkg.hide()
 
-  bBkg.show()
-  img = ImgLib.wrap(bBkg)
-  bBkg.changes = False
-  bBkg.close()
-  gain = Resample(Gauss(Scale2D(img, scaFac), 20), img.getDimensions())
-  bBkg = ImgLib.wrap(gain)
-  IJ.run("32-bit")
-  bBkg.show()
+  ic = ImageCalculator()
+
+  rCor = ic.run("Divide create 32-bit", rImg, rBkg)
+  rCor.setTitle("rCor")
+  rCor.show()
+  win = WindowManager.getWindow("rCor")
+  WindowManager.setCurrentWindow(win)
+  IJ.run("8-bit")
+  
+  gCor = ic.run("Divide create 32-bit", gImg, gBkg)
+  gCor.setTitle("gCor")
+  gCor.show()
+  win = WindowManager.getWindow("gCor")
+  WindowManager.setCurrentWindow(win)
+  IJ.run("8-bit")
+ 
+  bCor = ic.run("Divide create 32-bit", bImg, bBkg)
+  bCor.setTitle("bCor")
+  bCor.show()
+  win = WindowManager.getWindow("bCor")
+  WindowManager.setCurrentWindow(win) 
+  IJ.run("8-bit")
+  
+  IJ.run("Merge Channels...", "c1=[rCor] c2=[gCor] c3=[bCor] create")
+  impComp = WindowManager.getCurrentImage()
+  IJ.run("RGB Color")
+  impComp.changes = False
+  impComp.close()
+
+  impSc = WindowManager.getCurrentImage()
+  impSc.setTitle(name + "-sc")
+  impSc.updateAndDraw()
+
+  return impSc
+
 
   
-  
-
 
 
 imgDir  = os.environ['IMG_ROOT']
-relImg  = "/efi-test"
+relImg  = "/test/efi-test/bez-50X-1/ff"
 # strImg  = gitDir + relImg + "/bridge.gif"
-strImg = imgDir + relImg + "/50X-2-EDF.tif"
-strFF  = imgDir + relImg + "/50X-2-FF.tif"
+strImg = imgDir + relImg + "/sis-efi.tif"
+print(strImg)
+strFF  = imgDir + relImg + "/gain.tif"
 
 # 1. Open an image and it's flat field
 impExp = IJ.openImage(strImg)
+impExp.show()
 impBkg  =  IJ.openImage(strFF)
 
-flatFieldCorrectRGB(impExp, impBkg)
+impSc = flatFieldCorrectRGB(impExp, impBkg)
 
 
 
