@@ -13,6 +13,7 @@
 # 2014-10-14  JRM 1.1.14  Added computeStats to compute mu,s, and count for a
 #                         list 
 # 2014-10-20  JRM 1.1.15  Added makeStackFromDir
+# 2014-10-23  JRM 1.1.16  Added flatFieldCorrectRGB
 
 
 import sys
@@ -34,6 +35,8 @@ from ij import ImagePlus
 from ij import WindowManager
 
 from ij.plugin import Duplicator
+from ij.plugin import ChannelSplitter
+from ij.plugin import ImageCalculator
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract  
 from script.imglib.algorithm import Gauss, Scale2D, Resample  
@@ -323,6 +326,81 @@ def addScaleBar(theImp, scaFac, scaUni, barWid, barHt, barFnt, barCol, barLoc):
   IJ.run("Set Scale...", s1)
   s2 = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barWid, barHt, barFnt, barCol, barLoc)
   IJ.run("Add Scale Bar", s2) 
+  
+def flatFieldCorrectRGB(impImg, impFF, sigma=100):
+  """flatFieldCorrectRGB(impImg, impFF, sigma=100)
+  Do a flat-field (shading) correction for an RGB image
+  Input Parameters:
+  impImg - The image plus for an RGB image to correct for shading
+  impFF  - An even illumination image (gain) 
+  sigma  - blur parameter for a Gaussian blur for the gain image. default = 100 (px)
+  Returns an ImagePlus for the corrected image which is displayed
+  TO DO: error checking
+  """
+  strSigma = "sigma=%g" % sigma
+  name = impImg.getShortTitle()
+  cs = ChannelSplitter()
+  impImg.show()
+  [rImg, gImg, bImg] = cs.split(impImg)
+  impImg.changes = False
+  impImg.close()
+  rImg.setProcessor(rImg.getProcessor().convertToFloat()) 
+  gImg.setProcessor(gImg.getProcessor().convertToFloat()) 
+  bImg.setProcessor(bImg.getProcessor().convertToFloat()) 
+
+  impFF.show()
+  [rBkg, gBkg, bBkg] = cs.split(impFF)
+  impFF.changes = False
+  impFF.close()
+  rBkg.setProcessor(rBkg.getProcessor().convertToFloat())
+  rBkg.show()
+  IJ.run("Gaussian Blur...", strSigma)
+  rBkg.hide()
+  
+  gBkg.setProcessor(gBkg.getProcessor().convertToFloat())
+  gBkg.show()
+  IJ.run("Gaussian Blur...", strSigma)
+  gBkg.hide()
+  
+  bBkg.setProcessor(bBkg.getProcessor().convertToFloat())
+  bBkg.show()
+  IJ.run("Gaussian Blur...", strSigma)
+  bBkg.hide()
+
+  ic = ImageCalculator()
+
+  rCor = ic.run("Divide create 32-bit", rImg, rBkg)
+  rCor.setTitle("rCor")
+  rCor.show()
+  win = WindowManager.getWindow("rCor")
+  WindowManager.setCurrentWindow(win)
+  IJ.run("8-bit")
+  
+  gCor = ic.run("Divide create 32-bit", gImg, gBkg)
+  gCor.setTitle("gCor")
+  gCor.show()
+  win = WindowManager.getWindow("gCor")
+  WindowManager.setCurrentWindow(win)
+  IJ.run("8-bit")
+  
+  bCor = ic.run("Divide create 32-bit", bImg, bBkg)
+  bCor.setTitle("bCor")
+  bCor.show()
+  win = WindowManager.getWindow("bCor")
+  WindowManager.setCurrentWindow(win) 
+  IJ.run("8-bit")
+  
+  IJ.run("Merge Channels...", "c1=[rCor] c2=[gCor] c3=[bCor] create")
+  impComp = WindowManager.getCurrentImage()
+  IJ.run("RGB Color")
+  impComp.changes = False
+  impComp.close()
+
+  impSc = WindowManager.getCurrentImage()
+  impSc.setTitle(name + "-sc")
+  impSc.updateAndDraw()
+
+  return impSc
 
 def flatField(theImp, scaFac=0.25, bShowIntermediate=False):
   """flatField(theImp, scaFac=0.25, bShowIntermediate=False)
