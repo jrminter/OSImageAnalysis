@@ -14,6 +14,7 @@
 #                         list 
 # 2014-10-20  JRM 1.1.15  Added makeStackFromDir
 # 2014-10-23  JRM 1.1.16  Added flatFieldCorrectRGB
+# 2014-10-25  JRM 1.1.17  Added whiteBalance
 
 
 import sys
@@ -37,6 +38,10 @@ from ij import WindowManager
 from ij.plugin import Duplicator
 from ij.plugin import ChannelSplitter
 from ij.plugin import ImageCalculator
+
+from ij.plugin.frame import RoiManager
+
+from ij.measure import ResultsTable
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract  
 from script.imglib.algorithm import Gauss, Scale2D, Resample  
@@ -63,6 +68,92 @@ def checkNaN(x):
   if isNaN(x):
     x = 0.0
   return x
+  
+def whiteBalance(imp):
+  """whiteBalance(imp)
+  White balance an image from a ROI. Requires a ROI of the neutral area.
+  Adapted from the macro by  Vytas Bindokas; Oct 2006, Univ. of Chicago
+  Input parameters
+  imp - the input ImagePlus
+  Returns
+  An ImagePlus of the corrected image (displayed)"""
+  if(imp==None):
+    IJ.error("Missing Image","you must have an image with a region first")
+    return None
+  name = imp.getShortTitle()
+  w = imp.getWidth()
+  h = imp.getHeight()
+  print(name)
+  wbROI = imp.getRoi()
+  if (wbROI==None):
+    IJ.error("Missing ROI","you must draw region first")
+    return None
+  print(wbROI)
+  IJ.run("RGB Stack")
+  # work = WindowManager.getCurrentImage()
+  rm = RoiManager()
+  rm.select(imp, 0)
+  imp.setSlice(1)
+  IJ.run("Measure")
+  imp.setSlice(2)
+  IJ.run("Measure")
+  imp.setSlice(3)
+  IJ.run("Measure")
+  rt = ResultsTable.getResultsTable()
+  mc = rt.getColumnIndex("Mean")
+  ct = rt.getCounter()
+  r = rt.getValueAsDouble(mc, 0)
+  g = rt.getValueAsDouble(mc, 1)
+  b = rt.getValueAsDouble(mc, 2)
+  t=((r+g+b)/3)
+  dR=r-t
+  dG=g-t
+  dB=b-t
+  # val = rt.getValueAsDouble(0, 0)
+  print(mc,ct)
+  print(r,g,b)
+  # R=getResult("Mean")
+  # print(R)
+  IJ.makeRectangle(0, 0, w, h)
+  IJ.run("16-bit")
+  IJ.run("32-bit")
+  imp.setSlice(1)
+  strSlice = "slice value=%f" % abs(dR)
+  if (dR<0):
+    IJ.run("Add...", strSlice )
+  if (dR>0):
+    IJ.run("Subtract...", strSlice)
+  
+  imp.setSlice(2)
+  strSlice = "slice value=%f" % abs(dG)
+  if (dG<0):
+    IJ.run("Add...",  strSlice )
+  if (dG>0):
+    IJ.run("Subtract...",  strSlice )
+
+  strSlice = "slice value=%f" % abs(dB)
+  imp.setSlice(3)
+  if (dB<0):
+    IJ.run("Add...", strSlice )
+  if (dB>0):
+    IJ.run("Subtract...", strSlice )
+    
+  rm.runCommand("Deselect")
+  IJ.run("16-bit")
+  work = WindowManager.getCurrentImage()
+  IJ.run("Convert Stack to RGB")
+  imp = WindowManager.getCurrentImage()
+  imp.show()
+  work.changes = False
+  work.close()
+  IJ.selectWindow("ROI Manager")
+  IJ.run("Close");
+  IJ.selectWindow("Results")
+  IJ.run("Close")
+  imp.setTitle(name + "-wb")
+  imp.updateAndDraw()
+  return imp
+
 
 def computeStats(lis):
   """computeStats(lis)
