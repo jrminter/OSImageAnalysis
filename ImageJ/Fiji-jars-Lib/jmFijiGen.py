@@ -15,6 +15,7 @@
 # 2014-10-20  JRM 1.1.15  Added makeStackFromDir
 # 2014-10-23  JRM 1.1.16  Added flatFieldCorrectRGB
 # 2014-10-25  JRM 1.1.17  Added whiteBalance
+# 2014-10-25  JRM 1.1.18  Added some calls to imp.flush() to clean up memory
 
 
 import sys
@@ -146,6 +147,7 @@ def whiteBalance(imp):
   imp.show()
   work.changes = False
   work.close()
+  work.flush() # clean up memory...
   IJ.selectWindow("ROI Manager")
   IJ.run("Close");
   IJ.selectWindow("Results")
@@ -435,6 +437,7 @@ def flatFieldCorrectRGB(impImg, impFF, sigma=100):
   [rImg, gImg, bImg] = cs.split(impImg)
   impImg.changes = False
   impImg.close()
+  impImg.flush() # clean up memory...
   rImg.setProcessor(rImg.getProcessor().convertToFloat()) 
   gImg.setProcessor(gImg.getProcessor().convertToFloat()) 
   bImg.setProcessor(bImg.getProcessor().convertToFloat()) 
@@ -443,6 +446,7 @@ def flatFieldCorrectRGB(impImg, impFF, sigma=100):
   [rBkg, gBkg, bBkg] = cs.split(impFF)
   impFF.changes = False
   impFF.close()
+  impFF.flush() # clean up memory...
   rBkg.setProcessor(rBkg.getProcessor().convertToFloat())
   rBkg.show()
   IJ.run("Gaussian Blur...", strSigma)
@@ -486,6 +490,7 @@ def flatFieldCorrectRGB(impImg, impFF, sigma=100):
   IJ.run("RGB Color")
   impComp.changes = False
   impComp.close()
+  impComp.flush() # clean up memory...
 
   impSc = WindowManager.getCurrentImage()
   impSc.setTitle(name + "-sc")
