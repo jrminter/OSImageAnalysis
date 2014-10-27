@@ -16,7 +16,7 @@
 # 2014-10-23  JRM 1.1.16  Added flatFieldCorrectRGB
 # 2014-10-25  JRM 1.1.17  Added whiteBalance
 # 2014-10-25  JRM 1.1.18  Added some calls to imp.flush() to clean up memory
-
+# 2014-10-27  JRM 1.1.19  Fixed path spacer
 
 import sys
 import os
@@ -365,7 +365,7 @@ def makeStackFromDir(inpDir, inExt='.tif', bDebug=False):
   """
   for file in os.listdir(inpDir):
     if file.endswith(inExt):
-      path = inpDir + "\\" + file
+      path = inpDir + "/" + file
       raw = IJ.openImage(path)
       raw.show()
   IJ.run("Images to Stack")
