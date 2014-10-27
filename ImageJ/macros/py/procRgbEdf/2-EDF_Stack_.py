@@ -1,25 +1,33 @@
-# EDF simple example
-# from
+# 2-EDF_Stack_.py
+# adapted from from
 # http://cmci.embl.de/documents/120206pyip_cooking/python_imagej_cookbook#pluginextended_depth_of_field_easy_mode
 #  Modifications
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
 # 2014-10-19  JRM 0.1.00  copied from source with minor adaptations
 # 2014-10-21  JRM 0.1.10  added timing loop and contrast stretching
-#                         added a crop boundary delta in case alignment
+#                         could crop off a boundary delta in case alignment
 #                         is not perfect                         
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
+import os
+import time
+import jarray
 
 from ij import IJ
 from ij import ImagePlus
 from ij import WindowManager
 
-import time
-import jarray
 from edfgui import BasicDialog
- 
-imp = IJ.getImage()
+
+# 1. Open an image and it's flat field
+imgDir  = os.environ['IMG_ROOT']
+relImg  = "/test/efi-test/bez-50X-1"
+strImg = imgDir + relImg + "/out/bez-50X-1-ij.tif"
+print(strImg)
+imp = IJ.openImage(strImg)
+imp.show()
+
 '''
 here need to check conditions of the image, it should not be less than 
 - 4 pixel width
@@ -47,6 +55,10 @@ while (WindowManager.getWindow("Output") is None ):
   time.sleep(1)
 impEDF = WindowManager.getCurrentImage()
 impEDF.show()
-IJ.makeRectangle(delta, delta, w-2*delta, h-2*delta)
-IJ.run("Crop")
-IJ.run("Enhance Contrast", "saturated=0.0")
+
+imp.close()
+imp.flush()
+strImg = imgDir + relImg + "/out/bez-50X-1-ij-edf.tif"
+print(strImg)
+IJ.saveAs("Tiff", strImg)
+
