@@ -17,7 +17,8 @@
 # 2014-10-25  JRM 1.1.17  Added whiteBalance
 # 2014-10-25  JRM 1.1.18  Added some calls to imp.flush() to clean up memory
 # 2014-10-27  JRM 1.1.19  Fixed path spacer
-# 2014-10-28  JRM 1.1.20  Added verbose flag to WhiteBalance
+# 2014-10-28  JRM 1.1.20  Added verbose flag to WhiteBalance 
+# 2014-10-28  JRM 1.1.21  Consolidated getUnitString for DRY and added calStackZ
 
 import sys
 import os
@@ -70,7 +71,64 @@ def checkNaN(x):
   if isNaN(x):
     x = 0.0
   return x
+
+def getUnitString(units=-6):
+  """getUnitString(units)
+  Get a unit string given a power w.r.t. meters
+  Input:
+  units - an integer defaults to -6 for microns
+  Return
+  A string"""
+  if(units == -6):
+    a = [0xC2, 0xB5]
+    mu = "".join([chr(c) for c in a]).decode('UTF-8')
+    scaUni  = mu+"m"
+  if(units == -3):
+    scaUni  = "mm"
+  if(units == -9):
+    scaUni  = "nm"
+  if(units == 0):
+    scaUni  = "m"
+  if(units == 3):
+    scaUni  = "km"
+  return(scaUni)
   
+def calStackZ(imp, scaleX, scaleY, scaleZ, units=-6, bVerbose=False):
+  """calStackZ(imp, scaleX, scaleY, scaleZ, units=-6,  bVerbose=False)
+  Calibrate a stack from it's ImagePlus and scale factors
+  Inputs
+  imp - the ImagePlus
+  scaleX - the scale factor for the width
+  scaleY - the scale factor for the height
+  scaleZ - the scale factor for the depth
+  unit   - the power for the units w.r.t. meters defaults to -6 (microns)
+  Returns - the ImagePlus of the calibrated stack
+  """
+  nS = imp.getNSlices()
+  if(nS < 2):
+    IJ.error("Not a stack","This function expects a Z-stack")
+    return None
+  cal = imp.getCalibration()
+  
+  
+  zO = 0.5*(nS-1)
+  cal.zOrigin = zO
+  
+  scaUni = getUnitString(units)
+  cal.setUnit(scaUni)
+  cal.pixelWidth  = scaleX
+  cal.pixelHeight = scaleY
+  cal.pixelDepth  = scaleZ
+  imp.setCalibration(cal)
+  
+  imp.updateAndRepaintWindow() 
+
+  if(bVerbose):
+    print(nS)
+    print(cal)
+  
+  return imp
+
 def whiteBalance(imp, bVerbose=False):
   """whiteBalance(imp, bVerbose=False)
   White balance an image from a ROI. Requires a ROI of the neutral area.
@@ -247,18 +305,7 @@ def calibImage(theImp, fullWidth, units=-6):
   units     - the exponent w.r.t. meters. Defaults to -6 (microns)
   Returns   - the ImagePlus of the calibrated image"""
   theImp.show()
-  if(units == -6):
-    a = [0xC2, 0xB5]
-    mu = "".join([chr(c) for c in a]).decode('UTF-8')
-    scaUni  = mu+"m"
-  if(units == -3):
-    scaUni  = "mm"
-  if(units == -9):
-    scaUni  = "nm"
-  if(units == 0):
-    scaUni  = "m"
-  if(units == 3):
-    scaUni  = "km"
+  scaUni = getUnitString(units)
   w = theImp.getWidth()
   s1 = "distance=%d known=%f unit=%s" % (w, fullWidth, scaUni)
   IJ.run("Set Scale...", s1)
@@ -274,18 +321,7 @@ def calibImageDirect(theImp, unPerPx, units=-6):
   units   - the exponent w.r.t. meters. Defaults to -6 (microns)
   Returns - the ImagePlus of the calibrated image"""
   theImp.show()
-  if(units == -6):
-    a = [0xC2, 0xB5]
-    mu = "".join([chr(c) for c in a]).decode('UTF-8')
-    scaUni  = mu+"m"
-  if(units == -3):
-    scaUni  = "mm"
-  if(units == -9):
-    scaUni  = "nm"
-  if(units == 0):
-    scaUni  = "m"
-  if(units == 3):
-    scaUni  = "km"
+  scaUni = getUnitString(units)
   w = theImp.getWidth()
   s1 = "distance=1 known=%f unit=%s" % (unPerPx, scaUni)
   IJ.run("Set Scale...", s1)
@@ -304,18 +340,7 @@ def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
   units        - the exponent w.r.t. meters. Defaults to -6 (microns)
   Returns      - the ImagePlus of the calibrated image"""
   theImp.show()
-  if(units == -6):
-    a = [0xC2, 0xB5]
-    mu = "".join([chr(c) for c in a]).decode('UTF-8')
-    scaUni  = mu+"m"
-  if(units == -3):
-    scaUni  = "mm"
-  if(units == -9):
-    scaUni  = "nm"
-  if(units == 0):
-    scaUni  = "m"
-  if(units == 3):
-    scaUni  = "km"
+  scaUni = getUnitString(units)
   s1 = "distance=%d known=%f unit=%s" % (baseImgWidth, fullWidth, scaUni)
   IJ.run("Set Scale...", s1)
   theImp.show()
