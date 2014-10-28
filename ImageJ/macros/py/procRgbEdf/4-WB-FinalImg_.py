@@ -28,7 +28,7 @@ impExp.show()
 IJ.makeRectangle(0, 190, 1600, 260)
 
 # 3. Do the work
-jmg.whiteBalance(impExp)
+jmg.whiteBalance(impExp, bVerbose=True)
 
 # 4. save the results
 out = WindowManager.getCurrentImage()

@@ -17,6 +17,7 @@
 # 2014-10-25  JRM 1.1.17  Added whiteBalance
 # 2014-10-25  JRM 1.1.18  Added some calls to imp.flush() to clean up memory
 # 2014-10-27  JRM 1.1.19  Fixed path spacer
+# 2014-10-28  JRM 1.1.20  Added verbose flag to WhiteBalance
 
 import sys
 import os
@@ -70,12 +71,13 @@ def checkNaN(x):
     x = 0.0
   return x
   
-def whiteBalance(imp):
-  """whiteBalance(imp)
+def whiteBalance(imp, bVerbose=False):
+  """whiteBalance(imp, bVerbose=False)
   White balance an image from a ROI. Requires a ROI of the neutral area.
   Adapted from the macro by  Vytas Bindokas; Oct 2006, Univ. of Chicago
   Input parameters
   imp - the input ImagePlus
+  bVerbose - a boolean, default False, whether to print info
   Returns
   An ImagePlus of the corrected image (displayed)"""
   if(imp==None):
@@ -84,12 +86,10 @@ def whiteBalance(imp):
   name = imp.getShortTitle()
   w = imp.getWidth()
   h = imp.getHeight()
-  print(name)
   wbROI = imp.getRoi()
   if (wbROI==None):
     IJ.error("Missing ROI","you must draw region first")
     return None
-  print(wbROI)
   IJ.run("RGB Stack")
   # work = WindowManager.getCurrentImage()
   rm = RoiManager()
@@ -111,8 +111,14 @@ def whiteBalance(imp):
   dG=g-t
   dB=b-t
   # val = rt.getValueAsDouble(0, 0)
-  print(mc,ct)
-  print(r,g,b)
+  if(bVerbose==True):
+    print(name)
+    print("ROI:")
+    print(wbROI)
+    print("Mean R,G,B")
+    print(r,g,b)
+    print("Mean dR,dG,dB")
+    print(dR,dG,dB)
   # R=getResult("Mean")
   # print(R)
   IJ.makeRectangle(0, 0, w, h)
