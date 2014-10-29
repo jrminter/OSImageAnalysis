@@ -19,6 +19,7 @@
 # 2014-10-27  JRM 1.1.19  Fixed path spacer
 # 2014-10-28  JRM 1.1.20  Added verbose flag to WhiteBalance 
 # 2014-10-28  JRM 1.1.21  Consolidated getUnitString for DRY and added calStackZ
+# 2014-10-29  JRM 1.1.22  Added smoothFlatField
 
 import sys
 import os
@@ -528,6 +529,36 @@ def flatFieldCorrectRGB(impImg, impFF, sigma=100):
   impSc.updateAndDraw()
 
   return impSc
+  
+def smoothFlatField(theImp, scaFac=0.25, bShowIntermediate=False):
+  """smoothFlatField(theImp, scaFac=0.25, bShowIntermediate=False)
+  Smooth a flat field correction image to generate a gain reference image.
+  Uses ideas from: http://www.ini.uzh.ch/~acardona/fiji-tutorial/
+  Input Parameters:
+  theImp - the ImagePlus of the input image
+  scaFac - scale factor ... default = 0.25
+  bShowIntermediate - show work ... default = False
+  Return:
+  an ImagePlus with the flat field corrected image
+  """
+  # 1. wrap the ImagePlus to an ImgLib1 image
+  name = theImp.getShortTitle()
+  
+  img = ImgLib.wrap(theImp)
+  if bShowIntermediate:
+    # theImp.setTitle("raw")
+    theImp.show()
+    
+  
+  # 2. Simulate a gain image from a Gauss with a large radius  
+  # (First scale down by 1/scalefac X, then gauss of radius=20, then scale up)  
+  # Faster than a big median filter
+  gain = Resample(Gauss(Scale2D(img, scaFac), 20), img.getDimensions())
+  impGain = ImgLib.wrap(gain)
+  impGain.setTitle(name + "-sm")
+  return impGain
+  
+  
 
 def flatField(theImp, scaFac=0.25, bShowIntermediate=False):
   """flatField(theImp, scaFac=0.25, bShowIntermediate=False)
