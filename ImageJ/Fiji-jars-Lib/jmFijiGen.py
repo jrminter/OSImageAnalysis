@@ -21,6 +21,7 @@
 # 2014-10-28  JRM 1.1.21  Consolidated getUnitString for DRY and added calStackZ
 # 2014-10-29  JRM 1.1.22  Added smoothFlatField
 # 2014-10-29  JRM 1.1.23  Added procAZtecTifMap
+# 2014-10-30  JRM 1.1.24  Added vertProfileFromROI to process MAP ROIs
 
 import sys
 import os
@@ -94,7 +95,46 @@ def getUnitString(units=-6):
   if(units == 3):
     scaUni  = "km"
   return(scaUni)
-  
+
+
+def vertProfileFromROI(imp, lRoi, sFact, pause=0.1):
+  """vertProfileFromROI(imp, lRoi, sFact, pause=0.1)
+  Generate an averaged vertical profile from a rectangular ROI from an
+  ImagePlus
+  Inputs:
+  imp  - the ImagePlus
+  lRoi  - a list with the parameters to construct the ROI
+  sFact - a scale factor, defaults to 1 for pixels.
+  pause -  time in sec to wait before closing ROI
+  Returns
+  a list with two arrays, distance and intensity"""
+  if (len(lRoi) != 4):
+    IJ.error("Not a proper rectangle","This function expects a 4 item list for the ROI")
+    return None
+  imp.show()
+  IJ.makeRectangle(lRoi[0], lRoi[1], lRoi[2], lRoi[3]);
+  IJ.run("Duplicate...", "title=ROI-feature")
+  impROI = WindowManager.getCurrentImage()
+  imp.close()
+  w = impROI.getWidth()
+  h = impROI.getHeight()
+  ip = impROI.getProcessor()
+  ar = ip.getPixels()  
+  x = []
+  y = []
+  for j in xrange(h):
+    x.append(round(sFact*j, 3))
+    gSum = 0.
+    for i in xrange(w):
+      gSum += float(ar[j*w+i])
+    gAvg = gSum / float(w)
+    y.append(round(gAvg, 1))
+  ret = [x,y]
+  time.sleep(pause)
+  impROI.close()
+  return ret
+
+
 def procAZtecTifMap(imp, colStr, gamma=1.0, theta=5):
   """procAZtecTifMap(imp, colStr, gamma=1.0, theta=5)
   Process an ImagePlus from an AZtec X-ray map exported as a TIF
