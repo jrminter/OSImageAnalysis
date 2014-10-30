@@ -20,6 +20,7 @@
 # 2014-10-28  JRM 1.1.20  Added verbose flag to WhiteBalance 
 # 2014-10-28  JRM 1.1.21  Consolidated getUnitString for DRY and added calStackZ
 # 2014-10-29  JRM 1.1.22  Added smoothFlatField
+# 2014-10-29  JRM 1.1.23  Added procAZtecTifMap
 
 import sys
 import os
@@ -93,6 +94,34 @@ def getUnitString(units=-6):
   if(units == 3):
     scaUni  = "km"
   return(scaUni)
+  
+def procAZtecTifMap(imp, colStr, gamma=1.0, theta=5):
+  """procAZtecTifMap(imp, colStr, gamma=1.0, theta=5)
+  Process an ImagePlus from an AZtec X-ray map exported as a TIF
+  Inputs:
+  imp    - the ImagePlus
+  colStr - a color string for the LUT
+  gamma  - a gamma transform for the map. defaults to 1
+  theta  - parameter for ROF denoising. default = 5.
+  Returns:
+  An ImagePlus for the transformed image  
+  """
+  # start with a copy
+  name = imp.getShortTitle()
+  impRet = imp.duplicate()
+  impRet.show()
+  ip = impRet.getProcessor()
+  theMax = ip.getMax()
+  IJ.run("32-bit")
+  IJ.run("ROF Denoise", "theta=%g" % theta)
+  IJ.setMinAndMax(0, theMax);
+  IJ.run("8-bit")
+  IJ.run("Gamma...", "value=%g" % gamma)
+  IJ.run(colStr)
+  IJ.run("RGB Color")
+  impRet.setTitle(name + "-pr")
+  impRet.updateAndRepaintWindow()
+  return impRet
   
 def calStackZ(imp, scaleX, scaleY, scaleZ, units=-6, bVerbose=False):
   """calStackZ(imp, scaleX, scaleY, scaleZ, units=-6,  bVerbose=False)
