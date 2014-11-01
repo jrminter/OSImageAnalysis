@@ -22,6 +22,8 @@
 # 2014-10-29  JRM 1.1.22  Added smoothFlatField
 # 2014-10-29  JRM 1.1.23  Added procAZtecTifMap
 # 2014-10-30  JRM 1.1.24  Added vertProfileFromROI to process MAP ROIs
+# 2014-11-01  JRM 1.1.25  Updated vertProfileFromROI and doCrop to work
+#                         in headless mode. Many more functions to fix...
 
 import sys
 import os
@@ -105,17 +107,23 @@ def vertProfileFromROI(imp, lRoi, sFact, pause=0.1):
   imp  - the ImagePlus
   lRoi  - a list with the parameters to construct the ROI
   sFact - a scale factor, defaults to 1 for pixels.
-  pause -  time in sec to wait before closing ROI
+  pause - time in sec to wait before closing ROI. If pause > 2.
+          the image and rois are shown, otherwise it is headless compatible.
   Returns
   a list with two arrays, distance and intensity"""
   if (len(lRoi) != 4):
     IJ.error("Not a proper rectangle","This function expects a 4 item list for the ROI")
     return None
-  imp.show()
-  IJ.makeRectangle(lRoi[0], lRoi[1], lRoi[2], lRoi[3]);
-  IJ.run("Duplicate...", "title=ROI-feature")
-  impROI = WindowManager.getCurrentImage()
-  imp.close()
+  if (pause > 1.99):
+    imp.show()
+  cal = imp.getCalibration()
+  impROI = imp.duplicate()
+  impROI.setCalibration(cal)
+  impROI.setRoi(lRoi[0],lRoi[1],lRoi[2],lRoi[3])
+  IJ.run(impROI,"Crop","")
+  if (pause > 1.99):
+    imp.close()
+    impROI.show()
   w = impROI.getWidth()
   h = impROI.getHeight()
   ip = impROI.getProcessor()
@@ -131,7 +139,9 @@ def vertProfileFromROI(imp, lRoi, sFact, pause=0.1):
     y.append(round(gAvg, 1))
   ret = [x,y]
   time.sleep(pause)
-  impROI.close()
+  if (pause > 1.99):
+    impROI.changes = False
+    impROI.close()
   return ret
 
 
@@ -374,12 +384,10 @@ def calibImage(theImp, fullWidth, units=-6):
   fullWidth - the full width of the image, typically in microns
   units     - the exponent w.r.t. meters. Defaults to -6 (microns)
   Returns   - the ImagePlus of the calibrated image"""
-  theImp.show()
   scaUni = getUnitString(units)
   w = theImp.getWidth()
   s1 = "distance=%d known=%f unit=%s" % (w, fullWidth, scaUni)
-  IJ.run("Set Scale...", s1)
-  theImp.show()
+  IJ.run(theImp, "Set Scale...", s1)
   return theImp
 
 def calibImageDirect(theImp, unPerPx, units=-6):
@@ -390,12 +398,10 @@ def calibImageDirect(theImp, unPerPx, units=-6):
   unPerPx - the spacing between pixels in units
   units   - the exponent w.r.t. meters. Defaults to -6 (microns)
   Returns - the ImagePlus of the calibrated image"""
-  theImp.show()
   scaUni = getUnitString(units)
   w = theImp.getWidth()
   s1 = "distance=1 known=%f unit=%s" % (unPerPx, scaUni)
-  IJ.run("Set Scale...", s1)
-  theImp.show()
+  IJ.run(theImp, "Set Scale...", s1)
   return theImp
 
 def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
@@ -421,10 +427,19 @@ def doCrop(theImp, lPar):
   Crop an ImagePlus to a rectangle with the parameter list, lPar
   lPar = [x0,y0,width,height]
   returns an ImagePlus with the cropped image."""
-  theImp.show()
-  IJ.makeRectangle(lPar[0], lPar[1], lPar[2], lPar[3])
-  IJ.run("Crop")
-  imp = WindowManager.getCurrentImage()
+  if (len(lPar) != 4):
+    IJ.log("You need to pass a list of 4 integers [x,y,w,h] to doCrop")
+    return None      
+  name = theImp.getShortTitle() + "-cr"
+  cal = theImp.getCalibration()
+  # make a copy
+  imp = theImp.duplicate()
+  imp.setCalibration(cal)
+  w = imp.getWidth()
+  h = imp.getHeight()
+  imp.setRoi(lPar[0],lPar[1],lPar[2],lPar[3])
+  IJ.run(imp,"Crop","")
+  imp.setTitle(name)
   return (imp)
   
 def makeTiles(inpDir, outDir, lNames, inExt='.png', cropPar=None, bDebug=False):
