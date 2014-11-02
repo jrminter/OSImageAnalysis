@@ -34,6 +34,7 @@ images/map/tile/*.tif
 images/map/tile/TileConfiguration.txt
 images/map/exemplar-3x2-map.png
 images/George.txt
+images/latex-cr.tif
 # don't track written ini files
 images/suite/*.ini
 
