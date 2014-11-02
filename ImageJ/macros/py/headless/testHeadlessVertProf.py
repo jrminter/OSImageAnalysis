@@ -1,7 +1,7 @@
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
-import os, csv
+import os, csv, time
 from ij import IJ
 import jmFijiGen as jmg
 
@@ -23,23 +23,25 @@ if (pause > 1.99):
 
 # print(x,y)
 
-proPath = gitDir + relImg + "/latexPro.csv"
+proDir = gitDir + relImg 
+proPth = proDir + "/latexPro.csv"
 
 # open the file first (if its not there, newly created)
-f = open(proPath, 'wb')
- 
+print("writing output")
+f = open(proPth, 'wb')
 # create csv writer
 writer = csv.writer(f)
-
 # write the header
 row = ["x", "y"]
 writer.writerow(row)
  
 # for loop to write each row
 for i in range(len(x)):
-    row = [x[i], y[i]]
-    writer.writerow(row)
+  row = [x[i], y[i]]
+  writer.writerow(row)
  
 # close the file. 
 f.close()
+
+
 
