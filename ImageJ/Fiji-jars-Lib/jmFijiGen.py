@@ -24,6 +24,8 @@
 # 2014-10-30  JRM 1.1.24  Added vertProfileFromROI to process MAP ROIs
 # 2014-11-01  JRM 1.1.25  Updated vertProfileFromROI and doCrop to work
 #                         in headless mode. Many more functions to fix...
+# 2014-11-03  JRM 1.1.26  Upgraded procAZtecTifMap, calStackZ
+# 2014-11-06  JRM 1.1.27  Added i2b, hueDegToRGBCol, applyHueLUT
 
 import sys
 import os
@@ -32,6 +34,9 @@ import shutil
 import time
 import math
 import csv
+
+from colorsys import hsv_to_rgb
+
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
@@ -39,17 +44,22 @@ import java.io as jio
 import java.lang as jl
 import java.util as ju
 
+import jarray
+
 from ij import IJ
 from ij import ImagePlus
 from ij import WindowManager
 
+from ij.measure import ResultsTable
+
 from ij.plugin import Duplicator
 from ij.plugin import ChannelSplitter
 from ij.plugin import ImageCalculator
-
 from ij.plugin.frame import RoiManager
 
-from ij.measure import ResultsTable
+from ij.process import LUT
+
+
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract  
 from script.imglib.algorithm import Gauss, Scale2D, Resample  
@@ -76,6 +86,57 @@ def checkNaN(x):
   if isNaN(x):
     x = 0.0
   return x
+  
+
+def i2b(i):
+  """def i2b(i)
+  Convert an integer to a byte. Useful for LUTs."""
+  if i > 127:
+    i -= 256
+  if i < -128:
+    i = 128
+  return i
+
+
+def hueDegToRGBCol(hue):
+  """hueDegToRGBCol(hue)
+  Convert a hue balue (0 to 360 degrees) to an RGB color.
+  Useful for LUTs."""
+  h = hue / 360.
+  [r, g, b] =  hsv_to_rgb(h, 1.0, 1.0)
+  ret = [255.0*r, 255.0*g, 255.0*b]
+  return ret
+  
+def applyHueLUT(imp, hueDeg, gamma=1.0):
+  """applyHueLUT(imp, hueDeg, gamma=1.0)
+  Create and a apply a LUT to an ImagePlus where the maximum intensity corresponds to
+  the hue specified by hueDeg. Optionally apply a gamma.
+  Input Parameters
+  imp - the ImagePlus
+  hueDeg - the hue angle, in degrees, from 0 to 360
+  gamma  - an optional gamma correction, defaults to 1.0
+  Returns
+  an ImagePlus with the new LUT applied"""
+  ret = imp.duplicate()
+  r, g, b = hueDegToRGBCol(hueDeg)
+  print(r,g,b)
+  ra = jarray.zeros(256, 'b')
+  ga = jarray.zeros(256, 'b')
+  ba = jarray.zeros(256, 'b')
+
+  
+  for i in range(256):
+    ra[i] = i2b(int(round(r*pow(float(i)/256., gamma))))
+    ga[i] = i2b(int(round(g*pow(float(i)/256., gamma))))
+    ba[i] = i2b(int(round(b*pow(float(i)/256., gamma))))
+
+  lut = LUT(ra, ga, ba)
+  ip = ret.getProcessor() 
+  ip.setLut(lut)
+  ret.updateImage() 
+  
+  return ret
+
 
 def getUnitString(units=-6):
   """getUnitString(units)
@@ -159,18 +220,18 @@ def procAZtecTifMap(imp, colStr, gamma=1.0, theta=5):
   # start with a copy
   name = imp.getShortTitle()
   impRet = imp.duplicate()
-  impRet.show()
+  # impRet.show()
   ip = impRet.getProcessor()
   theMax = ip.getMax()
-  IJ.run("32-bit")
-  IJ.run("ROF Denoise", "theta=%g" % theta)
-  IJ.setMinAndMax(0, theMax);
-  IJ.run("8-bit")
-  IJ.run("Gamma...", "value=%g" % gamma)
-  IJ.run(colStr)
-  IJ.run("RGB Color")
+  IJ.run(impRet, "32-bit","")
+  IJ.run(impRet, "ROF Denoise", "theta=%g" % theta)
+  IJ.setMinAndMax(impRet, 0, theMax);
+  IJ.run(impRet, "8-bit", "")
+  IJ.run(impRet,"Gamma...", "value=%g" % gamma)
+  IJ.run(impRet, colStr, "")
+  IJ.run(impRet, "RGB Color", "")
   impRet.setTitle(name + "-pr")
-  impRet.updateAndRepaintWindow()
+  # impRet.updateAndRepaintWindow()
   return impRet
   
 def calStackZ(imp, scaleX, scaleY, scaleZ, units=-6, bVerbose=False):
@@ -201,7 +262,7 @@ def calStackZ(imp, scaleX, scaleY, scaleZ, units=-6, bVerbose=False):
   cal.pixelDepth  = scaleZ
   imp.setCalibration(cal)
   
-  imp.updateAndRepaintWindow() 
+  # imp.updateAndRepaintWindow() 
 
   if(bVerbose):
     print(nS)
