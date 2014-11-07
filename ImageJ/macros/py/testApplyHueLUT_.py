@@ -13,7 +13,7 @@ import os
 from ij import IJ
 import jmFijiGen as jmg
 
-
+bInvert = True
 gitDir = os.environ['GIT_HOME']
 edsDir = os.environ['EDS_ROOT']
 relImg = "/OSImageAnalysis/images"
@@ -23,9 +23,14 @@ imgPath = gitDir + relImg + "/blobs.gif"
 print(imgPath)
 
 raw = IJ.openImage(imgPath)
+name = raw.getShortTitle()
+if bInvert:
+  # we need to invert the blob imgage
+  IJ.run(raw, "Invert","")
 raw.show()
 
-new = jmg.applyHueLUT(raw, 30.0, gamma=0.5)
+new = jmg.applyHueLUT(raw, 210.0, gamma=0.5)
+new.setTitle(name+"-lut")
 new.show()
 
 
