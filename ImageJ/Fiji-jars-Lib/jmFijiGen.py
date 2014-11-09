@@ -26,6 +26,7 @@
 #                         in headless mode. Many more functions to fix...
 # 2014-11-03  JRM 1.1.26  Upgraded procAZtecTifMap, calStackZ
 # 2014-11-06  JRM 1.1.27  Added i2b, hueDegToRGBCol, applyHueLUT
+# 2014-11-09  JRM 1.1.28  Added burnBox
 
 import sys
 import os
@@ -49,6 +50,8 @@ import jarray
 from ij import IJ
 from ij import ImagePlus
 from ij import WindowManager
+
+from ij.gui import Roi
 
 from ij.measure import ResultsTable
 
@@ -97,6 +100,19 @@ def i2b(i):
     i = 128
   return i
 
+def burnBox(imp, lRoi, col="green", wid=2):
+  """burnBox(imp, lRoi, col="green", wid=2)
+  Burn a box into an ImagePlus
+  Input parameters
+  imp  - the ImagePlus
+  lRoi - a list with [x0,y0,w,h]
+  col  - the color, default is green
+  wid  - the line width default = 3"""
+  roi = Roi(lRoi[0], lRoi[1], lRoi[2], lRoi[3])
+  imp.setRoi(roi)
+  strStroke = "  stroke=%s width=%g" % (col, wid)
+  IJ.run(imp, "Properties... ", strStroke )
+  IJ.run(imp, "Add Selection...", "")
 
 def hueDegToRGBCol(hue):
   """hueDegToRGBCol(hue)
