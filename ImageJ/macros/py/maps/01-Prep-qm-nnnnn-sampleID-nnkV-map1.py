@@ -1,11 +1,13 @@
-# 01-Prep-qm-04219-49G003-188-7kV-map-1
+# 01-Prep-qm-nnnnn-sampleID-nnkV-map1.py
 #
-# Prep images from qm-04219-49G003-188-7kV-map-1
+# Prep images from 01-Prep-qm-nnnnn-sampleID-nnkV-map1
 #
 #  Modifications
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
-# 2014-11-06  JRM 0.1.00  Use the Hue lut and prep map images for stitching
+# 2014-11-07  JRM 0.1.00  Use the Hue lut and prep map images for stitching
+#                         this version applies gamma to ROI and tries 
+#                         to use standard directories
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -14,23 +16,33 @@ import os
 import jmFijiGen as jmg
 from ij import IJ
 
-bSave      = True
+bSave      = False
 homDir     = os.environ['HOME']
 edsDir     = os.environ['EDS_ROOT']
-relIn      = "/Oxford/QM14-04-06B-Wansha/reports/qm-04219-493004-188/qm-04219-493004-188-7kV-map1/tif"
-relOut     = "/Oxford/QM14-04-06B-Wansha/reports/qm-04219-493004-188/qm-04219-493004-188-7kV-map1/work"
-outNamFull = "qm-04209-49G003-S400-F-C21-Bez-10kV-map-2.png"
-
-lName   = ["N-K","O-K","Cu-L", "P-K", "Na-K","Cl-K", "Pd-L", "Ag-L", "ROI"]
-lHue    = [    0,  120,   180,   150,   210,    90,     60,     30 , -1   ]
-lGamma  = [  1.0,  1.0,   1.0,   1.0,   1.0,   1.0,    1.0,    1.0 , 1.0  ]
-#        sz   w-px  um
-lCal = [116., 1023, -6]
-
-
+ePrjDir    = "QM14-nn-nnA-Client"
+sampID     = "qm-nnnnn-sampleID"
+mapID      = "10kV-map1"   
+datDir     = "/Oxford/" + ePrjDir + "/reports/" + sampID + "/" + sampID + "-" + mapID
+relIn      = datDir + "/tif"
+relOut     = datDir + "/work"
 inDir  = edsDir + relIn
 outDir = edsDir + relOut
-# jmg.ensureDir(outDir)
+
+if (bSave != True):
+  print(inDir)
+  print(outDir)
+
+gam = 0.7
+#           map fills row-by row left to right
+lName   = ["C-K", "N-K","O-K","Cu-L", "P-K", "Cl-K", "Pd-L", "Ag-L", "ROI"]
+lHue    = [    0,   210,  120,   180,   150,     90,     60,     30 , -1   ]
+lGamma  = [  gam,   gam,  gam,   gam,   gam,    gam,    gam,    gam , gam  ]
+#        sz   w-px  um
+lCal = [193., 1024, -6]
+
+
+
+jmg.ensureDir(outDir)
 
 for i in range(len(lName)):
   strImg = inDir + "/" + lName[i] + ".tif"
@@ -52,6 +64,7 @@ for i in range(len(lName)):
     imp.changes = False
     imp.show()
   else:
+    IJ.run(imp, "Gamma...", "value=%g" % gamma)
     IJ.run(imp, "RGB Color", "")
     imp.setTitle(name)
     imp.changes = False
