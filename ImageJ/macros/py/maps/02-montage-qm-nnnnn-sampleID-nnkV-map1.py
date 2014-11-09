@@ -6,6 +6,7 @@
 # ----------  --- ------  -------------------------------------------------
 # 2014-11-07  JRM 0.1.00  Montage maps created with 01-Prep script
 #                         this version tries to use standard directories
+# 2014-11-07  JRM 0.1.10  Added a bTestPaths flag to test loading images 
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -14,6 +15,7 @@ import os
 import jmFijiGen as jmg
 from ij import IJ
 
+bTestPaths = False
 homDir     = os.environ['HOME']
 edsDir     = os.environ['EDS_ROOT']
 ePrjDir    = "QM14-nn-nnA-Client"
@@ -22,27 +24,39 @@ ePrjDir    = "QM14-nn-nnA-Client"
 # and unwieldy...
 rPrjDir    = "QM14-nn-nnA-Client"
 sampID     = "qm-nnnnn-sampleID"
-mapID      = "nnkV-map1"   
-datDir     = "/Oxford/" + ePrjDir + "/reports/" + sampID + "/" + sampID + "-" + mapID
-relIn      = datDir + "/tif"
+mapID      = "nnkV-map1" 
 
-relOut     = "/work/proj/" + rPrjDir + "/Sweave/inc/png"
-outNamFull = sampID + "-" + mapID + ".png"
 # map fills row-by row left to right
 lName = ["C-K", "N-K","O-K","Cu-L", "P-K", "Cl-K", "Pd-L", "Ag-L", "ROI"]
 nCol = 3
 nRow = 3
 #        sz   w-px  um
 lCal = [193., 1024, -6]
+  
+datDir     = "/Oxford/" + ePrjDir + "/reports/" + sampID + "/" + sampID + "-" + mapID
+relIn      = datDir + "/work"
 
+relOut     = "/work/proj/" + rPrjDir + "/Sweave/inc/png"
+outNamFull = sampID + "-" + mapID + ".png"
 
 inDir  = edsDir + relIn
 outDir = homDir + relOut
-jmg.ensureDir(outDir)
-
 outPth = outDir + "/" + outNamFull
-impMontFull = jmg.makeMontage(lName, nCol, nRow, inDir, lCal=lCal, sca=1.0)
-impMontFull.show()
-IJ.saveAs(impMontFull, "PNG", outPth)
+
+if bTestPaths == True:
+  # print the directories and try loading the ROI image
+  print(inDir)
+  strImg = inDir + "/ROI.png"
+  imp = IJ.openImage(strImg)
+  if imp == None:
+    print("Error loading ROI.png")
+  else:
+    imp.show()
+  print(outPth)
+else:
+  jmg.ensureDir(outDir)
+  impMontFull = jmg.makeMontage(lName, nCol, nRow, inDir, lCal=lCal, sca=1.0)
+  impMontFull.show()
+  IJ.saveAs(impMontFull, "PNG", outPth)
 
 
