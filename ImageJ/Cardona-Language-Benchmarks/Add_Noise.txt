@@ -1,0 +1,38 @@
+/*
+A macro for ImageJ(C).
+Copyright (C) 2005 Albert Cardona.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation (http://www.gnu.org/licenses/gpl.txt )
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. 
+
+You may contact Albert Cardona at albert at pensament.net, at http://www.pensament.net/java/
+*/
+
+macro "Add Noise" {
+	width = getWidth();
+	height = getHeight();
+	run("Select All");
+	run("Copy");
+	newImage("Noisy", "8-bit", width, height, 1);
+	run("Paste");
+	for (x=0; x<width; x++) {
+		for (y=0; y<height; y++) {
+			pixel = getPixel(x, y);
+			rand = pixel + (random() * 255) - 128;
+			if (rand > 255) rand = 255;
+			if (rand < 0) rand = 0;
+			setPixel(x, y, rand);
+		}
+	}
+	resetMinAndMax();
+	//updateDisplay(); //this is done anyway when the macro exits
+}
