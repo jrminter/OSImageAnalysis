@@ -6,7 +6,8 @@
 # ----------  --- ------  -------------------------------------------------
 # 2014-11-07  JRM 0.1.00  Montage maps created with 01-Prep script
 #                         this version tries to use standard directories
-# 2014-11-07  JRM 0.1.10  Added a bTestPaths flag to test loading images 
+# 2014-11-07  JRM 0.1.10  Added a bTestPaths flag to test loading images
+# 2014-11-10  JRM 0.0.11  Be sure to set title 
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -56,6 +57,7 @@ if bTestPaths == True:
 else:
   jmg.ensureDir(outDir)
   impMontFull = jmg.makeMontage(lName, nCol, nRow, inDir, lCal=lCal, sca=1.0)
+  impMontFull.setTitle(sampID + "-" + mapID)
   impMontFull.show()
   IJ.saveAs(impMontFull, "PNG", outPth)
 
