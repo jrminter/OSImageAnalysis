@@ -27,6 +27,7 @@
 # 2014-11-03  JRM 1.1.26  Upgraded procAZtecTifMap, calStackZ
 # 2014-11-06  JRM 1.1.27  Added i2b, hueDegToRGBCol, applyHueLUT
 # 2014-11-09  JRM 1.1.28  Added burnBox
+# 2014-11-18  JRM 1.1.29  Added findI0
 
 import sys
 import os
@@ -74,6 +75,42 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def findI0(imp, maxSearchFrac=0.5, chAvg=5):
+  """findI0(imp, maxSearchFrac=0.5, chAvg=5)
+  search a single channel image from the maximum gray level down to find
+  the mean intensity.
+  Input parameters:
+  imp - the Image Plus
+  maxSearchFrac - the maximum fraction of gray space to search, defualt is 0.5
+  chAvg         - number of channels on either side of the maximum to average
+                  to find the centroid. Defaults to 5
+  Returns:
+    The mean intensity of the peak or None if there is an error."""
+  if imp.getNChannels() > 1:
+    IJ.error("findI0 requires a single channel image")
+    return None
+  if imp.getNSlices() > 1:
+    IJ.error("findI0 requires a single channel image")
+    return None
+  ipHis = imp.getProcessor().getHistogram()
+  l = len(ipHis)
+  lMin = int(maxSearchFrac*l)
+  iMax = iPk = 0
+  for x in range(lMin):
+    i = l-x-1
+    if(ipHis[i] > iPk):
+      iPk = ipHis[i]
+      iMax = i
+  sumI = 0
+  sumH = 0
+  for x in range(2*chAvg+1):
+    i = iMax - chAvg + x
+    sumI += i * ipHis[i]
+    sumH += ipHis[i]  
+  iZero = float(sumI) / float(sumH)
+  return (iZero)
+
 
 
 def isNaN(num):
