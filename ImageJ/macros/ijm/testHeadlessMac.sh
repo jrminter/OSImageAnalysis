@@ -20,7 +20,7 @@ echo \"Fiji started:\"
 # --console -macro ${IJ_MACRO}
 rm -rf ${LOG_DIR}/log.txt
 
-$FIJI_APP --headless  --mem=1000m  -macro ${IJ_MACRO}  #  > ${LOG_DIR}/log.txt
+$FIJI_APP --headless  --mem=1000m  -macro --comnsole ${IJ_MACRO}  #  > ${LOG_DIR}/log.txt
 
 # cat ${LOG_DIR}/log.txt
 

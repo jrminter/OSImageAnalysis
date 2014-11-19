@@ -28,6 +28,7 @@
 # 2014-11-06  JRM 1.1.27  Added i2b, hueDegToRGBCol, applyHueLUT
 # 2014-11-09  JRM 1.1.28  Added burnBox
 # 2014-11-18  JRM 1.1.29  Added findI0
+# 2014-11-18  JRM 1.1.30  Fixed findI0 for 16 bit images
 
 import sys
 import os
@@ -93,12 +94,15 @@ def findI0(imp, maxSearchFrac=0.5, chAvg=5):
   if imp.getNSlices() > 1:
     IJ.error("findI0 requires a single channel image")
     return None
+  # need to find max Gray for search. 16 bit images have a lot of empty cells...
+  stats = imp.getStatistics()
+  maxGray = int(stats.max)
+  minGray = int(maxSearchFrac*stats.max)
+  delta = maxGray - minGray
   ipHis = imp.getProcessor().getHistogram()
-  l = len(ipHis)
-  lMin = int(maxSearchFrac*l)
   iMax = iPk = 0
-  for x in range(lMin):
-    i = l-x-1
+  for x in range(delta):
+    i = maxGray-x-1
     if(ipHis[i] > iPk):
       iPk = ipHis[i]
       iMax = i
