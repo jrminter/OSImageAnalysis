@@ -10,6 +10,7 @@
 #                         to use standard directories.
 # 2014-11-07  JRM 0.1.10  Added some test flags to make it easier to debug
 #                         directories and image contrast.
+# 2014-11-20  JRM 0.1.20  Added option to perform median filter.
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -22,6 +23,13 @@ from ij import IJ
 bTstPath   = False
 # when you are happy with images produces, set to True to save
 bSave      = True
+# option to do a median filter to reduce noise. Useful if map will not be downscaled later...
+bDoMedian  = False
+rMedian    = 3.0
+# gamma for maps and image. Set to 1 for linear.
+gam  = 0.7
+gamI = 0.7
+
 homDir     = os.environ['HOME']
 edsDir     = os.environ['EDS_ROOT']
 ePrjDir    = "QM14-nn-nnA-Client"
@@ -37,11 +45,11 @@ if (bSave != True):
   print(inDir)
   print(outDir)
 
-gam = 0.7
+
 #           map fills row-by row left to right
 lName   = ["C-K", "N-K","O-K","Cu-L", "P-K", "Cl-K", "Pd-L", "Ag-L", "ROI"]
 lHue    = [    0,   210,  120,   180,   150,     90,     60,     30 , -1   ]
-lGamma  = [  gam,   gam,  gam,   gam,   gam,    gam,    gam,    gam , gam  ]
+lGamma  = [  gam,   gam,  gam,   gam,   gam,    gam,    gam,    gam , gamI ]
 #        sz   w-px  um
 lCal = [193., 1024, -6]
 
@@ -57,6 +65,9 @@ for i in range(len(lName)):
     imp = IJ.openImage(strImg)
     name = imp.getShortTitle()
     IJ.run(imp, "Enhance Contrast", "saturated=0.35")
+    if bDoMedian:
+      strMedian = "radius=%g" % rMedian
+      IJ.run(imp, "Median...", strMedian)   
     IJ.run(imp, "8-bit", "")
     imp.show()
     hue = lHue[i]
