@@ -29,6 +29,7 @@
 # 2014-11-09  JRM 1.1.28  Added burnBox
 # 2014-11-18  JRM 1.1.29  Added findI0
 # 2014-11-18  JRM 1.1.30  Fixed findI0 for 16 bit images
+# 2014-11-22  JRM 1.1.31  Added RGBtoMontage and labelMontage
 
 import sys
 import os
@@ -43,28 +44,22 @@ from colorsys import hsv_to_rgb
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
+from java.awt import Color
 import java.io as jio
 import java.lang as jl
 import java.util as ju
 
 import jarray
 
-from ij import IJ
-from ij import ImagePlus
-from ij import WindowManager
+from ij import IJ, ImagePlus, WindowManager
 
-from ij.gui import Roi
+from ij.gui import Roi, TextRoi, Overlay
 
 from ij.measure import ResultsTable
-
-from ij.plugin import Duplicator
-from ij.plugin import ChannelSplitter
-from ij.plugin import ImageCalculator
+from ij.plugin import ImageCalculator, Duplicator, ChannelSplitter
 from ij.plugin.frame import RoiManager
 
 from ij.process import LUT
-
-
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract  
 from script.imglib.algorithm import Gauss, Scale2D, Resample  
@@ -76,6 +71,112 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+
+def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE):
+  """labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE)
+  Label a montage in the overlay
+  Inputs:
+  imp     - the ImagePlus of the montage to label
+  lLabels - a list of labels to write into the overlay
+  cols    - the number of columns in the montage
+  rows    - the number of rows in the montage
+  w0      - the x offset for the label (defaults to 12 px)
+  h0      - the y offset for the label (defaults to  2 px)
+  font    - the size of the font (pts, defaults to 24)
+  col     - color of text. Default to Color.WHITE
+  Returns
+  an ImagePlus with a labeled, duplicate of the input image
+  """
+  wBase = imp.getWidth()/cols
+  hBase = imp.getHeight()/rows
+  l = len(lLabels)
+  # make a copy
+  res = imp.duplicate()
+  # let's create an array of text rois
+  ol = Overlay()
+  for i in range(l):
+    x = (i % cols)*wBase + w0
+    y = (i // rows)*hBase + h0
+    tr = TextRoi(x, y, lLabels[i])
+    tr.setColor(col)
+    tr.setFont("SanSerif", font, 1) 
+    tr.setJustification(TextRoi.CENTER)
+    tr.setAntialiased(True)
+    ol.add(tr)
+  res.show()
+  res.setOverlay(ol)
+  res.updateAndRepaintWindow()
+  return res
+  
+ 
+def RGBtoMontage(imp, font=24, col=Color.WHITE, bClose=True):
+  """RGBtoMontage(imp)
+  Split an RGB image into channels, convert each to RGB, and then make a montage of the
+  four images."""
+  imp.show()
+  w = imp.getWidth()
+  print(w)
+  name = imp.getShortTitle()
+  cs = ChannelSplitter()
+  [rImg, gImg, bImg] = cs.split(imp)
+  imp.hide()
+  
+  rImg.setTitle("R")
+  IJ.run(rImg, "RGB Color","")
+  rImg.show()
+  rImg.updateAndRepaintWindow()
+  
+  gImg.setTitle("G")
+  IJ.run(gImg, "RGB Color","")
+  gImg.show()
+  gImg.updateAndRepaintWindow()
+  
+  bImg.setTitle("B")
+  IJ.run(bImg, "RGB Color","")
+  bImg.show()
+  bImg.updateAndRepaintWindow()
+  
+  imp.show()
+  IJ.run("Images to Stack", "name=Stack title=[] use")
+  stack = IJ.getImage()
+  strMon = "columns=4 rows=1 scale=1 first=1 last=4 increment=1 border=0 font=12"
+  IJ.run("Make Montage...", strMon)
+
+  res = IJ.getImage()
+  if bClose:
+    imp.changes=False
+    imp.close()
+    stack.changes=False
+    stack.close()
+  res.show()
+  trR = TextRoi(    10, 0, "R")
+  trR.setColor(col)
+  trR.setFont("SanSerif", font, 1) 
+  trR.setJustification(TextRoi.CENTER)
+  trR.setAntialiased(True)
+  
+  trG = TextRoi(  w+10, 0, "G")
+  trG.setColor(col)
+  trG.setFont("SanSerif", font, 1) 
+  trG.setJustification(TextRoi.CENTER)
+  trG.setAntialiased(True)
+  
+  trB = TextRoi(2*w+10, 0, "B")
+  trB.setColor(col)
+  trB.setFont("SanSerif", font, 1) 
+  trB.setJustification(TextRoi.CENTER)
+  trB.setAntialiased(True)
+
+  ol = Overlay()
+  ol.add(trR)
+  ol.add(trG)
+  ol.add(trB)
+  res.setOverlay(ol)
+  res.updateAndRepaintWindow()
+  return res
+  
+
 
 def findI0(imp, maxSearchFrac=0.5, chAvg=5):
   """findI0(imp, maxSearchFrac=0.5, chAvg=5)
