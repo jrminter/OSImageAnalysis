@@ -89,7 +89,7 @@ def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE
   Returns
   an ImagePlus with a labeled, duplicate of the input image
   """
-  print(cols,rows)
+  # print(cols,rows)
   wBase = imp.getWidth()/cols
   hBase = imp.getHeight()/rows
   # print(wBase, hBase)
