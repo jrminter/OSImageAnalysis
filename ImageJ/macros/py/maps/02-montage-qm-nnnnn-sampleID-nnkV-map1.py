@@ -110,6 +110,7 @@ else:
   # now burn the scale bar we really want...
   IJ.run(impOut, "Add Scale Bar", strSB)
   # impOut.setTitle(sampID + "-" + mapID)
+  IJ.makePoint(-10, -10)
   impOut.updateAndRepaintWindow()
   
   IJ.saveAs(impOut, "PNG", outPth)
