@@ -30,6 +30,7 @@
 # 2014-11-18  JRM 1.1.29  Added findI0
 # 2014-11-18  JRM 1.1.30  Fixed findI0 for 16 bit images
 # 2014-11-22  JRM 1.1.31  Added RGBtoMontage and labelMontage
+# 2014-11-25  JRM 1.1.32  Fixed bug in labelMontage
 
 import sys
 import os
@@ -88,17 +89,26 @@ def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE
   Returns
   an ImagePlus with a labeled, duplicate of the input image
   """
+  print(cols,rows)
   wBase = imp.getWidth()/cols
   hBase = imp.getHeight()/rows
+  # print(wBase, hBase)
   l = len(lLabels)
+  xt = 0
+  y = 0
   # make a copy
   res = imp.duplicate()
   # let's create an array of text rois
   ol = Overlay()
   for i in range(l):
-    x = (i % cols)*wBase + w0
-    y = (i // rows)*hBase + h0
-    tr = TextRoi(x, y, lLabels[i])
+    x = (i % cols+1)-1
+    if x < xt:
+      y += 1
+    xt = x
+    xL = x * wBase + w0
+    yL = y * hBase + h0
+    # print(xL,yL)
+    tr = TextRoi(xL, yL, lLabels[i])
     tr.setColor(col)
     tr.setFont("SanSerif", font, 1) 
     tr.setJustification(TextRoi.CENTER)
