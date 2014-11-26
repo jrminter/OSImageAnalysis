@@ -31,6 +31,7 @@
 # 2014-11-18  JRM 1.1.30  Fixed findI0 for 16 bit images
 # 2014-11-22  JRM 1.1.31  Added RGBtoMontage and labelMontage
 # 2014-11-25  JRM 1.1.32  Fixed bug in labelMontage
+# 2014-11-26  JRM 1.1.33  Fixed bug in whiteBalance
 
 import sys
 import os
@@ -459,6 +460,7 @@ def whiteBalance(imp, bVerbose=False):
     return None
   IJ.run("RGB Stack")
   # work = WindowManager.getCurrentImage()
+  IJ.run("Set Measurements...", "mean redirect=None decimal=3")
   rm = RoiManager()
   rm.select(imp, 0)
   imp.setSlice(1)
