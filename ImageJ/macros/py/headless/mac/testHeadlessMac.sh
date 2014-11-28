@@ -8,6 +8,8 @@ IJ_SCRIPT="/Users/jrminter/git/OSImageAnalysis/ImageJ/macros/py/headless/testHea
 BASE_DIR="/Users/jrminter/dat/images/test/ij"
 LOG_DIR="${BASE_DIR}/fiji-log"
 
+rm -rf $HOME/.jlin*
+
 cd ${BASE_DIR}
 rm -rf ${LOG_DIR}
 [ -d fiji-log ] || mkdir fiji-log
@@ -20,9 +22,11 @@ echo \"Fiji started:\"
 # --console -macro ${IJ_MACRO}
 rm -rf ${LOG_DIR}/log.txt
 
-$FIJI_APP --headless  --mem=1000m  -macro ${IJ_MACRO}  #  > ${LOG_DIR}/log.txt
+$FIJI_APP --headless  --mem=1000m  ${IJ_SCRIPT}  #  > ${LOG_DIR}/log.txt
 
 # cat ${LOG_DIR}/log.txt
+
+rm -rf $HOME/.jlin*
 
 read -p "Press [Enter] key to finish..."
 
