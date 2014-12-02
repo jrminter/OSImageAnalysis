@@ -32,6 +32,7 @@
 # 2014-11-22  JRM 1.1.31  Added RGBtoMontage and labelMontage
 # 2014-11-25  JRM 1.1.32  Fixed bug in labelMontage
 # 2014-11-26  JRM 1.1.33  Fixed bug in whiteBalance
+# 2014-12-02  JRM 1.1.34  Added my own scaleImg function and fix to label montage
 
 import sys
 import os
@@ -53,15 +54,15 @@ import java.util as ju
 
 import jarray
 
-from ij import IJ, ImagePlus, WindowManager
+from ij import IJ, ImagePlus, WindowManager, Prefs
 
 from ij.gui import Roi, TextRoi, Overlay
 
-from ij.measure import ResultsTable
+from ij.measure import ResultsTable, Calibration
 from ij.plugin import ImageCalculator, Duplicator, ChannelSplitter
 from ij.plugin.frame import RoiManager
 
-from ij.process import LUT
+from ij.process import LUT, ImageProcessor
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract  
 from script.imglib.algorithm import Gauss, Scale2D, Resample  
@@ -73,6 +74,23 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def scaleImg(imp,factor):
+  """scaleImg(imp,factor)
+  Scale an input ImagePlus for an image by factor using bicubic interpolation. Returns an ImagePlus"""
+  name = imp.getShortTitle()
+  averageWhenDownsizing = True
+  im = ImageProcessor.BICUBIC
+  newWidth = int(round(factor*imp.getWidth(), 0))
+  newHeight = int(round(factor*imp.getHeight(), 0))
+  ip = imp.getProcessor()
+  ip.setBackgroundValue(0)
+  imp2 = imp.createImagePlus()
+  imp2.setProcessor(name, ip.resize(newWidth, newHeight, averageWhenDownsizing))
+  cal = imp2.getCalibration()
+  cal.pixelWidth *= 1.0/factor
+  cal.pixelHeight *= 1.0/factor  
+  return imp2
 
 
 def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE):
@@ -100,6 +118,15 @@ def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE
   # make a copy
   res = imp.duplicate()
   # let's create an array of text rois
+  # first a dummy text ROI to set the font
+  tr = TextRoi(10, 10, "Foo")
+  tr.setColor(col)
+  tr.setFont("SanSerif", font, 1) 
+  tr.setJustification(TextRoi.CENTER)
+  tr.setAntialiased(True)
+  # explicitly save preferences
+  Prefs.savePreferences()
+  
   ol = Overlay()
   for i in range(l):
     x = (i % cols+1)-1
@@ -762,10 +789,17 @@ def addScaleBar(theImp, scaFac, scaUni, barWid, barHt, barFnt, barCol, barLoc):
   barLoc - bar location ........ e.g. "Lower Right"
   """
   theImp.show()
+  foo = theImp.duplicate()
   s1 = "distance=1 known=%f unit=%s" % (scaFac, scaUni)
-  IJ.run("Set Scale...", s1)
+  IJ.run(theImp, "Set Scale...", s1)
   s2 = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barWid, barHt, barFnt, barCol, barLoc)
-  IJ.run("Add Scale Bar", s2) 
+  # dummy to get things set
+  IJ.run(foo, "Add Scale Bar", s2)
+  # explicitly save preferences
+  Prefs.savePreferences()
+  foo.changes = False
+  foo.close()
+  IJ.run(theImp, "Add Scale Bar", s2) 
   
 def flatFieldCorrectRGB(impImg, impFF, sigma=100):
   """flatFieldCorrectRGB(impImg, impFF, sigma=100)
