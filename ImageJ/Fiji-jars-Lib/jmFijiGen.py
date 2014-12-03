@@ -33,7 +33,8 @@
 # 2014-11-25  JRM 1.1.32  Fixed bug in labelMontage
 # 2014-11-26  JRM 1.1.33  Fixed bug in whiteBalance
 # 2014-12-02  JRM 1.1.34  Added my own scaleImg function and fix to label montage
-# 2014-12-03  JRM 1.1.35  Added  printJavaVersion
+# 2014-12-03  JRM 1.1.35  Added printJavaVersion
+# 2014-12-03  JRM 1.1.36  Added makeStackFromListRGB
 
 import sys
 import os
@@ -55,7 +56,9 @@ import java.util as ju
 
 import jarray
 
-from ij import IJ, ImagePlus, WindowManager, Prefs
+from ij import IJ, ImagePlus, WindowManager, Prefs, ImageStack
+
+from ij.io import FileInfo
 
 from ij.gui import Roi, TextRoi, Overlay
 
@@ -75,6 +78,34 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def makeStackFromListRGB(lImps, strName="Stack"):
+  """makeStackFromListRGB(lImps, strName="Stack")
+  make a RGB stack from a list of RGB images
+  Inputs:
+  lImps - a list of ImagePlus from RGB images to create the stack
+  strName - a name for the stack. Defaults to Stack
+  Returns:
+  ImagePlus of the stack
+  """
+  fi = lImps[0].getOriginalFileInfo()
+  w = lImps[0].getWidth()
+  h =  lImps[0].getHeight()
+  cal = lImps[0].getCalibration()
+  stack = ImageStack(w,h)
+  l = len(lImps)
+  if l < 2:
+    IJ.log("Too few images (%d) passed to makeStackFromListRGB" % l)
+    return None
+  for i in range(l):
+    stack.addSlice(lImps[i].getShortTitle(), lImps[i].getProcessor().convertToRGB())
+  stack.update(lImps[0].getProcessor())
+  impStack = ImagePlus(strName, stack)
+  impStack.setCalibration(cal)
+  fi.fileName = ""
+  fi.nImages = impStack.getStackSize()
+  impStack.setFileInfo(fi) 
+  return impStack
 
 def printJavaVersion():
   """check and print the Java version. Useful to test the effectiveness of supplying
@@ -106,18 +137,19 @@ def scaleImg(imp,factor):
   return imp2
 
 
-def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE):
-  """labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE)
+def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE, bHeadless=False):
+  """labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE, bHeadless=False)
   Label a montage in the overlay
   Inputs:
-  imp     - the ImagePlus of the montage to label
-  lLabels - a list of labels to write into the overlay
-  cols    - the number of columns in the montage
-  rows    - the number of rows in the montage
-  w0      - the x offset for the label (defaults to 12 px)
-  h0      - the y offset for the label (defaults to  2 px)
-  font    - the size of the font (pts, defaults to 24)
-  col     - color of text. Default to Color.WHITE
+  imp       - the ImagePlus of the montage to label
+  lLabels   - a list of labels to write into the overlay
+  cols      - the number of columns in the montage
+  rows      - the number of rows in the montage
+  w0        - the x offset for the label (defaults to 12 px)
+  h0        - the y offset for the label (defaults to  2 px)
+  font      - the size of the font (pts, defaults to 24)
+  col       - color of text. Default to Color.WHITE
+  bHeadless - a flag (default False) to suppress display for headless mode
   Returns
   an ImagePlus with a labeled, duplicate of the input image
   """
@@ -155,38 +187,55 @@ def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE
     tr.setJustification(TextRoi.CENTER)
     tr.setAntialiased(True)
     ol.add(tr)
-  res.show()
-  res.setOverlay(ol)
-  res.updateAndRepaintWindow()
+  if bHeadless:
+    res.setOverlay(ol)
+  else:
+    res.show()
+    res.setOverlay(ol)
+    res.updateAndRepaintWindow()
   return res
   
  
-def RGBtoMontage(imp, font=24, col=Color.WHITE, bClose=True):
-  """RGBtoMontage(imp)
+def RGBtoMontage(imp, font=24, col=Color.WHITE, bClose=True, bHeadless=False):
+  """RGBtoMontage(imp, font=24, col=Color.WHITE, bClose=True, bHeadless=False)
   Split an RGB image into channels, convert each to RGB, and then make a montage of the
-  four images."""
-  imp.show()
+  four images.
+  Inputs:
+  imp       - the ImagePlus of the montage to label
+  font      - the size of the font (pts, defaults to 24)
+  col       - color of text. Default to Color.WHITE
+  bClose    - a flag (default True) 
+  bHeadless - a flag (default False) to suppress display for headless mode
+  Returns
+  an ImagePlus with a labeled, duplicate of the input image
+  """
+  if bHeadless != True:
+    imp.show()
   w = imp.getWidth()
   print(w)
   name = imp.getShortTitle()
   cs = ChannelSplitter()
   [rImg, gImg, bImg] = cs.split(imp)
-  imp.hide()
+  if bHeadless != True:
+    imp.hide()
   
   rImg.setTitle("R")
   IJ.run(rImg, "RGB Color","")
-  rImg.show()
-  rImg.updateAndRepaintWindow()
+  if bHeadless != True:
+    rImg.show()
+    rImg.updateAndRepaintWindow()
   
   gImg.setTitle("G")
   IJ.run(gImg, "RGB Color","")
-  gImg.show()
-  gImg.updateAndRepaintWindow()
+  if bHeadless != True:
+    gImg.show()
+    gImg.updateAndRepaintWindow()
   
   bImg.setTitle("B")
   IJ.run(bImg, "RGB Color","")
-  bImg.show()
-  bImg.updateAndRepaintWindow()
+  if bHeadless != True:
+    bImg.show()
+    bImg.updateAndRepaintWindow()
   
   imp.show()
   IJ.run("Images to Stack", "name=Stack title=[] use")
