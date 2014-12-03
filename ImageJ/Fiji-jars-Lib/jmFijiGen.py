@@ -88,7 +88,7 @@ def makeStackFromListRGB(lImps, strName="Stack"):
   Returns:
   ImagePlus of the stack
   """
-  fi = lImps[0].getOriginalFileInfo()
+    
   w = lImps[0].getWidth()
   h =  lImps[0].getHeight()
   cal = lImps[0].getCalibration()
@@ -97,6 +97,9 @@ def makeStackFromListRGB(lImps, strName="Stack"):
   if l < 2:
     IJ.log("Too few images (%d) passed to makeStackFromListRGB" % l)
     return None
+  fi = lImps[0].getOriginalFileInfo()
+  if fi == None:
+    fi = lImps[l-1].getOriginalFileInfo()
   for i in range(l):
     stack.addSlice(lImps[i].getShortTitle(), lImps[i].getProcessor().convertToRGB())
   stack.update(lImps[0].getProcessor())
@@ -237,19 +240,23 @@ def RGBtoMontage(imp, font=24, col=Color.WHITE, bClose=True, bHeadless=False):
     bImg.show()
     bImg.updateAndRepaintWindow()
   
-  imp.show()
-  IJ.run("Images to Stack", "name=Stack title=[] use")
-  stack = IJ.getImage()
+  lImps = [rImg, gImg, bImg, imp]
+  impStack = makeStackFromListRGB(lImps, strName="Stack")
+  
+  if bHeadless != True:
+    impStack.show()
+ 
   strMon = "columns=4 rows=1 scale=1 first=1 last=4 increment=1 border=0 font=12"
-  IJ.run("Make Montage...", strMon)
+  IJ.run(impStack, "Make Montage...", strMon)
 
-  res = IJ.getImage()
+  # res = IJ.getImage()
   if bClose:
     imp.changes=False
     imp.close()
-    stack.changes=False
-    stack.close()
-  res.show()
+    # stack.changes=False
+    # stack.close()
+  if bHeadless != True:
+    impStack.show()
   trR = TextRoi(    10, 0, "R")
   trR.setColor(col)
   trR.setFont("SanSerif", font, 1) 
@@ -272,9 +279,10 @@ def RGBtoMontage(imp, font=24, col=Color.WHITE, bClose=True, bHeadless=False):
   ol.add(trR)
   ol.add(trG)
   ol.add(trB)
-  res.setOverlay(ol)
-  res.updateAndRepaintWindow()
-  return res
+  impStack.setOverlay(ol)
+  if bHeadless != True:
+    impStack.updateAndRepaintWindow()
+  return impStack
   
 
 
