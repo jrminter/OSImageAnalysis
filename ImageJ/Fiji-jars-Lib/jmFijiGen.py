@@ -33,6 +33,7 @@
 # 2014-11-25  JRM 1.1.32  Fixed bug in labelMontage
 # 2014-11-26  JRM 1.1.33  Fixed bug in whiteBalance
 # 2014-12-02  JRM 1.1.34  Added my own scaleImg function and fix to label montage
+# 2014-12-03  JRM 1.1.35  Added  printJavaVersion
 
 import sys
 import os
@@ -74,6 +75,18 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def printJavaVersion():
+  """check and print the Java version. Useful to test the effectiveness of supplying
+  the JAVA_HOME environment variable in a script."""
+  ans="bad"
+  if IJ.isJava16():
+    ans = "Java 1.6"
+    if IJ.isJava17():
+      ans = "Java 1.7"
+      if IJ.isJava18():
+        ans = "Java 1.8"
+  print ans        
 
 def scaleImg(imp,factor):
   """scaleImg(imp,factor)
