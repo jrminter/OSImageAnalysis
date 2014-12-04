@@ -90,7 +90,7 @@ else:
 
     #  IJ.run(impMontFull, "Scale...", strSca )
     impMontFull.changes=False
-    impMontFull.close()
+    impMontFull.flush()
     # impOut = IJ.getImage()
   else:
     impOut = impMontFull
@@ -112,7 +112,7 @@ else:
   IJ.run(inImg, "Add Scale Bar", strSB)
   # close the original
   inImg.changes = False
-  inImg.close()
+  inImg.flush()
 
   # now burn the scale bar we really want...
   IJ.run(impOut, "Add Scale Bar", strSB)

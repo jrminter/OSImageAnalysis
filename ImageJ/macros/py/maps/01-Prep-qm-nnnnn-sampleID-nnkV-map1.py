@@ -11,6 +11,7 @@
 # 2014-11-07  JRM 0.1.10  Added some test flags to make it easier to debug
 #                         directories and image contrast.
 # 2014-11-20  JRM 0.1.20  Added option to perform median filter.
+# 2014-12-03  JRM 0.1.30  Updated to remove display for headless operation
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -29,6 +30,8 @@ rMedian    = 3.0
 # gamma for maps and image. Set to 1 for linear.
 gam  = 0.7
 gamI = 0.7
+# option for no display when True
+bHeadless = True
 
 homDir     = os.environ['HOME']
 edsDir     = os.environ['EDS_ROOT']
@@ -69,29 +72,36 @@ for i in range(len(lName)):
       strMedian = "radius=%g" % rMedian
       IJ.run(imp, "Median...", strMedian)   
     IJ.run(imp, "8-bit", "")
-    imp.show()
+    if bHeadless != True:
+      imp.show()
     hue = lHue[i]
     gamma = lGamma[i]
     if (hue >= 0):
-      work = jmg.applyHueLUT(imp, hue, gamma)
+      work = jmg.applyHueLUT(imp, hue, gamma, bHeadless=bHeadless)
       imp.changes = False
-      imp.close()
+      imp.flush()
       imp = work
       IJ.run(imp, "RGB Color", "")
       imp.setTitle(name)
       imp.changes = False
-      imp.show()
+      if bHeadless != True:
+        imp.show()
     else:
       IJ.run(imp, "Gamma...", "value=%g" % gamma)
       IJ.run(imp, "RGB Color", "")
       imp.setTitle(name)
       imp.changes = False
-      imp.show()
+      if bHeadless != True:
+        imp.show()
     
     strImg = outDir + "/" + lName[i] + ".png"
     if bSave:
       IJ.saveAs(imp, "PNG", strImg)
-      imp.close()
+      imp.flush()
+    
+    
+if bHeadless:
+  print("done")
       
   
 

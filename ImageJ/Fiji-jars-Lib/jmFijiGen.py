@@ -36,6 +36,7 @@
 # 2014-12-03  JRM 1.1.35  Added printJavaVersion
 # 2014-12-03  JRM 1.1.36  Added makeStackFromListRGB
 # 2014-12-03  JRM 1.1.37  Montage functions and dependencies work w/o display
+# 2014-12-03  JRM 1.1.38  Added headless capabilities for HueLUT
 
 import sys
 import os
@@ -379,14 +380,15 @@ def hueDegToRGBCol(hue):
   ret = [255.0*r, 255.0*g, 255.0*b]
   return ret
   
-def applyHueLUT(imp, hueDeg, gamma=1.0):
-  """applyHueLUT(imp, hueDeg, gamma=1.0)
+def applyHueLUT(imp, hueDeg, gamma=1.0, bHeadless=False):
+  """applyHueLUT(imp, hueDeg, gamma=1.0, bHeadless=False))
   Create and a apply a LUT to an ImagePlus where the maximum intensity corresponds to
   the hue specified by hueDeg. Optionally apply a gamma.
   Input Parameters
   imp - the ImagePlus
   hueDeg - the hue angle, in degrees, from 0 to 360
   gamma  - an optional gamma correction, defaults to 1.0
+  bHeadless - an optional flag, default False, that when true supresses display for headless mode
   Returns
   an ImagePlus with the new LUT applied"""
   ret = imp.duplicate()
@@ -405,7 +407,8 @@ def applyHueLUT(imp, hueDeg, gamma=1.0):
   lut = LUT(ra, ga, ba)
   ip = ret.getProcessor() 
   ip.setLut(lut)
-  ret.updateImage() 
+  if bHeadless != True:
+    ret.updateImage() 
   
   return ret
 
