@@ -10,6 +10,7 @@
 # 2014-11-10  JRM 0.1.11  Be sure to set title 
 # 2014-11-13  JRM 0.1.12  Option to scale
 # 2014-11-24  JRM 0.1.13  This adds annotations and scale bars
+# 2014-12-03  JRM 0.2.00  This can work w/o display (headless)
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -17,6 +18,7 @@ codecs.setDefaultEncoding('utf-8')
 import os
 import jmFijiGen as jmg
 from ij import IJ
+from ij.gui import PointRoi
 from java.awt import Color
 
 # check that paths are correct by loading ROI image
@@ -24,6 +26,8 @@ bTestPaths = False
 # scale the image by scaFac
 bScale     = True
 scaFac     = 0.5
+# For headless (no display) set to True
+bHeadless = True
 
 # For scale bar
 # loc for scale bar. if sbPtX=None will be lower right
@@ -71,35 +75,38 @@ if bTestPaths == True:
   if imp == None:
     print("Error loading ROI.png")
   else:
-    imp.show()
+    if bHeadless != True:
+      imp.show()
   print(outPth)
 else:
   jmg.ensureDir(outDir)
-  impMontFull = jmg.makeMontage(lName, nCol, nRow, inDir, lCal=lCal, sca=1.0)
+  impMontFull = jmg.makeMontage(lName, nCol, nRow, inDir, lCal=lCal, sca=1.0, lCr=None, bDebug=False, bHeadless=bHeadless)
   if bScale:
     newW = round(scaFac * impMontFull.getWidth())
     newH = round(scaFac * impMontFull.getHeight())
     newN = sampID + "-" + mapID
-    strSca = "x=%g y=%g width=%d height=%d interpolation=Bicubic average create title=%s" % (scaFac, scaFac, newW, newH, newN)
+    # strSca = "x=%g y=%g width=%d height=%d interpolation=Bicubic average create title=%s" % (scaFac, scaFac, newW, newH, newN)
+    impOut = jmg.scaleImg(impMontFull, scaFac)
 
-    IJ.run(impMontFull, "Scale...", strSca )
+    #  IJ.run(impMontFull, "Scale...", strSca )
     impMontFull.changes=False
     impMontFull.close()
-    impOut = IJ.getImage()
+    # impOut = IJ.getImage()
   else:
     impOut = impMontFull
   inImg = impOut 
   # Note: this returns a duplicate 
-  impOut = jmg.labelMontage(impOut, lAnn, nCol, nRow, w0=12, h0=2, font=24, col=Color.WHITE)
+  impOut = jmg.labelMontage(impOut, lAnn, nCol, nRow, w0=12, h0=2, font=24, col=Color.WHITE, bHeadless=bHeadless)
   impOut.setTitle(sampID + "-" + mapID)
   
   # show the annotated image
-  impOut.show()
+  if bHeadless != True:
+    impOut.show()
   # burn a scale bar
   if sbPtX == None:
     strSB = "width=%g height=%g font=%g color=%s location=[Lower Right] bold" % (sbW, sbH, sbFont, sbCol )
   else:
-    IJ.makePoint(sbPtX, sbPtY)
+    impOut.setRoi(PointRoi(sbPtX, sbPtY))
     strSB = "width=%g height=%g font=%g color=%s location=[At Selection] bold" % (sbW, sbH, sbFont, sbCol )
   # first burn a scale bar in the original image to make sure changes are written
   IJ.run(inImg, "Add Scale Bar", strSB)
@@ -110,7 +117,10 @@ else:
   # now burn the scale bar we really want...
   IJ.run(impOut, "Add Scale Bar", strSB)
   # impOut.setTitle(sampID + "-" + mapID)
-  IJ.makePoint(-10, -10)
-  impOut.updateAndRepaintWindow()
+  impOut.setRoi(PointRoi(-10, -10))
+  if bHeadless != True:
+    impOut.updateAndRepaintWindow()
   
   IJ.saveAs(impOut, "PNG", outPth)
+  if bHeadless:
+    print("done")

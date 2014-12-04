@@ -1,12 +1,16 @@
 # testMakeStack.py
 
+import os
 from ij import IJ, WindowManager, ImageStack, ImagePlus
 from ij.io import FileInfo
 import jmFijiGen as jmg
   
 
-IJ.run("Lena (68K)")
-lena = IJ.getImage()
+gitDir = os.environ['GIT_HOME']
+sPath  = gitDir + "/OSImageAnalysis/images/lena-std.tif"
+# make an input RGB image
+lena = IJ.openImage(sPath)
+# lena.show()
 
 lI = [lena, lena, lena]
 

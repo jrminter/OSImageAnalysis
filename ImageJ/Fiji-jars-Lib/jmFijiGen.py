@@ -35,6 +35,7 @@
 # 2014-12-02  JRM 1.1.34  Added my own scaleImg function and fix to label montage
 # 2014-12-03  JRM 1.1.35  Added printJavaVersion
 # 2014-12-03  JRM 1.1.36  Added makeStackFromListRGB
+# 2014-12-03  JRM 1.1.37  Montage functions and dependencies work w/o display
 
 import sys
 import os
@@ -64,6 +65,7 @@ from ij.gui import Roi, TextRoi, Overlay
 
 from ij.measure import ResultsTable, Calibration
 from ij.plugin import ImageCalculator, Duplicator, ChannelSplitter
+from ij.plugin import MontageMaker
 from ij.plugin.frame import RoiManager
 
 from ij.process import LUT, ImageProcessor
@@ -193,9 +195,8 @@ def labelMontage(imp, lLabels, cols, rows, w0=12, h0=2, font=24, col=Color.WHITE
   if bHeadless:
     res.setOverlay(ol)
   else:
-    res.show()
     res.setOverlay(ol)
-    res.updateAndRepaintWindow()
+    res.show()
   return res
   
  
@@ -245,18 +246,23 @@ def RGBtoMontage(imp, font=24, col=Color.WHITE, bClose=True, bHeadless=False):
   
   if bHeadless != True:
     impStack.show()
+    
+  mont = MontageMaker()
+  # starts with a stack (stack) and returns an imp to the montage
+  # makeMontage2(ImagePlus imp, int columns, int rows, double scale, int first, int last, int inc, int borderWidth, boolean labels) 
+  impMont = mont.makeMontage2(impStack, 4, 1, 1.0, 1, 4, 1, 0, False)
  
-  strMon = "columns=4 rows=1 scale=1 first=1 last=4 increment=1 border=0 font=12"
-  IJ.run(impStack, "Make Montage...", strMon)
+  # strMon = "columns=4 rows=1 scale=1 first=1 last=4 increment=1 border=0 font=12"
+  # IJ.run(impStack, "Make Montage...", strMon)
 
   # res = IJ.getImage()
   if bClose:
     imp.changes=False
     imp.close()
-    # stack.changes=False
-    # stack.close()
-  if bHeadless != True:
-    impStack.show()
+    if bHeadless != True:
+      impStack.changes=False
+      impStack.close()
+
   trR = TextRoi(    10, 0, "R")
   trR.setColor(col)
   trR.setFont("SanSerif", font, 1) 
@@ -279,10 +285,10 @@ def RGBtoMontage(imp, font=24, col=Color.WHITE, bClose=True, bHeadless=False):
   ol.add(trR)
   ol.add(trG)
   ol.add(trB)
-  impStack.setOverlay(ol)
+  impMont.setOverlay(ol)
   if bHeadless != True:
-    impStack.updateAndRepaintWindow()
-  return impStack
+    impMont.updateAndRepaintWindow()
+  return impMont
   
 
 
@@ -664,19 +670,23 @@ def makeTmpDir():
     os.unlink(file)
   return tmpDir
   
-def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], lCr=None, bDebug=False):
-  """makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], lCr=None, bDebug=False)
+def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], lCr=None, bDebug=False, bHeadless=False):
+  """makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], lCr=None, bDebug=False, bHeadless=False)
   Make a montage from a list of file names
   Parameters:
-  lNames  - a list of file names
-  columns - number of columns in the montage
-  rows    - number of rows in the montage
-  inDir   - input directory for images
-  inExt   - input extension for images - default = .png
-  sca     - scale factor, default = 1.0
-  lCal    - an optional list of calibration info: [fullWidth, baseImgWidthPx, -6]
-  lCr     - an optional list of parameters for a crop [x0,y0,w, h], default is None
-  bDebug  - a flag, default = False, to print diagnostic info"""
+  lNames    - a list of file names
+  columns   - number of columns in the montage
+  rows      - number of rows in the montage
+  inDir     - input directory for images
+  inExt     - input extension for images - default = .png
+  sca       - scale factor, default = 1.0
+  lCal      - an optional list of calibration info: [fullWidth, baseImgWidthPx, -6]
+  lCr       - an optional list of parameters for a crop [x0,y0,w, h], default is None
+  bDebug    - a flag, default = False, to print diagnostic info
+  bHeadless - a flag, default = False, to suppress display for headless mode
+  Returns
+  The ImagePlus corresponding to the montage"""
+  lImp = []
   l = len(lNames)
   l2 = len(lCal)
   IJ.run("Close All")
@@ -687,22 +697,28 @@ def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], l
     if bDebug:
       print(inImg)
     raw = IJ.openImage(inImg)
-    raw.show()
-  IJ.run("Images to Stack")
-  impSeq = WindowManager.getCurrentImage()
+    lImp.append(raw)
+    if bHeadless == False:
+      raw.show()
+  impStack = makeStackFromListRGB(lImp)
+  for imp in lImp:
+    imp.close()
   if(lCr != None):
     IJ.makeRectangle(lCr[0], lCr[1], lCr[2], lCr[3])
-    IJ.run("Crop")
-    impSeq = WindowManager.getCurrentImage()
-  strMon = "columns=%g rows=%g scale=%f first=1 last=%d increment=1 border=0 font=12" % (columns, rows, sca, l)
-  IJ.run("Make Montage...", strMon)
+    IJ.run(impStack, "Crop", "")
+  
+  mont = MontageMaker()
+  # starts with a stack (stack) and returns an imp to the montage
+  # makeMontage2(ImagePlus imp, int columns, int rows, double scale, int first, int last, int inc, int borderWidth, boolean labels) 
+  impMont = mont.makeMontage2(impStack, columns, rows, sca, 1, l, 1, 0, False)
+  # strMon = "columns=%g rows=%g scale=%f first=1 last=%d increment=1 border=0 font=12" % (columns, rows, sca, l)
+  # IJ.run("Make Montage...", strMon)
   if (bDebug==False):
-    impSeq.changes = False
-    impSeq.close()
-  imp = WindowManager.getCurrentImage()
+    impStack.changes = False
+    impStack.close()
   if (l2 == 3):
-      imp = calibAZtecImage(imp, lCal[0], lCal[1], units=lCal[2])
-  return imp
+      impMont = calibAZtecImage(impMont, lCal[0], lCal[1], units=lCal[2])
+  return impMont
   
 def calibImage(theImp, fullWidth, units=-6):
   """calibImage(theImp, fullWidth, units=-6)
@@ -713,9 +729,16 @@ def calibImage(theImp, fullWidth, units=-6):
   units     - the exponent w.r.t. meters. Defaults to -6 (microns)
   Returns   - the ImagePlus of the calibrated image"""
   scaUni = getUnitString(units)
-  w = theImp.getWidth()
-  s1 = "distance=%d known=%f unit=%s" % (w, fullWidth, scaUni)
-  IJ.run(theImp, "Set Scale...", s1)
+  w = float(theImp.getWidth())
+  sf = fullWidth/w
+  cal = theImp.getCalibration()
+  cal.setXUnit(scaUni)
+  cal.setYUnit(scaUni)
+  cal.pixelWidth  = sf
+  cal.pixelHeight = sf
+  theImp.setCalibration(cal)
+  # s1 = "distance=%d known=%f unit=%s" % (w, fullWidth, scaUni)
+  # IJ.run(theImp, "Set Scale...", s1)
   return theImp
 
 def calibImageDirect(theImp, unPerPx, units=-6):
@@ -727,9 +750,15 @@ def calibImageDirect(theImp, unPerPx, units=-6):
   units   - the exponent w.r.t. meters. Defaults to -6 (microns)
   Returns - the ImagePlus of the calibrated image"""
   scaUni = getUnitString(units)
-  w = theImp.getWidth()
-  s1 = "distance=1 known=%f unit=%s" % (unPerPx, scaUni)
-  IJ.run(theImp, "Set Scale...", s1)
+  cal = theImp.getCalibration()
+  cal.setXUnit(scaUni)
+  cal.setYUnit(scaUni)
+  cal.pixelWidth  = unPerPx
+  cal.pixelHeight = unPerPx
+  # theImp.setCalibration(cal)
+  # w = theImp.getWidth()
+  # s1 = "distance=1 known=%f unit=%s" % (unPerPx, scaUni)
+  # IJ.run(theImp, "Set Scale...", s1)
   return theImp
 
 def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
@@ -743,11 +772,17 @@ def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
   baseImgWidth -  the width, in px, of the base image
   units        - the exponent w.r.t. meters. Defaults to -6 (microns)
   Returns      - the ImagePlus of the calibrated image"""
-  theImp.show()
   scaUni = getUnitString(units)
-  s1 = "distance=%d known=%f unit=%s" % (baseImgWidth, fullWidth, scaUni)
-  IJ.run("Set Scale...", s1)
-  theImp.show()
+  w = float(baseImgWidth)
+  sf = fullWidth/w
+  cal = theImp.getCalibration()
+  cal.setXUnit(scaUni)
+  cal.setYUnit(scaUni)
+  cal.pixelWidth  = sf
+  cal.pixelHeight = sf
+  theImp.setCalibration(cal)
+  # s1 = "distance=%d known=%f unit=%s" % (baseImgWidth, fullWidth, scaUni)
+  # IJ.run("Set Scale...", s1)
   return theImp
 
 def doCrop(theImp, lPar):

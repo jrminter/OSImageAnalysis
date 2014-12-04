@@ -6,22 +6,25 @@
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
 # 2014-11-22  JRM 0.1.00  replacement for the RGB_to_montage plug-in
+# 2014-12-03  JRM 0.1.00  this is set up for headless
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
+import os
 from ij import IJ
 import jmFijiGen as jmg
 
+gitDir = os.environ['GIT_HOME']
+sPath  = gitDir + "/OSImageAnalysis/images/lena-std.tif"
+
 # make an input RGB image
+rgb = IJ.openImage(sPath)
+rgb.show()
 
-IJ.run("Fluorescent Cells (400K)")
-imp = IJ.getImage()
-IJ.run(imp, "RGB Color","")
-imp.close()
-rgb = IJ.getImage()
+a = jmg.RGBtoMontage(rgb, bHeadless=True)
+a.show()
 
-a = jmg.RGBtoMontage(rgb)
 
 
 
