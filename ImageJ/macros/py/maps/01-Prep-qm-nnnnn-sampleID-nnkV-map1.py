@@ -12,6 +12,7 @@
 #                         directories and image contrast.
 # 2014-11-20  JRM 0.1.20  Added option to perform median filter.
 # 2014-12-03  JRM 0.1.30  Updated to remove display for headless operation
+# 2014-12-09  JRM 0.1.40  replaced imp.flush() with imp.close() to fix bug
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -79,7 +80,7 @@ for i in range(len(lName)):
     if (hue >= 0):
       work = jmg.applyHueLUT(imp, hue, gamma, bHeadless=bHeadless)
       imp.changes = False
-      imp.flush()
+      imp.close()
       imp = work
       IJ.run(imp, "RGB Color", "")
       imp.setTitle(name)
@@ -97,7 +98,7 @@ for i in range(len(lName)):
     strImg = outDir + "/" + lName[i] + ".png"
     if bSave:
       IJ.saveAs(imp, "PNG", strImg)
-      imp.flush()
+      imp.close()
     
     
 if bHeadless:
