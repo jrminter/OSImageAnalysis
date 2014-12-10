@@ -11,6 +11,7 @@
 # 2014-11-13  JRM 0.1.12  Option to scale
 # 2014-11-24  JRM 0.1.13  This adds annotations and scale bars
 # 2014-12-03  JRM 0.2.00  This can work w/o display (headless)
+# 2014-12-09  JRM 0.2.10  replaced imp.flush() with imp.close() to fix bug
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -90,7 +91,7 @@ else:
 
     #  IJ.run(impMontFull, "Scale...", strSca )
     impMontFull.changes=False
-    impMontFull.flush()
+    impMontFull.close()
     # impOut = IJ.getImage()
   else:
     impOut = impMontFull
@@ -112,7 +113,7 @@ else:
   IJ.run(inImg, "Add Scale Bar", strSB)
   # close the original
   inImg.changes = False
-  inImg.flush()
+  inImg.close()
 
   # now burn the scale bar we really want...
   IJ.run(impOut, "Add Scale Bar", strSB)
