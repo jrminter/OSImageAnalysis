@@ -37,6 +37,7 @@
 # 2014-12-03  JRM 1.1.36  Added makeStackFromListRGB
 # 2014-12-03  JRM 1.1.37  Montage functions and dependencies work w/o display
 # 2014-12-03  JRM 1.1.38  Added headless capabilities for HueLUT
+# 2014-12-12  JRM 1.1.40  Added makeTransparentOverlay
 
 import sys
 import os
@@ -62,7 +63,7 @@ from ij import IJ, ImagePlus, WindowManager, Prefs, ImageStack
 
 from ij.io import FileInfo
 
-from ij.gui import Roi, TextRoi, Overlay
+from ij.gui import Roi, TextRoi, ImageRoi, Overlay, ImageCanvas
 
 from ij.measure import ResultsTable, Calibration
 from ij.plugin import ImageCalculator, Duplicator, ChannelSplitter
@@ -81,6 +82,29 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def makeFlattenedTransparentOverlay(impBase, impOvr, op=50):
+  """makeFlattenedTransparentOverlay(impBase, impOvr, op=50)
+  Make a transparent overlay on an image and flattens it. Note:
+  this cannot be headless because of the flatten.
+  Inputs:
+  impBase - the ImagePlus for the underlying image (uses a duplicate)
+  impOvr  - the ImagePlus for the image to overlay
+  op      - the opacity (default 50%)
+  Returns:
+  The ImagePlus of the flattened composite image
+  """
+  imp = impBase.duplicate()
+  name = impOvr.getTitle()
+  roi = ImageRoi(0, 0, impOvr.getProcessor())
+  roi.setOpacity(op/100.0)
+  imp.setRoi(roi)
+  imp.flatten()
+  IJ.run(imp, "Flatten", "")
+  imp.close()
+  imp = IJ.getImage()
+  imp.setTitle(impOvr.getShortTitle() + "-ROI" )
+  return imp
 
 def makeStackFromListRGB(lImps, strName="Stack"):
   """makeStackFromListRGB(lImps, strName="Stack")
