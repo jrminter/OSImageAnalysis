@@ -1,44 +1,26 @@
 # testHeadlessFlatten.py
 import os
-from ij import IJ, ImagePlus
-from ij.gui import ImageRoi
+from ij import IJ
 import jmFijiGen as jmg
 
-def headlessFlatten(imp):
-  flags = imp.isComposite()
-  if flags==False:
-    IJ.setupDialog(imp, 0)
-  ret = imp.flatten()
-  ret.setTitle(imp.getShortTitle())
-  return ret
-  
-  
-  
-
-op = 50.
-
-homDir = os.environ['HOME']
+imgDir = os.environ['IMG_ROOT']
 edsDir = os.environ['EDS_ROOT']
 relDir = "/Oxford/QM14-nn-nnA-Client/reports/qm-nnnnn-sampleID/qm-nnnnn-sampleID-nnkV-map1/work"
-imgDir = edsDir + relDir
+inDir  = edsDir + relDir
 
-pthRoi = imgDir + "/ROI.png"
-pthCuL = imgDir + "/Ag-L.png"
+pthRoi = inDir + "/ROI.png"
+pthCuL = inDir + "/Cu-L.png"
 
 impRoi = IJ.openImage(pthRoi)
 impCuL = IJ.openImage(pthCuL)
 
-impTol = jmg.makeFlattenedTransparentOverlay(impRoi, impCuL, op=30)
-
+# headlessFlatten is built into jmg.makeFlattenedTransparentOverlay
+impTol = jmg.makeFlattenedTransparentOverlay(impRoi, impCuL, op=50)
+# flat = headlessFlatten(impTol)
 impTol.show()
 
-
-
-# flat = headlessFlatten(imp)
-
-outPth = homDir + "/Desktop/foo-fl.png"
-
-# IJ.saveAs(flat, "PNG", outPth)
+outPth = imgDir + "/tmp/foo-fl.png"
+IJ.saveAs(impTol, "PNG", outPth)
 
 # imp.show()
 # impRoi.show()

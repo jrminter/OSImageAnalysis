@@ -38,6 +38,7 @@
 # 2014-12-03  JRM 1.1.37  Montage functions and dependencies work w/o display
 # 2014-12-03  JRM 1.1.38  Added headless capabilities for HueLUT
 # 2014-12-12  JRM 1.1.40  Added makeTransparentOverlay
+# 2014-12-13  JRM 1.1.41  Added headlessFlatten
 
 import sys
 import os
@@ -83,6 +84,21 @@ and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) princip
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
 
+def headlessFlatten(imp):
+  """headlessFlatten(imp)
+  A flatten command that works in headless mode without displaying
+  images.
+  Inputs:
+  imp - The ImagePlus of the image to flatten
+  Returns 
+  The ImagePlus of the flattened image"""
+  flags = imp.isComposite()
+  if flags==False:
+    IJ.setupDialog(imp, 0)
+  ret = imp.flatten()
+  ret.setTitle(imp.getShortTitle())
+  return ret
+
 def makeFlattenedTransparentOverlay(impBase, impOvr, op=50):
   """makeFlattenedTransparentOverlay(impBase, impOvr, op=50)
   Make a transparent overlay on an image and flattens it. Note:
@@ -99,10 +115,11 @@ def makeFlattenedTransparentOverlay(impBase, impOvr, op=50):
   roi = ImageRoi(0, 0, impOvr.getProcessor())
   roi.setOpacity(op/100.0)
   imp.setRoi(roi)
-  imp.flatten()
-  IJ.run(imp, "Flatten", "")
-  imp.close()
-  imp = IJ.getImage()
+  imp = headlessFlatten(imp)
+  # imp.flatten()
+  # IJ.run(imp, "Flatten", "")
+  # imp.close()
+  # imp = IJ.getImage()
   imp.setTitle(impOvr.getShortTitle() + "-ROI" )
   return imp
 
