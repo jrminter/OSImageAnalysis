@@ -26,7 +26,7 @@ $FIJI_APP --headless  --mem=1000m  ${IJ_SCRIPT}  #  > ${LOG_DIR}/log.txt
 
 # cat ${LOG_DIR}/log.txt
 
-rm -rf $HOME/.jlin*
+# rm -rf $HOME/.jlin*
 
 read -p "Press [Enter] key to finish..."
 
