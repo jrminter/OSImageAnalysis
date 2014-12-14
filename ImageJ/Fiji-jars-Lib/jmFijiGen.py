@@ -40,6 +40,8 @@
 # 2014-12-12  JRM 1.1.40  Added makeTransparentOverlay
 # 2014-12-13  JRM 1.1.41  Added headlessFlatten
 # 2014-12-14  JRM 1.1.42  changed vertProfileFromROI to have headless flag
+# 2014-12-14  JRN 1.1.43  Added makeStackFromImageFiles for stacks with each slice
+#                         with optimum brightness/contrast LUT
 
 import sys
 import os
@@ -84,6 +86,32 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif', bUseStackHisto=False):
+  """makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif', bUseStackHisto=False)
+  Construct a stack of images from a list of file names
+  Inputs:
+  lNames         - a list of base file namers
+  imgDir         - a path to the image files
+  stkName        - the name for the stack (default stack)
+  ext            - file extension (default .tif)
+  bUseStackHisto - use the same LUT for the whole stack (default False)
+  Returns:
+  An ImagePlus for the stack"""
+  strImg = imgDir + "/" + lNames[0] + ext
+  imp = IJ.openImage(strImg)
+  newStack = ImageStack(imp.getWidth(), imp.getHeight())
+  for name in lNames:
+    strImg = imgDir + "/" + name + ext
+    imp = IJ.openImage(strImg)
+    newStack.addSlice(name, imp.getProcessor())
+  ret = ImagePlus(stkName, newStack)
+  if bUseStackHisto == True:
+    IJ.run(ret, "Enhance Contrast", "saturated=0.35 process_all use")
+  else:
+    IJ.run(ret, "Enhance Contrast", "saturated=0.35 process_all")
+  return ret
+
 
 def headlessFlatten(imp):
   """headlessFlatten(imp)

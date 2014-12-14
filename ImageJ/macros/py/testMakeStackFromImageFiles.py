@@ -13,6 +13,7 @@ from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
 import os
+import jmFijiGen as jmg
 from ij import IJ, ImagePlus, ImageStack
 
 homDir     = os.environ['HOME']
@@ -25,14 +26,15 @@ relIn      = datDir + "/tif"
 relOut     = datDir + "/work"
 inDir  = edsDir + relIn
 
-def makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif'):
-  """makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif')
+def makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif', bUseStackHisto=False):
+  """makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif', bUseStackHisto=False)
   Construct a stack of images from a list of file names
   Inputs:
-  lNames  - a list of base file namers
-  imgDir  - a path to the image files
-  stkName - the name for the stack (default stack)
-  ext     - file extension (default .tif)
+  lNames         - a list of base file namers
+  imgDir         - a path to the image files
+  stkName        - the name for the stack (default stack)
+  ext            - file extension (default .tif)
+  bUseStackHisto - use the same LUT for the whole stack (default False)
   Returns:
   An ImagePlus for the stack"""
   strImg = imgDir + "/" + lNames[0] + ext
@@ -43,14 +45,17 @@ def makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif'):
     imp = IJ.openImage(strImg)
     newStack.addSlice(name, imp.getProcessor())
   ret = ImagePlus(stkName, newStack)
-  IJ.run(ret, "Enhance Contrast", "saturated=0.35")
+  if bUseStackHisto == True:
+    IJ.run(ret, "Enhance Contrast", "saturated=0.35 process_all use")
+  else:
+    IJ.run(ret, "Enhance Contrast", "saturated=0.35 process_all")
   return ret
     
     
 
 lNames = ["C-K", "N-K","O-K", "Cu-L", "P-K", "Cl-K", "Pd-L", "Ag-L", "ROI"]
 
-theStack = makeStackFromImageFiles(lNames, inDir, stkName='stack', ext='.tif')
+theStack = jmg.makeStackFromImageFiles(lNames, inDir, stkName='stack', ext='.tif')
 theStack.show()
 
 
