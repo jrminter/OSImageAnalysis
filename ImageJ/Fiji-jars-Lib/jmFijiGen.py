@@ -40,7 +40,7 @@
 # 2014-12-12  JRM 1.1.40  Added makeTransparentOverlay
 # 2014-12-13  JRM 1.1.41  Added headlessFlatten
 # 2014-12-14  JRM 1.1.42  changed vertProfileFromROI to have headless flag
-# 2014-12-14  JRN 1.1.43  Added makeStackFromImageFiles for stacks with each slice
+# 2014-12-14  JRM 1.1.43  Added makeStackFromImageFiles for stacks with each slice
 #                         with optimum brightness/contrast LUT
 
 import sys
