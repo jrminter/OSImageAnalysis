@@ -39,6 +39,7 @@
 # 2014-12-03  JRM 1.1.38  Added headless capabilities for HueLUT
 # 2014-12-12  JRM 1.1.40  Added makeTransparentOverlay
 # 2014-12-13  JRM 1.1.41  Added headlessFlatten
+# 2014-12-14  JRM 1.1.42  changed vertProfileFromROI to have headless flag
 
 import sys
 import os
@@ -476,29 +477,28 @@ def getUnitString(units=-6):
   return(scaUni)
 
 
-def vertProfileFromROI(imp, lRoi, sFact, pause=0.1):
-  """vertProfileFromROI(imp, lRoi, sFact, pause=0.1)
+def vertProfileFromROI(imp, lRoi, sFact, bHeadless=True):
+  """vertProfileFromROI(imp, lRoi, sFact, bHeadless=True)
   Generate an averaged vertical profile from a rectangular ROI from an
   ImagePlus
   Inputs:
-  imp  - the ImagePlus
-  lRoi  - a list with the parameters to construct the ROI
-  sFact - a scale factor, defaults to 1 for pixels.
-  pause - time in sec to wait before closing ROI. If pause > 2.
-          the image and rois are shown, otherwise it is headless compatible.
+  imp       - the ImagePlus
+  lRoi      - a list with the parameters to construct the ROI
+  sFact     - a scale factor, defaults to 1 for pixels.
+  bHeadless - a flag (default True) to supress display for headless operation
   Returns
   a list with two arrays, distance and intensity"""
   if (len(lRoi) != 4):
     IJ.error("Not a proper rectangle","This function expects a 4 item list for the ROI")
     return None
-  if (pause > 1.99):
+  if bHeadless == False:
     imp.show()
   cal = imp.getCalibration()
   impROI = imp.duplicate()
   impROI.setCalibration(cal)
   impROI.setRoi(lRoi[0],lRoi[1],lRoi[2],lRoi[3])
   IJ.run(impROI,"Crop","")
-  if (pause > 1.99):
+  if bHeadless == False:
     imp.close()
     impROI.show()
   w = impROI.getWidth()
@@ -515,8 +515,7 @@ def vertProfileFromROI(imp, lRoi, sFact, pause=0.1):
     gAvg = gSum / float(w)
     y.append(round(gAvg, 1))
   ret = [x,y]
-  time.sleep(pause)
-  if (pause > 1.99):
+  if bHeadless == False:
     impROI.changes = False
     impROI.close()
   return ret
