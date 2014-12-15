@@ -50,11 +50,15 @@ C:\Apps\Fiji.app.win64
 
 ## Set up appropriate user environment variables.
 
-Here are the User Environment variables I set from ``Computer > Properties > Advanced System Settings > Environment Variables``
+Here are the User Environment variables I set from ``Computer > Properties > Advanced System Settings > Environment Variables``. Note: the first two need to be called by Git bash and need the `/C/` syntax...
 
 ```
 BAD_DLL
-C:/Users/%USERNAME%/AppData/Local/Temp/org.scijava.jython.shaded.jline_2_5_3.dll
+/C/Users/{username}/AppData/Local/Temp/org.scijava.jython.shaded.jline_2_5_3.dll
+
+BAD_TMP
+/C/Users/{username}/AppData/Local/Temp
+
 
 EDS_ROOT
 C:/Data/eds
@@ -70,5 +74,34 @@ C:/Users/%USERNAME%/Documents/git
 
 GITHOME
 C:\Users\%USERNAME%\Documents\git
+```
+
+## Use a runFijiHeadless.sh shell script
+
+This is the current version
+
+```
+#!/bin/bash
+# use predefined variables to access passed arguments
+#echo arguments to the shell
+if [ -f $BAD_DLL ]
+  then
+    rm -rf $BAD_DLL
+    rm -rf $BAD_TMP/j*.tmp
+fi
+
+if [ -f $1 ]
+  then
+    $FIJI_APP --java-home $FIJI_JAVA_HOME --mem=1000m --console --headless $1
+  else
+    echo $1 not found
+fi
+
+
+if [ -f $BAD_DLL ]
+  then
+    rm -rf $BAD_DLL
+    rm -rf $BAD_TMP/j*.tmp
+fi
 ```
 
