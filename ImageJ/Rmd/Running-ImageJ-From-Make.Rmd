@@ -1,0 +1,74 @@
+---
+title: "Running ImageJ from make on multiple operating systems"
+author: "J. R. Minter"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    theme: united
+    highlight: pygments
+---
+
+We want to use ``Gnu make`` to reproducibly process images with Fiji/ImageJ in the ``headless`` mode. Here we describe an approach that works on Windows, Linux, and MacOSX from a common code base. Getting this working on Windows was most difficult, so we present that as the base method.
+
+## Install the Java Virtual Machines properly.
+
+We will need to use environment variables and path names including spaces has caused errors. One needs to select a custom directory durning the installation process.  We also want multiple JVMs installed. Here are the paths I use in Windows 7 x64:
+
+64 Bit JVMs:
+
+```
+C:\Apps\Java64\jdk1.8.0_25
+C:\Apps\Java64\jdk1.7.0_71
+C:\Apps\Java64\jdk1.8.0_25
+```
+
+and one 32 bit JVM (for the browser):
+
+```
+C:\Apps\Java32\jre1.8.0_25
+```
+
+Note that one can set up shortcuts to run the ImageJ/Fiji Gui from the Quick Launch bar that are stored here:
+
+```
+%appdata%\Microsoft\Internet Explorer\Quick Launch
+```
+
+I name the shortcuts `FijiJ6`, `FijiJ7`, and `FijiJ8`. Here are the entries for `FijiJ7`:
+
+Target:
+
+```
+C:\Apps\Fiji.app.win64\ImageJ-win64.exe -Dpython.cachedir.skip=false --java-home "C:\Apps\Java64\jdk1.7.0_71" --
+```
+
+Run in:
+
+```
+C:\Apps\Fiji.app.win64
+```
+
+## Set up appropriate user environment variables.
+
+Here are the User Environment variables I set from ``Computer > Properties > Advanced System Settings > Environment Variables``
+
+```
+BAD_DLL
+C:/Users/%USERNAME%/AppData/Local/Temp/org.scijava.jython.shaded.jline_2_5_3.dll
+
+EDS_ROOT
+C:/Data/eds
+
+FIJI_APP
+C:/Apps/Fiji.app.win64/ImageJ-win64.exe
+
+FIJI_JAVA_HOME
+C:/Apps/Java64/jdk1.7.0_71/jre
+
+GIT_HOME
+C:/Users/%USERNAME%/Documents/git
+
+GITHOME
+C:\Users\%USERNAME%\Documents\git
+```
+

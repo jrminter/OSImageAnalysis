@@ -52,6 +52,7 @@ magCalD692/.Rhistory
 # ImageJ
 ImageJ/Analyze_Line/*.class
 ImageJ/Analyze_Line/std/*.csv
+ImageJ/Rmd/*.html
 
 # jrm-r-pkgs
 # don't keep the Rcheck dirs
