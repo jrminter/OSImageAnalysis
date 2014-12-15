@@ -1,0 +1,2 @@
+importClass(Packages.ij.IJ);
+
