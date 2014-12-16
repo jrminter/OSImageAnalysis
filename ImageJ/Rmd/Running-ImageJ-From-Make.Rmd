@@ -70,10 +70,10 @@ FIJI_JAVA_HOME
 C:/Apps/Java64/jdk1.7.0_71/jre
 
 GIT_HOME
-C:/Users/%USERNAME%/Documents/git
+C:/Users/{username}/Documents/git
 
 GITHOME
-C:\Users\%USERNAME%\Documents\git
+C:\Users\{username}\Documents\git
 ```
 
 ## Use a runFijiHeadless.sh shell script
@@ -103,5 +103,32 @@ if [ -f $BAD_DLL ]
     rm -rf $BAD_DLL
     rm -rf $BAD_TMP/j*.tmp
 fi
+```
+
+### Generate a Makefile
+
+Here is an example Makefile
+
+```
+# Example Makefile
+
+dat/csv/latexPro.csv:
+  cd sh; bash runFijiHeadless.sh "../py/makeLatexVertProf.py"
+
+Sweave/inc/png/qm-nnnnn-sampleID-nnkV-map1.png:
+	cd sh; bash runFijiHeadless.sh "../py/qm-nnnnn-sampleID-nnkV-map1/01-Prep-qm-nnnnn-sampleID-nnkV-map1.py"
+	cd sh; bash runFijiHeadless.sh "../py/qm-nnnnn-sampleID-nnkV-map1/02-montage-qm-nnnnn-sampleID-nnkV-map1.py"
+	
+Sweave/inc/png/qm-nnnnn-sampleID-nnkV-map1-tol.png:
+	cd sh; bash runFijiHeadless.sh "../py/qm-nnnnn-sampleID-nnkV-map1/01-Prep-qm-nnnnn-sampleID-nnkV-map1-tol.py"
+	cd sh; bash runFijiHeadless.sh "../py/qm-nnnnn-sampleID-nnkV-map1/02-montage-qm-nnnnn-sampleID-nnkV-map1-tol.py"
+
+all: Sweave/inc/png/qm-nnnnn-sampleID-nnkV-map1.png Sweave/inc/png/qm-nnnnn-sampleID-nnkV-map1-tol.png dat/csv/latexPro.csv
+
+clean:
+	rm -f Sweave/inc/png/qm-nnnnn-sampleID-nnkV-map1.png
+	rm -f Sweave/inc/png/qm-nnnnn-sampleID-nnkV-map1-tol.png
+	rm -f dat/csv/latexPro.csv
+
 ```
 
