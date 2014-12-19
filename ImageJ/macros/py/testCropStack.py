@@ -6,6 +6,7 @@ import os, time
 from ij import IJ
 from ij.gui import ShapeRoi, Roi
 from ij.process import ImageProcessor, StackProcessor
+import jmFijiGen as jmg
 
 def headlessCropStack(imp, lRoi):
   """headlessCropStack(imp, lRoi)
@@ -33,22 +34,6 @@ def headlessCropStack(imp, lRoi):
   imp.setStack(None, s2)
   imp.setCalibration(cal)
   return imp
-  
-    
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  ret = imp
-  print "done"
-  return ret
 
 lRoi = [0, 22, 512, 163]
 
@@ -58,7 +43,7 @@ imgPath = gitDir + relImg
 
 imp = IJ.openImage(imgPath)
 # 512x203
-ret =  headlessCropStack(imp, lRoi=lRoi)
+ret =  jmg.headlessCropStack(imp, lRoi=lRoi)
 ret.show()
 # time.sleep(2)
 # imp.close()

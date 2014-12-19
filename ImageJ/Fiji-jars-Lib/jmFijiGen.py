@@ -42,6 +42,8 @@
 # 2014-12-14  JRM 1.1.42  changed vertProfileFromROI to have headless flag
 # 2014-12-14  JRM 1.1.43  Added makeStackFromImageFiles for stacks with each slice
 #                         with optimum brightness/contrast LUT
+# 2014-12-18  JRM 1.1.44  Added  headlessCropStack
+#                         TO DO: add error checking
 
 import sys
 import os
@@ -67,14 +69,14 @@ from ij import IJ, ImagePlus, WindowManager, Prefs, ImageStack
 
 from ij.io import FileInfo
 
-from ij.gui import Roi, TextRoi, ImageRoi, Overlay, ImageCanvas
+from ij.gui import Roi, TextRoi, ImageRoi, Overlay, ImageCanvas, ShapeRoi
 
 from ij.measure import ResultsTable, Calibration
 from ij.plugin import ImageCalculator, Duplicator, ChannelSplitter
 from ij.plugin import MontageMaker
 from ij.plugin.frame import RoiManager
 
-from ij.process import LUT, ImageProcessor
+from ij.process import LUT, ImageProcessor, StackProcessor
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract  
 from script.imglib.algorithm import Gauss, Scale2D, Resample  
@@ -86,6 +88,33 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def headlessCropStack(imp, lRoi):
+  """headlessCropStack(imp, lRoi)
+  Crop a stack to a rectangle given by the list, lRoi
+  Inputs:
+  imp  - the ImagePlus of the stack to crop
+  lRoi - a list with [x0, y0, w, h]
+  Returns:
+  imp - the ImagePlus of the cropped stack
+  """
+  ip = imp.getProcessor()
+  roi = ShapeRoi(Roi(lRoi[0], lRoi[1], lRoi[2], lRoi[3]))
+  imp.setRoi(roi)
+  stackSize= imp.getStackSize()
+  bounds = roi.getBounds()
+  newWidth = bounds.width
+  newHeight = bounds.height
+  interpolationMethod = ImageProcessor.BICUBIC
+  ip.setInterpolationMethod(interpolationMethod)
+  sp = StackProcessor(imp.getStack(), ip)
+  s2 = sp.resize(newWidth, newHeight, False)
+  cal = imp.getCalibration()
+  cal.xOrigin -= roi.getBounds().x
+  cal.yOrigin -= roi.getBounds().y
+  imp.setStack(None, s2)
+  imp.setCalibration(cal)
+  return imp
 
 def makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif', bUseStackHisto=False):
   """makeStackFromImageFiles(lNames, imgDir, stkName='stack', ext='.tif', bUseStackHisto=False)
@@ -775,8 +804,9 @@ def makeMontage(lNames, columns, rows, inDir, inExt= ".png", sca=1.0, lCal=[], l
   for imp in lImp:
     imp.close()
   if(lCr != None):
-    IJ.makeRectangle(lCr[0], lCr[1], lCr[2], lCr[3])
-    IJ.run(impStack, "Crop", "")
+    headlessCropStack(impStack, lCr)
+    # IJ.makeRectangle(lCr[0], lCr[1], lCr[2], lCr[3])
+    # IJ.run(impStack, "Crop", "")
   
   mont = MontageMaker()
   # starts with a stack (stack) and returns an imp to the montage
