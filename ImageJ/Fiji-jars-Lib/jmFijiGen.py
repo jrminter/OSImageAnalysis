@@ -44,6 +44,7 @@
 #                         with optimum brightness/contrast LUT
 # 2014-12-18  JRM 1.1.44  Added  headlessCropStack
 #                         TO DO: add error checking
+# 2014-12-20  JRM 1.1.45  Added smoothMapImage
 
 import sys
 import os
@@ -71,7 +72,7 @@ from ij.io import FileInfo
 
 from ij.gui import Roi, TextRoi, ImageRoi, Overlay, ImageCanvas, ShapeRoi
 
-from ij.measure import ResultsTable, Calibration
+from ij.measure import ResultsTable, Calibration, Measurements
 from ij.plugin import ImageCalculator, Duplicator, ChannelSplitter
 from ij.plugin import MontageMaker
 from ij.plugin.frame import RoiManager
@@ -88,6 +89,30 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def smoothMapImage(imp, sat=0.00001):
+  """smoothMapImage(imp, sat=0.00001)
+  Smooths an X-ray map image (typically a 16 bit gray image) with a 3x3 kernel and
+  converts it to an 8 bit gray scale image that spans 0-255. This is ready for a 
+  hueLUT. It peforms this on a duplicate imp and returns the resultant imp. To the
+  best of my understanding, this is how Oxford treats their maps. 
+  Inputs:
+  imp - the input ImagePlus object
+  sat - the saturation, default 0.00001 to truncate very little from the max
+  Returns:
+  ret - an ImapePlus for the 8-bit, scaled, filtered image
+  """
+  ret = imp.duplicate()
+  name = imp.getShortTitle()
+  ip = ret.getProcessor()
+  ip.smooth()
+  stats = ret.getStatistics(Measurements.MIN_MAX)
+  imp.setDisplayRange(stats.min, stats.max)
+  strEC = "saturated=%g" % sat
+  IJ.run(ret, "Enhance Contrast", strEC)
+  IJ.run(ret, "8-bit", "")
+  ret.setTitle(name)
+  return ret
 
 def headlessCropStack(imp, lRoi):
   """headlessCropStack(imp, lRoi)
