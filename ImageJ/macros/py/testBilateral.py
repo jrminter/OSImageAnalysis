@@ -15,8 +15,8 @@ from ij.process import ImageStatistics
 from ij.measure import Measurements
 from vib import BilateralFilter
 
-spatialRadius = 10
-factor = 20
+spatialRadius = 20
+factor = 5
 
 
 edsDir  = os.environ['EDS_ROOT']
@@ -25,6 +25,8 @@ imp = IJ.openImage(imgPth)
 stats = imp.getStatistics(Measurements.MIN_MAX)
 imp.setDisplayRange(stats.min, stats.max)
 rangeRadius = factor*(stats.max - stats.min)
+stats = imp.getStatistics(Measurements.MIN_MAX)
+imp.setDisplayRange(stats.min, stats.max)
 IJ.run(imp, "8-bit", "")
 imp = BilateralFilter.filter(imp, spatialRadius, rangeRadius)
 IJ.run(imp, "Enhance Contrast", "saturated=0.35")

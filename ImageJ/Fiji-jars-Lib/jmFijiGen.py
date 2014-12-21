@@ -45,6 +45,7 @@
 # 2014-12-18  JRM 1.1.44  Added  headlessCropStack
 #                         TO DO: add error checking
 # 2014-12-20  JRM 1.1.45  Added smoothMapImage
+# 2014-12-21  JRM 1.1.46  Edit to smoothMapImage to handle noise pixels
 
 import sys
 import os
@@ -90,27 +91,30 @@ and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) princip
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
 
-def smoothMapImage(imp, sat=0.00001):
-  """smoothMapImage(imp, sat=0.00001)
-  Smooths an X-ray map image (typically a 16 bit gray image) with a 3x3 kernel and
-  converts it to an 8 bit gray scale image that spans 0-255. This is ready for a 
-  hueLUT. It peforms this on a duplicate imp and returns the resultant imp. To the
-  best of my understanding, this is how Oxford treats their maps. 
+def smoothMapImage(imp, no=2):
+  """smoothMapImage(imp, no=2)
+  Smooths an X-ray map image (typically a 16 bit gray image). First, it sets the
+  display range to a noise offset (to get rid of isolated pixels), converts to an 8
+  bit image that spans no to 255 and smooths with a 3x3 kernel. and
+  converts it to an 8 bit gray scale image that spans 0-255. This is
+  ready for a  hueLUT. It peforms this on a duplicate imp and returns
+  the resultant imp. To the best of my understanding, this is how Oxford
+  treats their maps. 
   Inputs:
   imp - the input ImagePlus object
-  sat - the saturation, default 0.00001 to truncate very little from the max
+  no  - the noise offset, default = 2, to remove noise pixels
   Returns:
   ret - an ImapePlus for the 8-bit, scaled, filtered image
   """
+  stats = imp.getStatistics(Measurements.MIN_MAX)
+  imp.setDisplayRange(no, stats.max)
   ret = imp.duplicate()
+  IJ.run(ret, "8-bit", "")
   name = imp.getShortTitle()
   ip = ret.getProcessor()
   ip.smooth()
   stats = ret.getStatistics(Measurements.MIN_MAX)
-  imp.setDisplayRange(stats.min, stats.max)
-  strEC = "saturated=%g" % sat
-  IJ.run(ret, "Enhance Contrast", strEC)
-  IJ.run(ret, "8-bit", "")
+  ret.setDisplayRange(no, stats.max)
   ret.setTitle(name)
   return ret
 
