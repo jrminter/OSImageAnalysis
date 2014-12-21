@@ -46,6 +46,7 @@
 #                         TO DO: add error checking
 # 2014-12-20  JRM 1.1.45  Added smoothMapImage
 # 2014-12-21  JRM 1.1.46  Edit to smoothMapImage to handle noise pixels
+# 2014-12-21  JRM 1.1.47  Added clipNoisePixMapImage to just clip noise pixels
 
 import sys
 import os
@@ -90,6 +91,30 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def clipNoisePixMapImage(imp, no=2):
+  """clipNoisePixMapImage(imp, no=2)
+  Clips noise pixels from an X-ray map image (typically a 16 bit gray image). 
+  First, it sets the isplay range to a noise offset (to get rid of isolated pixels),
+  converts to an 8 bit image that spans no to 255 and returns an 8 bit gray scale
+  image that spans no-255. This is ready for a  hueLUT. It peforms this on a duplicate
+  imp and returns the resultant imp. To the best of my understanding, this is how Oxford
+  treats their maps w/o a 3x3 smooth. 
+  Inputs:
+  imp - the input ImagePlus object
+  no  - the noise offset, default = 2, to remove noise pixels
+  Returns:
+  ret - an ImapePlus for the 8-bit, scaled, filtered image
+  """
+  stats = imp.getStatistics(Measurements.MIN_MAX)
+  imp.setDisplayRange(no, stats.max)
+  ret = imp.duplicate()
+  IJ.run(ret, "8-bit", "")
+  name = imp.getShortTitle()
+  stats = ret.getStatistics(Measurements.MIN_MAX)
+  ret.setDisplayRange(no, stats.max)
+  ret.setTitle(name)
+  return ret  
 
 def smoothMapImage(imp, no=2):
   """smoothMapImage(imp, no=2)
