@@ -47,6 +47,8 @@
 # 2014-12-20  JRM 1.1.45  Added smoothMapImage
 # 2014-12-21  JRM 1.1.46  Edit to smoothMapImage to handle noise pixels
 # 2014-12-21  JRM 1.1.47  Added clipNoisePixMapImage to just clip noise pixels
+# 2014-12-22  JRM 1.1.48  Actually zero pix below noise offset in smoothMapImage and
+#                         clipNoisePixMapImage.
 
 import sys
 import os
@@ -92,34 +94,11 @@ and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) princip
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
 
-def clipNoisePixMapImage(imp, no=2):
-  """clipNoisePixMapImage(imp, no=2)
-  Clips noise pixels from an X-ray map image (typically a 16 bit gray image). 
-  First, it sets the isplay range to a noise offset (to get rid of isolated pixels),
-  converts to an 8 bit image that spans no to 255 and returns an 8 bit gray scale
-  image that spans no-255. This is ready for a  hueLUT. It peforms this on a duplicate
-  imp and returns the resultant imp. To the best of my understanding, this is how Oxford
-  treats their maps w/o a 3x3 smooth. 
-  Inputs:
-  imp - the input ImagePlus object
-  no  - the noise offset, default = 2, to remove noise pixels
-  Returns:
-  ret - an ImapePlus for the 8-bit, scaled, filtered image
-  """
-  stats = imp.getStatistics(Measurements.MIN_MAX)
-  imp.setDisplayRange(no, stats.max)
-  ret = imp.duplicate()
-  IJ.run(ret, "8-bit", "")
-  name = imp.getShortTitle()
-  stats = ret.getStatistics(Measurements.MIN_MAX)
-  ret.setDisplayRange(no, stats.max)
-  ret.setTitle(name)
-  return ret  
-
 def smoothMapImage(imp, no=2):
   """smoothMapImage(imp, no=2)
   Smooths an X-ray map image (typically a 16 bit gray image). First, it sets the
-  display range to a noise offset (to get rid of isolated pixels), converts to an 8
+  display range to a noise offset to the max and sets pixels below the noise offset
+  to zero (to get rid of isolated pixels), converts to an 8
   bit image that spans no to 255 and smooths with a 3x3 kernel. and
   converts it to an 8 bit gray scale image that spans 0-255. This is
   ready for a  hueLUT. It peforms this on a duplicate imp and returns
@@ -134,14 +113,52 @@ def smoothMapImage(imp, no=2):
   stats = imp.getStatistics(Measurements.MIN_MAX)
   imp.setDisplayRange(no, stats.max)
   ret = imp.duplicate()
+  ip = ret.getProcessor()
+  data = ip.getPixels()
+  l = len(data)
+  for i in range(l):
+    val = data[i]
+    if val < no:
+      data[i] = 0
   IJ.run(ret, "8-bit", "")
   name = imp.getShortTitle()
   ip = ret.getProcessor()
   ip.smooth()
   stats = ret.getStatistics(Measurements.MIN_MAX)
-  ret.setDisplayRange(no, stats.max)
+  ret.setDisplayRange(0, stats.max)
   ret.setTitle(name)
   return ret
+  
+def clipNoisePixMapImage(imp, no=2):
+  """clipNoisePixMapImage(imp, no=2)
+  Clips noise pixels from an X-ray map image (typically a 16 bit gray image). 
+  First, it sets the display range to a noise offset to max and removes the noise
+  pixels (to get rid of isolated pixels), then converts to an 8 bit image that spans
+  0 to 255 and returns an 8 bit gray scale. This is ready for a  hueLUT. It peforms
+  this on a duplicate imp and returns the resultant imp. To the best of my understanding,
+  this is how Oxford treats their maps w/o a 3x3 smooth. 
+  Inputs:
+  imp - the input ImagePlus object
+  no  - the noise offset, default = 2, to remove noise pixels
+  Returns:
+  ret - an ImapePlus for the 8-bit, scaled, filtered image
+  """
+  stats = imp.getStatistics(Measurements.MIN_MAX)
+  imp.setDisplayRange(no, stats.max)
+  ret = imp.duplicate()
+  ip = ret.getProcessor()
+  data = ip.getPixels()
+  l = len(data)
+  for i in range(l):
+    val = data[i]
+    if val < no:
+      data[i] = 0
+  IJ.run(ret, "8-bit", "")
+  name = imp.getShortTitle()
+  stats = ret.getStatistics(Measurements.MIN_MAX)
+  ret.setDisplayRange(0, stats.max)
+  ret.setTitle(name)
+  return ret  
 
 def headlessCropStack(imp, lRoi):
   """headlessCropStack(imp, lRoi)
