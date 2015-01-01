@@ -1,4 +1,10 @@
 #!/bin/bash -e
+#
+# 2014-11-28 JRM  Trying to get headless working on the mac
+# 2015-01-01 JRM  Playing with $HOME/.jython including 
+#                 python.console=org.python.util.InteractiveConsole
+#                 to not use jline...
+#
 # Mac's standard Java Home
 # JAVA_HOME="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home"
 # Oracle's Java 7 Home
@@ -17,9 +23,9 @@ cd ${BASE_DIR}
 rm -rf ${LOG_DIR}
 [ -d fiji-log ] || mkdir fiji-log
 
-java -version
+# java -version
 
-echo \"Fiji started:\"
+echo \"Fiji run 1 started:\"
 
 # --java-home ${JAVA_HOME}
 # --console -macro ${IJ_MACRO}
@@ -28,6 +34,13 @@ rm -rf ${LOG_DIR}/log.txt
 $FIJI_APP --java-home ${JAVA_HOME} --headless  --mem=1000m  ${IJ_SCRIPT}  #  > ${LOG_DIR}/log.txt
 
 # cat ${LOG_DIR}/log.txt
+
+# java -version
+
+echo \"Fiji run 2 started:\"
+
+$FIJI_APP --java-home ${JAVA_HOME} --headless  --mem=1000m  ${IJ_SCRIPT}  #  > ${LOG_DIR}/log.txt
+
 
 # rm -rf $HOME/.jlin*
 
