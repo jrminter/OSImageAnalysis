@@ -9,17 +9,17 @@ gitDir = os.environ['GIT_HOME']
 relImg = "/OSImageAnalysis/images"
 imgPath = gitDir + relImg + "/latex.tif"
 
-pause = 0.1
+bHeadless=True
 
 imp = IJ.openImage(imgPath)
 
-if (pause > 1.99):
+if bHeadless==False:
   imp.show()
   
 # pro = jmg.doCrop(imp, [24,24,32,32])
 # pro.show()
 
-[x, y] = jmg.vertProfileFromROI(imp, [343, 436, 11, 68], 1.0, pause=pause)
+[x, y] = jmg.vertProfileFromROI(imp, [343, 436, 11, 68], 1.0, bHeadless)
 
 # print(x,y)
 
