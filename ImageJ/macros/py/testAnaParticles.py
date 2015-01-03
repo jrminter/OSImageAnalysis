@@ -21,7 +21,13 @@ from ij.plugin.filter import ParticleAnalyzer
 from ij.plugin.frame import RoiManager
 import jmFijiGen as jmg
 
-def anaParticles(imp, minSize, maxSize, minCirc):
+def anaParticles(imp, minSize, maxSize, minCirc, bHeadless=True):
+  """anaParticles(imp, minSize, maxSize, minCirc, bHeadless=True)
+  Analyze particles using a watershed separation. If headless=True, we cannot
+  redirect the intensity measurement to the original immage becuae it is never
+  displayed. If we display the original, we can and get the mean gray level. We
+  may then compute the particle contrast from the measured Izero value for the image.
+  No ability here to draw outlines on the original."""
   strName = imp.getShortTitle()
   imp.setTitle("original")
   ret = imp.duplicate()
@@ -32,7 +38,11 @@ def anaParticles(imp, minSize, maxSize, minCirc):
   rt = ResultsTable()
   # strSetMeas = "area mean modal min center perimeter bounding fit shape feret's redirect='original' decimal=3"
   # N.B. redirect will not work without a displayed image, so we cannot use a gray level image
-  strSetMeas = "area mean modal min center perimeter bounding fit shape feret's decimal=3"
+  if bHeadless == True:
+    strSetMeas = "area mean modal min center perimeter bounding fit shape feret's decimal=3"
+  else:
+    imp.show()
+    strSetMeas = "area mean modal min center perimeter bounding fit shape feret's redirect='original' decimal=3"
   IJ.run("Set Measurements...", strSetMeas)
   # note this doies not get passed directly to ParticleAnalyzer, so
   # I did this, saved everything and looked for the measurement value in ~/Library/Preferences/IJ_Prefs.txt
@@ -48,6 +58,7 @@ def anaParticles(imp, minSize, maxSize, minCirc):
 col = "red"
 wid = 2
 bClose = True
+bHeadless = False
 
 imgDir  = os.environ['IMG_ROOT']
 rptDir  = os.environ['RPT_ROOT']
@@ -74,11 +85,11 @@ orig = ImagePlus(sImgPath)
 strName = os.path.basename(sImgPath)
 strName = strName.split('.')[0]
 orig.setTitle(strName)
-orig.show()
+# orig.show()
 iZero = jmg.findI0(orig, maxSearchFrac=0.5, chAvg=5)
 print(iZero)
 
-[ana, rt] = anaParticles(orig, minSize, maxSize, minCirc)
+[ana, rt] = anaParticles(orig, minSize, maxSize, minCirc, bHeadless=bHeadless)
 nMeas = rt.getCounter()
 print("%d particles detected in image %d" % (nMeas,1) )
 nCols = rt.getLastColumn()
@@ -87,6 +98,7 @@ for j in range(nCols+1):
 
 
 print("Area     = %d" % rt.getColumnIndex("Area"))
+print("Mean     = %d" % rt.getColumnIndex("Mean"))
 print("Perim.   = %d" % rt.getColumnIndex("Perim."))
 print("Major    = %d" % rt.getColumnIndex("Major"))
 print("Minor    = %d" % rt.getColumnIndex("Minor"))
@@ -97,5 +109,8 @@ print("AR       = %d" % rt.getColumnIndex("AR"))
 print("Round    = %d" % rt.getColumnIndex("Round"))
 print("Solidity = %d" % rt.getColumnIndex("Solidity"))
 
+rt.show("Results")
+
 print("done")
+
 

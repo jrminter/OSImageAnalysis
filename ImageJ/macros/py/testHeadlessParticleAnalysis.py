@@ -90,7 +90,7 @@ for fi in lFiles:
   print(iZero)
   [ana, rt] = anaParticles(orig, minSize, maxSize, minCirc)
   nMeas = rt.getCounter()
-  print("%d particles detected in image %d" % (nMeas,i) )
+  print("%d particles detected in image %d" % (nMeas,i+1) )
   nCols = rt.getLastColumn()
   lArea   = rt.getColumn(0)
   lPeri   = rt.getColumn(10)
