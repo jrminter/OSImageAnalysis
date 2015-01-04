@@ -124,8 +124,8 @@ def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
   imp.setOverlay(ovl)
   return imp
 
-def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minCirc=0.35, labCol=Color.white, linCol=Color.green, bDebug=False):
-  """anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minCirc=0.35, labCol=Color.white, linCol=Color.green, bDebug=False)
+def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minCirc=0.35, labCol=Color.white, linCol=Color.green, bDebug=False, sl=0.005):
+  """anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minCirc=0.35, labCol=Color.white, linCol=Color.green, bDebug=False, sl=0.005)
   A wrapper function to do particle analyis from an image after a watershed transformation and draw the detected
   features into the overlay of the original image.
   Inputs:
@@ -135,16 +135,24 @@ def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minC
   minCirc    - the minimum circularity to detect
   labCol     - the color for labels in the overlay (default white)
   linCol     - the color for line/stroke in the overlay (default green)
-  bDebug     - a flag (default False) that, if true, keeps the work image opem
+  bDebug     - a flag (default False) that, if true, keeps the work image open
+  sl         - a time (default 0.005) to sleep when adding ROIs to not overload
 
   This adds the detected features to the overlay and returns the result table for
   processing for output.
   """
   title = imp.getTitle()
   shortTitle = imp.getShortTitle()
+  
+  typ = imp.getType()
   imp.setTitle(shortTitle)
+  imp.show()
   IJ.run(imp,"Duplicate...", "title=work")
   wrk = IJ.getImage()
+  # if this is a 16 bit image, convert to 8 bit prior to threshold
+  if typ == ImagePlus.GRAY16:
+    IJ.run(wrk, "Enhance Contrast", "saturated=0.35")
+    IJ.run(wrk, "8-bit", "")
   IJ.run(wrk, "Threshold", strThrMeth)
   IJ.run(wrk, "Watershed", "")
   wrk.show()
@@ -162,6 +170,8 @@ def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minC
     rLab = "%d" % i
     r.setName(rLab)
     imp = addRoiToOverlay(imp, r, labCol=labCol, linCol=linCol)
+    # needed to put in sleep here on cruch to let this complete and not overrun buffer
+    time.sleep(sl)
   # let's put a PointRoi outside the image to get the overlays all the same color
   r = PointRoi(-10, -10)
   imp = addRoiToOverlay(imp, r, labCol=labCol, linCol=linCol)
@@ -173,6 +183,7 @@ def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minC
     wrk.close()
   imp.setTitle(title)
   return rt
+
 
 def smoothMapImage(imp, no=2):
   """smoothMapImage(imp, no=2)
