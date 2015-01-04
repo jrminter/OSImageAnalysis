@@ -205,6 +205,12 @@ print("Solidity = %d" % rt.getColumnIndex("Solidity"))
 
 rt.show("Results")
 
+outPth = sRptImgPath + strName + ".png"
+# burn a scale bar and save the image
+IJ.run(orig, "RGB Color", "")
+IJ.run(orig, "Add Scale Bar", "width=100 height=6 font=28 color=Green location=[Lower Right] bold")
+IJ.saveAs(orig, "PNG", outPth)
+
 print("done")
 
 
