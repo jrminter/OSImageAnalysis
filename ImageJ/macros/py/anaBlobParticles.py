@@ -24,6 +24,8 @@ from ij.measure import ResultsTable, Measurements
 from ij.plugin.filter import ParticleAnalyzer
 from ij.plugin.frame import RoiManager
 
+import jmFijiGen as jmg
+
 def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
   """addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white)
   A convenience function to draw a ROI into the overlay of an ImagePlus. This is useful for
@@ -105,7 +107,7 @@ closeRW = False
 
 IJ.run("Blobs (25K)")
 ori = IJ.getImage()
-myRT = anaParticlesWatershed(ori)
+myRT = jmg.anaParticlesWatershed(ori)
 
 myRT.show("Results")
 
