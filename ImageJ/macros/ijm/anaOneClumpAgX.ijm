@@ -1,0 +1,10 @@
+open("/Users/jrminter/dat/images/test/clumpAgX/qm-03965-KJL-027/dm3/qm-03695-KJL-027-01.dm3");
+run("Duplicate...", "title=work");
+setAutoThreshold("Default");
+setOption("BlackBackground", false);
+run("Make Binary");
+run("Convert to Mask");
+run("Watershed");
+run("Set Measurements...", "area mean modal min center perimeter bounding fit shape feret's display redirect=qm-03695-KJL-027-01.dm3 decimal=3");
+run("Analyze Particles...", "size=10-Infinity pixel circularity=0.35-1.00 display exclude clear include add");
+// run("Analyze Particles...", "size=10-Infinity circularity=0.35-1.00 display exclude clear include add");
