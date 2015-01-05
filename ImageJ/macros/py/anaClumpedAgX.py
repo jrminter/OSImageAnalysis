@@ -97,9 +97,10 @@ for fi in lFiles:
     con = lMode[j]/iZero
     conOut.append(con)   
     cirOut.append(lCirc[j])
+    arOut.append(lAspRat[j])
     rndOut.append(lRound[j])
-    solOut.append(lCirc[j])
-    arOut.append(lSolid[j])
+    solOut.append(lSolid[j])
+    
     
   orig.show()
   outPth = sRptImgPath + strName + ".png"
