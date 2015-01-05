@@ -59,7 +59,7 @@ for fi in lFiles:
   # orig.show()
   iZero = jmg.findI0(orig, maxSearchFrac=0.5, chAvg=5)
   # print(iZero)
-  rt = jmg.anaParticlesWatershed(orig)
+  rt = jmg.anaParticlesWatershed(orig, minPx=30)
   nMeas = rt.getCounter()
   
   nCols = rt.getLastColumn()
@@ -113,4 +113,5 @@ elapsed = toc - tic
 print("completed in %g sec" % elapsed )
 
 # 177 sec on jrmFastMac
+#  32 sec on crunch
   
