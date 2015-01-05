@@ -112,6 +112,8 @@ elapsed = toc - tic
 
 print("completed in %g sec" % elapsed )
 
-# 177 sec on jrmFastMac
+#  56 sec on jrmFastMac (huh?)
 #  32 sec on crunch
+#  47 sec on ROCPW6C6XDN1
+
   
