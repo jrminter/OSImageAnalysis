@@ -29,7 +29,7 @@ relImg  = "/test/clumpAgX"
 sampID  = "qm-03966-KJL-031"
 nmPerPx = 1.213
 minCirc = 0.5
-minSize = 1000.0
+minSize = 100.0
 maxSize = 10000.0
 
 # set some strings
