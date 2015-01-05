@@ -129,9 +129,10 @@ elapsed = toc - tic
 
 print("completed in %g sec" % elapsed )
 
-#  56 sec on jrmFastMac (huh?)
-#  32 sec on crunch       - Win7-64 16 GB RAM i7-3370 8 cores    3.4 GHz
-#  46 sec on ROCPW6C6XDN1 - Win7-64 16 GB RAM Core Duo E8500 CPU 3.0 GHz
-#  48 sec on ROCTL185TXY1 - Win7-32  4 GB RAM i5-3340M CPU       2.7 GHz
+# All with Oracle JDK 1.7.0_71
+#  54 sec on jrmFastMac   - Yosemite 16 GB RAM i7 4 cores MacBookPro11,3 2.3 GHz
+#  32 sec on crunch       - Win7-64  16 GB RAM i7-3370 8 cores           3.4 GHz
+#  46 sec on ROCPW6C6XDN1 - Win7-64  16 GB RAM Core Duo E8500 CPU        3.0 GHz
+#  48 sec on ROCTL185TXY1 - Win7-32   4 GB RAM i5-3340M CPU              2.7 GHz
 
   
