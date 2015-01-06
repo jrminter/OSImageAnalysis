@@ -1,5 +1,7 @@
 # anaClumpedAgX.R
 # Analyze and plot the results from anaClumpedGrains.py
+# 2015-01-05  JRM 0.2.10  Worked with image and particle numbers and contrast
+# 2015-01-06  JRM 0.2.20  Fixed Contrast
 
 rm(list=ls())
 library(analab)
@@ -80,4 +82,16 @@ if(do.pdf){
   pdfFil <- paste0(rptDir,"/",sampleID,"/",sampleID,"-sp-cont.pdf")
   rs.plot.pdf(pf.spc(), pdfFil, width = 9, height = 6, pts = 12)
 }
+
+relC <- df.sp$contrast/df.sp$ecd.nm
+Sys.sleep(0.1)
+pf.rspc <- function(){
+  linear.distn.panel.plot(relC, n.brks, kern.bw="nrd0", distn.lab='contrast/ecd')
+}
+pf.rspc()
+if(do.pdf){
+  pdfFil <- paste0(rptDir,"/",sampleID,"/",sampleID,"-rsp-cont.pdf")
+  rs.plot.pdf(pf.rspc(), pdfFil, width = 9, height = 6, pts = 12)
+}
+
 

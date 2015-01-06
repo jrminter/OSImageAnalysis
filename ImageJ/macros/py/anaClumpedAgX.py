@@ -94,7 +94,7 @@ for fi in lFiles:
     parOut.append(j+1)
     ecd = 2.0*sqrt(lArea[j]/3.1415926)
     ecdOut.append(ecd)
-    con = lMode[j]/iZero
+    con = 1.0-(lMode[j]/iZero)
     conOut.append(con)   
     cirOut.append(lCirc[j])
     arOut.append(lAspRat[j])
