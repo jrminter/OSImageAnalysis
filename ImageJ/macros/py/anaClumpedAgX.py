@@ -9,6 +9,7 @@
 # 2015-01-04  JRM 0.2.00  Changed to call anaParticlesWatershed() from
 #                         jmFijiGen and to compute contrast
 # 2015-01-05  JRM 0.2.10  Added image and particle number and fixed scale bar
+# 2015-01-06  JRM 0.2.20  Fixed Contrast
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 import os
