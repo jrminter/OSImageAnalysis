@@ -67,6 +67,7 @@ for fi in lFiles:
   lStr =  strName.split('-')
   l = len(lStr)
   strNum = lStr[l-1]
+  iNum = int(strNum)
   orig.setTitle(strNum)
   if i == 1:
     # a hack to get the scale bars to work reliably
@@ -91,7 +92,7 @@ for fi in lFiles:
   lRound  = rt.getColumn(rt.getColumnIndex("Round"))
   lSolid  = rt.getColumn(rt.getColumnIndex("Solidity"))
   for j in range(len(lArea)):
-    imgOut.append(i)
+    imgOut.append(iNum)
     parOut.append(j+1)
     ecd = 2.0*sqrt(lArea[j]/3.1415926)
     ecdOut.append(ecd)
@@ -118,8 +119,8 @@ for fi in lFiles:
 f=open(sRptCsvPath, 'w')
 strLine = 'img, part, ecd.nm, contrast, circ, a.r, round, solidity\n'
 f.write(strLine)
-for i in range(len(ecdOut)):
-  strLine = "%d, %d, %.2f, %.4f, %.4f, %.4f, %.4f, %.4f\n" % (imgOut[i], parOut[i], ecdOut[i],  conOut[i], cirOut[i], arOut[i], rndOut[i], solOut[i] )
+for k in range(len(ecdOut)):
+  strLine = "%d, %d, %.2f, %.4f, %.4f, %.4f, %.4f, %.4f\n" % (imgOut[k], parOut[k], ecdOut[k],  conOut[k], cirOut[k], arOut[k], rndOut[k], solOut[k] )
   f.write(strLine)
 
 f.close()
@@ -128,6 +129,7 @@ toc = time.time()
 
 elapsed = toc - tic
 
+print("analyzed %g images" % i)
 print("completed in %g sec" % elapsed )
 
 # All with Oracle JDK 1.7.0_71
@@ -135,5 +137,6 @@ print("completed in %g sec" % elapsed )
 #  32 sec on crunch       - Win7-64  16 GB RAM i7-3370 8 cores           3.4 GHz
 #  46 sec on ROCPW6C6XDN1 - Win7-64  16 GB RAM Core Duo E8500 CPU        3.0 GHz
 #  48 sec on ROCTL185TXY1 - Win7-32   4 GB RAM i5-3340M CPU              2.7 GHz
+#  93 sec on parrot       - Ubuntu-64 2 GB RAM AMD 64 2Core              1.8 GHz         
 
   
