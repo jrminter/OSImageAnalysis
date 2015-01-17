@@ -11,6 +11,11 @@
 #
 # We'll push these changes up to Fiji this week, and I will find or write
 # better instructions for local testing.
+# 
+#    Date     Who   Version                    Comments
+# ----------  ---  ---------  -------------------------------------------------------
+# 2015-01-15  JRM  v. 0.9.00  Initial version - does not yet work. need scifio update
+# 2015-01-17  JRM  v. 1.0.00  Works after today's update
 #
 from ij import IJ
 from ij import ImagePlus
@@ -26,7 +31,7 @@ from io.scif.img import ImgSaver
 from net.imagej.axis import Axes
 
 imgDir  = os.environ['IMG_ROOT']
-relImg  = "/test/original-ome"
+relImg  = "/test/ij/original-ome"
 
 inImg = imgDir + relImg + ".tif"
 ouImg = imgDir + relImg + "-cr.tif"
