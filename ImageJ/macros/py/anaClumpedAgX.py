@@ -136,6 +136,7 @@ print("completed in %g sec" % elapsed )
 
 # All with Oracle JDK 1.7.0_71
 #  53 sec on jrmFastMac   - Yosemite 16 GB RAM i7 4 cores MacBookPro11,3 2.3 GHz
+#  64 sec on jrmfastMac   - Parallels Win 10 tech prev Java 6 VM         2.3 Ghz
 #  32 sec on crunch       - Win7-64  16 GB RAM i7-3370 8 cores           3.4 GHz
 #  52 sec on ROCPW6C6XDN1 - Win7-64  16 GB RAM Core Duo E8500 CPU        3.0 GHz
 #  48 sec on ROCTL185TXY1 - Win7-32   4 GB RAM i5-3340M CPU              2.7 GHz
