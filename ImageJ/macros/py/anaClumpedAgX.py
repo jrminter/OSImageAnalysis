@@ -135,7 +135,7 @@ print("analyzed %g images" % i)
 print("completed in %g sec" % elapsed )
 
 # All with Oracle JDK 1.7.0_71
-#  53 sec on jrmFastMac   - Yosemite 16 GB RAM i7 4 cores MacBookPro11,3 2.3 GHz
+#  53 sec on jrmFastMac   - Yosemite 16 GB RAM i7 4 cores MacBookPro11,3 2.3 GHz not much different w JVM 1.6.0.65
 #  64 sec on jrmfastMac   - Parallels Win 10 tech prev Java 6 VM         2.3 Ghz
 #  32 sec on crunch       - Win7-64  16 GB RAM i7-3370 8 cores           3.4 GHz
 #  52 sec on ROCPW6C6XDN1 - Win7-64  16 GB RAM Core Duo E8500 CPU        3.0 GHz
