@@ -50,6 +50,7 @@
 # 2014-12-22  JRM 1.1.48  Actually zero pix below noise offset in smoothMapImage and
 #                         clipNoisePixMapImage.
 # 2015-01-04  JRM 1.1.49  Added addRoiToOverlay and anaParticlesWatershed
+# 2015-01-29  JRM 1.1.50  Changed getUnitString() to use characters exported by IJ
 
 import sys
 import os
@@ -682,13 +683,14 @@ def getUnitString(units=-6):
   Return
   A string"""
   if(units == -6):
-    a = [0xC2, 0xB5]
-    mu = "".join([chr(c) for c in a]).decode('UTF-8')
-    scaUni  = mu+"m"
+    mu = IJ.micronSymbol
+    scaUni  = mu + "m"
   if(units == -3):
     scaUni  = "mm"
   if(units == -9):
     scaUni  = "nm"
+  if(units == -10):
+    scaUni  = IJ.angstromSymbol
   if(units == 0):
     scaUni  = "m"
   if(units == 3):

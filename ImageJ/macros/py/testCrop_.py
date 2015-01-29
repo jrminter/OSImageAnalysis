@@ -18,23 +18,26 @@ from ij import ImagePlus
 from ij import WindowManager
 import jmFijiGen as jmg
 
-edsDir  = os.environ['EDS_ROOT']
-relInImg  = "/testMap/png"
+imgDir  = os.environ['IMG_ROOT']
+relInImg  = "/QM15-02-03A-Nair/qm-04249-MIS-12-105-cryo/png"
 
-inDir = edsDir + relInImg 
-imgName = "6-line.png"
+inDir = imgDir + relInImg 
+imgName = "qm-04249-MIS-12-105-cryo-15-s3.png"
 
 inImg = inDir + "/" + imgName
 
-# x  = 300
-# y  = 50
-# wd = 400
-# ht = 500
+print(inImg)
 
-x  = 350
-y  = 70
-wd = 400
-ht = 400
+# 6-line.png
+# x  = 300
+# y  = 70
+# wd = 400
+# ht = 400
+
+x  = 170
+y  = 40
+wd = 3670
+ht = 1780
 
 cropPar = [x,y,wd,ht]
 
