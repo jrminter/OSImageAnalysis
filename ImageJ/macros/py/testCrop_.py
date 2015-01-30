@@ -19,10 +19,14 @@ from ij import WindowManager
 import jmFijiGen as jmg
 
 imgDir  = os.environ['IMG_ROOT']
-relInImg  = "/QM15-02-03A-Nair/qm-04249-MIS-12-105-cryo/png"
+edsDir  = os.environ['EDS_ROOT']
+# relInImg  = "/QM15-02-03A-Nair/qm-04249-MIS-12-105-cryo/png"
+relInImg  = "/Oxford/QM15-04-01B-Steele/reports/qm-04261-44T005-294-Cu-blue/qm-04261-44T005-294-Cu-blue-7kV-map2/msa"
 
-inDir = imgDir + relInImg 
-imgName = "qm-04249-MIS-12-105-cryo-15-s3.png"
+# inDir = imgDir + relInImg 
+inDir = edsDir + relInImg 
+# imgName = "qm-04249-MIS-12-105-cryo-15-s3.png"
+imgName = "ppts.png"
 
 inImg = inDir + "/" + imgName
 
