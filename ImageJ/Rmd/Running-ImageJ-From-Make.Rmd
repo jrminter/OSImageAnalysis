@@ -17,15 +17,15 @@ We will need to use environment variables and path names including spaces has ca
 64 Bit JVMs:
 
 ```
-C:\Apps\Java64\jdk1.8.0_25
-C:\Apps\Java64\jdk1.7.0_71
-C:\Apps\Java64\jdk1.8.0_25
+C:\Apps\Java64\jdk1.6.0_45
+C:\Apps\Java64\jdk1.7.0_75
+C:\Apps\Java64\jdk1.8.0_31
 ```
 
 and one 32 bit JVM (for the browser):
 
 ```
-C:\Apps\Java32\jre1.8.0_25
+C:\Apps\Java32\jre1.8.0_31
 ```
 
 Note that one can set up shortcuts to run the ImageJ/Fiji Gui from the Quick Launch bar that are stored here:
@@ -39,7 +39,7 @@ I name the shortcuts `FijiJ6`, `FijiJ7`, and `FijiJ8`. Here are the entries for 
 Target:
 
 ```
-C:\Apps\Fiji.app.win64\ImageJ-win64.exe -Dpython.cachedir.skip=false --java-home "C:\Apps\Java64\jdk1.7.0_71" --
+C:\Apps\Fiji.app.win64\ImageJ-win64.exe -Dpython.cachedir.skip=false --java-home "C:\Apps\Java64\jdk1.7.0_75" --
 ```
 
 Run in:
@@ -67,7 +67,7 @@ FIJI_APP
 C:/Apps/Fiji.app.win64/ImageJ-win64.exe
 
 FIJI_JAVA_HOME
-C:/Apps/Java64/jdk1.7.0_71/jre
+C:/Apps/Java64/jdk1.7.0_75/jre
 
 GIT_HOME
 C:/Users/{username}/Documents/git
