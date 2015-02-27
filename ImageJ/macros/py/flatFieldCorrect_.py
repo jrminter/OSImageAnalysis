@@ -19,10 +19,14 @@ from ij import IJ
 import jmFijiGen as jmg
 
 
-gitDir  = os.environ['GIT_HOME']
-relImg  = "/OSImageAnalysis/images"
+# gitDir  = os.environ['GIT_HOME']
+# relImg  = "/OSImageAnalysis/images"
 # strImg  = gitDir + relImg + "/bridge.gif"
-strImg  = gitDir + relImg + "/latex.tif"
+# strImg  = gitDir + relImg + "/latex.tif"
+imgDir  = os.environ['IMG_ROOT']
+relImg  = "/test/ff-test/TiO2-Ruler/tif"
+strImg  = gitDir + relImg + "/TiO2-Ruler-20X-1.tif"
+print(strImg)
   
 # 1. Open an image 
 imp =  IJ.openImage(strImg)

@@ -9,6 +9,7 @@
 #  date       who  comment
 # ----------  ---  -----------------------------------------------------
 # 2014-01-09  JRM  initial prototype
+# 2015-02-27  JRM  change micron to µm 
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -22,16 +23,16 @@ import jmFijiGen as jmg
 
 tic = time.time()
 
-barW    =     15        # bar width, nm
+barW    =     20        # bar width, units
 barH    =      6        # bar height, pts
 barF    =     28        # bar font, pts
 barC    = "Black"       # bar color
 barL    = "Lower Right" # bar location
 
 imgRt  = os.environ['IMG_ROOT']
-relPrj = "/QM15-02-02A-Brust"
-labId  = "qm-04240"
-smpId  = "TBB1155-1"
+relPrj = "/QM15-02-02C-Brust"
+labId  = "qm-04280"
+smpId  = "TBB1172-6"
 
 
 
@@ -54,6 +55,14 @@ for fi in lFiles:
   strNum = lStr[l-1]
   iNum = int(strNum)
   orig.setTitle(strNum)
+  cal = orig.getCalibration()
+  strUnit = cal.getUnit()
+  if strUnit == "micron":
+    mu = IJ.micronSymbol
+    strUnit  = mu + "m"
+    cal.setUnit(strUnit)
+    orig.setCalibration(cal)
+    orig.updateAndRepaintWindow()
   if i == 1:
     # a hack to get the scale bars to work reliably
     foo = orig.duplicate()
