@@ -27,12 +27,12 @@ barW    =    0.2        # bar width, microns
 barH    =      6        # bar height, pts
 barF    =     28        # bar font, pts
 barC    = "White"       # bar color
-barL    = "Upper Right" # bar location
+barL    = "Lower Right" # bar location
 
 imgRt  = os.environ['IMG_ROOT']
 relPrj = "/Kateeva-15-01"
-labId  = "qm-04288"
-smpId  = "41837"
+labId  = "qm-04290"
+smpId  = "41527"
 
 
 
