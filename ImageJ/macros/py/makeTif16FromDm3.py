@@ -1,15 +1,15 @@
-# makePngWithSbFromDm3.py
+# makeTif16FromDm3.py
 #
 # J. R. Minter
 #
-# Process a folder of .DM3 files and burn scale bars
-# expects a subfolder "dm3" in a sample folder
+# Process a folder of .DM3 files create 16 bit TIF files for ImageJ
+# expects a subfolder "dm3" in a sample folder and puts tifs in
+# "tif" subfolder
 #
 # CCA licence
 #  date       who  comment
 # ----------  ---  -----------------------------------------------------
-# 2014-01-09  JRM  initial prototype
-# 2015-02-27  JRM  change micron to µm 
+# 2014-03-03 JRM  initial prototype
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -23,12 +23,6 @@ import jmFijiGen as jmg
 
 tic = time.time()
 
-barW    =    0.2        # bar width, microns
-barH    =      6        # bar height, pts
-barF    =     28        # bar font, pts
-barC    = "White"       # bar color
-barL    = "Upper Right" # bar location
-
 imgRt  = os.environ['IMG_ROOT']
 relPrj = "/Kateeva-15-01"
 labId  = "qm-04288"
@@ -37,9 +31,8 @@ smpId  = "41837"
 
 
 sDm3Path = imgRt + relPrj + "/" + labId + "-" + smpId + "/dm3/"
-sPngPath = imgRt + relPrj + "/" + labId + "-" + smpId + "/png/"
-jmg.ensureDir(sPngPath)
-
+sTifPath = imgRt + relPrj + "/" + labId + "-" + smpId + "/tif/"
+jmg.ensureDir(sTifPath)
 
 query = sDm3Path + "*.dm3"
 print(query)
@@ -63,24 +56,11 @@ for fi in lFiles:
     cal.setUnit(strUnit)
     orig.setCalibration(cal)
     orig.updateAndRepaintWindow()
-    barUseW = barW
-  else:
-    if strUnit == "nm":
-      barUseW = 1000 * barW
-    
-  strBar = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barUseW, barH, barF, barC, barL)
-    
-  # a hack to get the scale bars to work reliably
-  foo = orig.duplicate()
-  IJ.run(foo, "RGB Color", "")
-  IJ.run(foo, "Add Scale Bar", strBar)
-  foo.close()
   # IJ.run(orig, "Enhance Contrast", "saturated=0.35")
-  IJ.run(orig, "RGB Color", "")
-  IJ.run(orig, "Add Scale Bar", strBar)
+  IJ.run(orig, "16-bit", "")
   orig.show()
-  outPth = sPngPath + strName + ".png"
-  IJ.saveAs(orig, "PNG", outPth)
+  outPth = sTifPath + strName + ".tif"
+  IJ.saveAs(orig, "Tiff", outPth)
   time.sleep(1)
   orig.close()
 
