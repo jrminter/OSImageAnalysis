@@ -25,8 +25,8 @@ tic = time.time()
 
 imgRt  = os.environ['IMG_ROOT']
 relPrj = "/Kateeva-15-01"
-labId  = "qm-04290"
-smpId  = "41527"
+labId  = "qm-04309"
+smpId  = "R31"
 
 
 
