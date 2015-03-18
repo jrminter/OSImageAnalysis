@@ -26,13 +26,13 @@ tic = time.time()
 barW    =    0.2        # bar width, microns
 barH    =      6        # bar height, pts
 barF    =     28        # bar font, pts
-barC    = "White"       # bar color
+barC    = "Black"       # bar color
 barL    = "Lower Right" # bar location
 
 imgRt  = os.environ['IMG_ROOT']
-relPrj = "/Kateeva-15-01"
-labId  = "qm-04309"
-smpId  = "R31"
+relPrj = "/QM15-02-02E-Brust"
+labId  = "qm-04317"
+smpId  = "RC5-011-02"
 
 
 
