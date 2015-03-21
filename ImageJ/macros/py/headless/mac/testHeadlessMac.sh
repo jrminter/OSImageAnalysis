@@ -8,7 +8,7 @@
 # Mac's standard Java Home
 # JAVA_HOME="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home"
 # Oracle's Java 7 Home
-JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home"
+JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.7.0_75.jdk/Contents/Home"
 FIJI_APP="/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx -Dpython.cachedir.skip=false --"
 IJ_MACRO="/Users/jrminter/git/OSImageAnalysis/ImageJ/macros/ijm/HelloWorldMacro.ijm"
 # IJ_SCRIPT="/Users/jrminter/git/OSImageAnalysis/ImageJ/macros/py/HelloWorld.py"
