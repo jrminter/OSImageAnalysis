@@ -26,6 +26,9 @@ Thumbs.db
 # For this module
 config
 
+# hyperSpy/iPyNb3 - no checkpoints
+hyperSpy/iPyNb3/.ipynb_checkpoints
+
 # images
 # don't track output .csv files
 images/*.csv
