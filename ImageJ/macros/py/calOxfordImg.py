@@ -10,7 +10,7 @@ codecs.setDefaultEncoding('utf-8')
 from ij import IJ
 import jmFijiGen as jmg
 
-fwUnits = 57.9
+fwUnits = 19.3
 units = IJ.micronSymbol + "m"
 
 imp = IJ.getImage()
