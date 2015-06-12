@@ -46,11 +46,13 @@
 # 2014-09-06  JRM 1.1.23  Added reportComps and reportAtmPct
 # 2014-09-23  JRM 1.1.24  Added getSirionSiCpsPerNa
 # 2014-09-24  JRM 1.1.25  Added getSirionCuCpsPerNa
+# 2015-06-12  JRM 1.1.26  Added getSpectrumFromDataCube
 
 import sys
 import os
 import glob
 import shutil
+import fnmatch
 import time
 import math
 import csv
@@ -67,6 +69,8 @@ import java.io as jio
 import java.lang as jl
 import java.util as ju
 
+from java.lang import Double
+
 
 import dtsa2 as dt2
 import dtsa2.mcSimulate3 as mc3
@@ -74,6 +78,58 @@ import dtsa2.mcSimulate3 as mc3
 """A series of wrapper scripts to make DTSA-II automation easy
 Place this file in DTSA_ROOT/lib/dtsa2/  call with
 import dtsa2.jmGen as jmg"""
+
+def getSpectrumFromDataCube(hsVecCube, det, spcFile, x, y, mapTime, pc=1.0, bDebug=False):
+  """getSpectrumFromDataCube(hsVecCube, det, spcFile, x, y, mapTime, pc=1.0, bDebug=False)
+  Get a calibrated spectrum from an open hyperspectral vector datacube
+  (hsVecCube) which was typically opened from a .rpl file. Calibrate the
+  energy using DTSA detector (det) and the sum spectrum file (spcFile).
+  Live time is computed from the mapTime (sec)
+  Extract the spectrum from the coordinates x (width) and y (height).
+  The probe current (pc) defaults to 1.0. A bDebug flag (default False)
+  presents diagnostic messages.
+
+  Return a DTSA-II scriptable spectrum."""
+  ss = dt2.readSpectrum(spcFile)
+  props=ss.getProperties()
+  props.setDetector(det)
+  cw = ss.getChannelWidth()
+  zo = ss.getZeroOffset()
+  nc = ss.getChannelCount()
+  if(bDebug):
+    strDetProps = "Detector properties: cw %.5f, zo %.3f" % (cw, zo)
+    print(strDetProps)
+  
+  ss.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+
+  if(bDebug):
+    display(ss)
+  newSP = epq.SpectrumProperties()
+  newSP.addAll(props);
+  newSP.setTextProperty(epq.SpectrumProperties.SourceFile, "paint-sum-dtsa.msa")
+  lt = newSP.getNumericWithDefault(epq.SpectrumProperties.LiveTime, Double.NaN)
+  ### y,x in oxford map
+  w = hsVecCube.getWidth()
+  h = hsVecCube.getHeight()
+  d = hsVecCube.getDepth()
+  if ((x < w) and (y < h)):
+    hsVecCube.seek(y,x) # Ba
+    dat = hsVecCube.readDouble(d)
+    sp = epq.SpectrumUtils.toSpectrum(cw, -zo, nc, dat)
+    sp = dt2.wrap(sp)
+    sp.setEnergyScale(newSP.getNumericProperty(epq.SpectrumProperties.EnergyOffset), newSP.getNumericProperty(epq.SpectrumProperties.EnergyScale))
+    # props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
+    sp.setProbeCurrent(pc)
+  
+    lt = mapTime / (w*h)
+    sp.setLiveTime(lt)
+    newName = "location (%d,%d)" % (x,y)
+    sp.rename(newName)
+    dt2.display(sp)
+  else:
+    print("check x and y")
+    sp = None
+  return sp
 
 def getSirionSiCpsPerNa(e0):
   """getSirionSiCpsPerNa(e0)
