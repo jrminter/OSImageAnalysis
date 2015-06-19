@@ -47,6 +47,8 @@
 # 2014-09-23  JRM 1.1.24  Added getSirionSiCpsPerNa
 # 2014-09-24  JRM 1.1.25  Added getSirionCuCpsPerNa
 # 2015-06-12  JRM 1.1.26  Added getSpectrumFromDataCube
+# 2015-06-19  JRM 1.1.27  Made sure I set FaradayEnd with FaradayBegin
+#                         That was a REALLY annoying bug...
 
 import sys
 import os
@@ -101,6 +103,7 @@ def getSpectrumFromDataCube(hsVecCube, det, spcFile, x, y, mapTime, pc=1.0, bDeb
     print(strDetProps)
   
   ss.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  ss.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
 
   if(bDebug):
     display(ss)
@@ -288,6 +291,7 @@ def updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1, wr
     props.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
   if(probeCur > 0) :
     props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, probeCur)
+    props.setNumericProperty(epq.SpectrumProperties.FaradayEnd, probeCur)
   if(e0 > 0) :
     props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   if(wrkDist > 0) :
@@ -334,6 +338,7 @@ def cropSpec(spc, start=0, end=2048, bClear=True):
   import dtsa2.jmGen as jmg
   niSpc = ept.SpectrumFile.open(niFile)[0]
   niSpc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
+  niSpc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayEnd,1.0)
   ws = wrap(niSpc)
   niSpc = jmg.cropSpec(ws, start=50, end=2048, bClear=True)
   """
@@ -373,6 +378,7 @@ def clipSpec(spc, lcChan=0, hcChan=2048, bClear=True):
   import dtsa2.jmGen as jmg
   niSpc = ept.SpectrumFile.open(niFile)[0]
   niSpc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin,1.0)
+  niSpc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayEnd,1.0)
   ws = wrap(niSpc)
   niSpc = jmg.clipSpec(ws, lcChan=20, hcChan=2048)
   """
@@ -480,6 +486,7 @@ def simBulkSpcCor(name, matl, det, e0=15, nTraj=100, lt=100, pc=1, noise=True):
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, sName)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd,pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
   return spc
 
@@ -523,6 +530,7 @@ def simBulkSpcUnCor(name, matl, det, e0=15, nTraj=100, lt=100, pc=1, noise=True)
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, sName)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd,pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
   return spc
 
@@ -535,6 +543,7 @@ def spcTopHatFilter(spc, det, e0, fw=150, norm=False):
   rawName=spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
   fltName=rawName+"-thf"
   spc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayBegin, 1.0)
+  spc.getProperties().setNumericProperty(epq.SpectrumProperties.FaradayEnd, 1.0)
   spc.getProperties().setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   sw=dt2.wrap(spc)
   spc=sw
@@ -647,6 +656,7 @@ def simMatlOnSubTEM(det, e0, matl, matlThick, subMat, subThick, lNames, nTraj=10
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, spName)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd,pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
   return(noisy)
   
@@ -693,6 +703,7 @@ def simBrehmTEM(det, e0, matl, matlThick, subMat, subThick, lNames, nTraj=10000,
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, spName)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   return dt2.wrap(noisy)
   
@@ -753,6 +764,7 @@ def avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False):
   props = sum.getProperties()
   # use the live time and acquisition time of the first spectrum for the average
   liveTime = props.getNumericProperty(epq.SpectrumProperties.LiveTime)
+  realTime = props.getNumericProperty(epq.SpectrumProperties.RealTime)
   ts = props.getTimestampProperty(epq.SpectrumProperties.AcquisitionTime)
 
   for i in range(1, nSpec):
@@ -764,7 +776,9 @@ def avgSpectra(dir, names, det, e0, wrkDist, pc=1, resName="Avg", debug=False):
   props = avg.getProperties()
   props.setDetector(det)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
+  props.setNumericProperty(epq.SpectrumProperties.RealTime, realTime)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   props.setNumericProperty(epq.SpectrumProperties.WorkingDistance, wrkDist)
   props.setTextProperty(epq.SpectrumProperties.SpecimenDesc, "Averaged " + resName)
@@ -950,6 +964,7 @@ def simAnaStdSpc(mat, e0, det, cuRef, magNoise=1.0):
   sp = epq.SpectrumProperties(det.getProperties())
   sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, 1.0)
+  sp.setNumericProperty(epq.SpectrumProperties.FaradayEnd, 1.0)
   sp.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
     
   res = dt2.wrap(epq.SpectrumSimulator.Basic.generateSpectrum(cu, sp, det, True))
@@ -964,6 +979,7 @@ def simAnaStdSpc(mat, e0, det, cuRef, magNoise=1.0):
   sp = epq.SpectrumProperties(det.getProperties())
   sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  sp.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
   sp.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
   
   res = dt2.wrap(epq.SpectrumSimulator.Basic.generateSpectrum(mat, sp, det, True))
@@ -972,6 +988,7 @@ def simAnaStdSpc(mat, e0, det, cuRef, magNoise=1.0):
   props = stdSim.getProperties()
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
   # set a time stamp for the time of the ref
   props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
@@ -1005,6 +1022,7 @@ def simMcStdSpc(mat, e0, det, cuRef, nTraj=1000, debug=False):
   sp = epq.SpectrumProperties(det.getProperties())
   sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, 1.0)
+  sp.setNumericProperty(epq.SpectrumProperties.FaradayEnd, 1.0)
   sp.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
     
   cuSim = dt2.wrap(simBulkSpcCor("Cu-sim", cu, det, e0, nTraj, lt=liveTime, pc=1))
@@ -1019,6 +1037,7 @@ def simMcStdSpc(mat, e0, det, cuRef, nTraj=1000, debug=False):
   sp = epq.SpectrumProperties(det.getProperties())
   sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  sp.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
   sp.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
   
   name = "%s" % mat
@@ -1028,6 +1047,7 @@ def simMcStdSpc(mat, e0, det, cuRef, nTraj=1000, debug=False):
   props = stdSim.getProperties()
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, liveTime)
   # set a time stamp for the time of the ref
   props.setTimestampProperty(epq.SpectrumProperties.AcquisitionTime, ts)
@@ -1082,6 +1102,7 @@ def readEdaxSpc(path, det, pc, wrkDist):
   props.setTextProperty(epq.SpectrumProperties.SpectrumDisplayName, name)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin,pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd,pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy,e0)
   spc = matchDet(spc, det)
   props = spc.getProperties()
@@ -1089,6 +1110,7 @@ def readEdaxSpc(path, det, pc, wrkDist):
   props.setDetector(det)
   props.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
   props.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+  props.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
   props.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
   return spc
   
