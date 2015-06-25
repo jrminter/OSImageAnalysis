@@ -14,6 +14,8 @@
                       copy all tags and the description
   2013-05-29    JRM   Changed names to use - instead of _
                       added invertFrontimage
+  2015-06-23    RRM   Added function to change the sample IDs of all
+                      images in a folder.
 
   This script is released under the Gnu Public License v.2
   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -97,8 +99,11 @@
       cmd           = "Crop front image"
       AddScriptFileToPackage( path+ScriptFile, pkgName, level, cmd, menu, submenu, IsLibrary)
       InstallationLog( pkgName, scriptFile )
-
-
+      
+      scriptFile    = "BatchFixSampleID.s"
+      cmd           = "Fix sample IDs in folder"
+      AddScriptFileToPackage( path+ScriptFile, pkgName, level, cmd, menu, submenu, IsLibrary)
+      InstallationLog( pkgName, scriptFile )
 
       scriptFile    = "CropFrontImageToSquare.s"
       cmd           = "Crop front image to square"

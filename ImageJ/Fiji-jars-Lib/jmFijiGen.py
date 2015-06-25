@@ -51,6 +51,8 @@
 #                         clipNoisePixMapImage.
 # 2015-01-04  JRM 1.1.49  Added addRoiToOverlay and anaParticlesWatershed
 # 2015-01-29  JRM 1.1.50  Changed getUnitString() to use characters exported by IJ
+# 2015-06-25  JRM 1.1.51  Added corImageFIB to correct stitched images from the
+#                         FEI FIB 620 stitched with analySIS 5.0
 
 import sys
 import os
@@ -99,6 +101,26 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/  call with
 import jmFijiGen as jmg"""
+
+def corImageFIB(imp, umPerPx):
+  """ corImageFIB(imp, umPerPx)
+  Correct the aspect ratio of a FIB image stitched with analySIS 5.0.
+  Note: FEI and SIS did/do some undocumented image manipulation under
+  the hood. This was worked out using analySIS to stitch the base image
+  and then correcting for their misdeeds. Their code reproducibly scales
+  the height by a factor of 1.154135."""
+
+  mu = IJ.micronSymbol
+  scaUni  = mu + "m"
+
+  ti = imp.getShortTitle() + "-arc"
+  wd = imp.getWidth()
+  ht = imp.getHeight()
+  newHt = int(round(1.154135*ht,0))
+  strArg = "x=- y=- width=%d height=%d interpolation=Bicubic average create title=%s" % (wd, newHt, ti)
+  IJ.run("Scale...", strArg);
+  strArg = "distance=1 known=%f pixel=1 unit=%s" % (umPerPx, scaUni)
+  IJ.run("Set Scale...", strArg)
 
 def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
   """addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white)
