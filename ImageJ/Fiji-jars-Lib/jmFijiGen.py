@@ -54,7 +54,7 @@
 # 2015-06-25	JRM 1.1.51	Added corImageFIB to correct stitched images from the
 #													FEI FIB 620 stitched with analySIS 5.0
 # 2015-07-15	JRM	1.1.52	Added functions to analyze thickness of lines from
-#													X-ray EDS maps.
+#													X-ray EDS maps. Also switched to tabs...
 
 import sys
 import os
@@ -103,6 +103,7 @@ from script.imglib import ImgLib
 and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/	call with
 import jmFijiGen as jmg"""
+
 
 def reduceMapNoise(imp):
 	"""reduceMapNoise(imp)
