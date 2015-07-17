@@ -58,6 +58,7 @@
 # 2015-07-17	JRM	1.1.53	Added binarizeXrayMap, findAndCloseImage,
 #                         and anaLineFromXrayMap. The latter writes the
 #                         overlay into the image.
+# 2015-07-17	JRM	1.1.53  Minor clean-up...
 
 import sys
 import os
@@ -119,9 +120,7 @@ def anaLineFromXrayMap(imgPath, csvDir, unPerPx, units=-9, startClean=True):
 	imp = IJ.openImage(imgPath)
 	shortTitle = imp.getShortTitle()
 	outPth = csvDir + "/" + shortTitle + ".csv"
-	strU = getUnitString(units)
-	arg2 = "distance=1 known=%f pixel=1 unit=%s" % (unPerPx, strU)
-	IJ.run(imp, "Set Scale...", arg2)
+	calibImageDirect(imp, unPerPx, units)
 	imp.show()
 	binary = binarizeXrayMap(imp)
 	binary.show()
@@ -212,7 +211,7 @@ def reduceMapNoise(imp):
 
 def detectEdges(imp):
 	"""detectEdges(imp)
-	Detect edges using a gradiant squared, squared. Returns a binary
+	Detect edges using a gradient squared, squared. Returns a binary
 	image.
 	Input:
 	imp - an ImagePlus"""
@@ -303,7 +302,7 @@ def corImageFIB(imp, umPerPx):
 def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
 	"""addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white)
 	A convenience function to draw a ROI into the overlay of an ImagePlus. This is useful for
-	situations where ROIs are computed from a highly processed image and tha analyst wants to
+	situations where ROIs are computed from a highly processed image and the analyst wants to
 	draw them into the overlay of the original image (e.g. particle analysis after a 
 	watershed separation. Adapted from addToOverlay() from Analyzer.java
 	Inputs:
@@ -327,7 +326,7 @@ def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
 
 def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minCirc=0.35, labCol=Color.white, linCol=Color.green, bDebug=False, sl=0.005):
 	"""anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minCirc=0.35, labCol=Color.white, linCol=Color.green, bDebug=False, sl=0.005)
-	A wrapper function to do particle analyis from an image after a watershed transformation and draw the detected
+	A wrapper function to do particle analysis from an image after a watershed transformation and draw the detected
 	features into the overlay of the original image.
 	Inputs:
 	imp        - the ImagePlus instance that we will process
@@ -357,7 +356,7 @@ def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minC
 	IJ.run(wrk, "Threshold", strThrMeth)
 	IJ.run(wrk, "Watershed", "")
 	wrk.show()
-	strMeas = "area mean modal min center perimeter bounding fit shape feret's display redirect=%s decimal=3" % shortTitle
+	strMeas = "area mean modal min center perimeter bounding fit shape Feret's display redirect=%s decimal=3" % shortTitle
 	IJ.run(wrk, "Set Measurements...", strMeas)
 	strAna = "size=%d-Infinity circularity=%g-1.00	exclude clear include add" % (minPx, minCirc)
 	IJ.run(wrk, "Analyze Particles...", strAna)
@@ -393,7 +392,7 @@ def smoothMapImage(imp, no=2):
 	to zero (to get rid of isolated pixels), converts to an 8
 	bit image that spans no to 255 and smooths with a 3x3 kernel. and
 	converts it to an 8 bit gray scale image that spans 0-255. This is
-	ready for a	hueLUT. It peforms this on a duplicate imp and returns
+	ready for a	hueLUT. It performs this on a duplicate imp and returns
 	the resultant imp. To the best of my understanding, this is how Oxford
 	treats their maps. 
 	Inputs:
@@ -426,7 +425,7 @@ def clipNoisePixMapImage(imp, no=2):
 	Clips noise pixels from an X-ray map image (typically a 16 bit gray image). 
 	First, it sets the display range to a noise offset to max and removes the noise
 	pixels (to get rid of isolated pixels), then converts to an 8 bit image that spans
-	0 to 255 and returns an 8 bit gray scale. This is ready for a	hueLUT. It peforms
+	0 to 255 and returns an 8 bit gray scale. This is ready for a	hueLUT. It performs
 	this on a duplicate imp and returns the resultant imp. To the best of my understanding,
 	this is how Oxford treats their maps w/o a 3x3 smooth. 
 	Inputs:
@@ -835,7 +834,7 @@ def burnBox(imp, lRoi, col="green", wid=2):
 
 def hueDegToRGBCol(hue):
 	"""hueDegToRGBCol(hue)
-	Convert a hue balue (0 to 360 degrees) to an RGB color.
+	Convert a hue value (0 to 360 degrees) to an RGB color.
 	Useful for LUTs."""
 	h = hue / 360.
 	[r, g, b] =	hsv_to_rgb(h, 1.0, 1.0)
@@ -850,7 +849,7 @@ def applyHueLUT(imp, hueDeg, gamma=1.0, bHeadless=False):
 	imp       - the ImagePlus
 	hueDeg    - the hue angle, in degrees, from 0 to 360
 	gamma     - an optional gamma correction, defaults to 1.0
-	bHeadless - an optional flag, default False, that when true supresses display for headless mode
+	bHeadless - an optional flag, default False, that when true suppresses display for headless mode
 	Returns
 	an ImagePlus with the new LUT applied"""
 	ret = imp.duplicate()
@@ -906,7 +905,7 @@ def vertProfileFromROI(imp, lRoi, sFact, bHeadless=True):
 	imp       - the ImagePlus
 	lRoi      - a list with the parameters to construct the ROI
 	sFact     - a scale factor, defaults to 1 for pixels.
-	bHeadless - a flag (default True) to supress display for headless operation
+	bHeadless - a flag (default True) to suppress display for headless operation
 	Returns
 	a list with two arrays, distance and intensity"""
 	if (len(lRoi) != 4):
@@ -1218,7 +1217,7 @@ def calibImageDirect(theImp, unPerPx, units=-6):
 	cal = theImp.getCalibration()
 	cal.setXUnit(scaUni)
 	cal.setYUnit(scaUni)
-	cal.pixelWidth	= unPerPx
+	cal.pixelWidth = unPerPx
 	cal.pixelHeight = unPerPx
 	# theImp.setCalibration(cal)
 	# w = theImp.getWidth()
