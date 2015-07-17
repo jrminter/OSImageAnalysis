@@ -55,6 +55,9 @@
 #													FEI FIB 620 stitched with analySIS 5.0
 # 2015-07-15	JRM	1.1.52	Added functions to analyze thickness of lines from
 #													X-ray EDS maps. Also switched to tabs...
+# 2015-07-17	JRM	1.1.53	Added binarizeXrayMap, findAndCloseImage,
+#                         and anaLineFromXrayMap. The latter writes the
+#                         overlay into the image.
 
 import sys
 import os
@@ -100,9 +103,101 @@ from script.imglib import ImgLib
 
 
 """A series of wrapper scripts to make ImageJ Jython automation easy
-and to avoid re-writing the same code - The Do not Repeat Yourself (DRY) principle...
-Place this file in FIJI_ROOT/jars/Lib/	call with
+and to avoid re-writing the same code - The Do not Repeat Yourself
+(DRY) principle...
+Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg"""
+
+def anaLineFromXrayMap(imgPath, csvDir, unPerPx, units=-9, startClean=True):
+	"""anaLineFromXrayMap(imgPath, csvDir, unPerPx, units=-9, startClean=True)
+	This loads an X-ray map from a vertical line, measures the thickness
+	statistics, outputting them to a .csv file, and writing the detected
+	edges into an overlay.
+	"""
+	if (startClean==True):
+		IJ.run("Close All")
+	imp = IJ.openImage(imgPath)
+	shortTitle = imp.getShortTitle()
+	outPth = csvDir + "/" + shortTitle + ".csv"
+	strU = getUnitString(units)
+	arg2 = "distance=1 known=%f pixel=1 unit=%s" % (unPerPx, strU)
+	IJ.run(imp, "Set Scale...", arg2)
+	imp.show()
+	binary = binarizeXrayMap(imp)
+	binary.show()
+	IJ.run(binary, "Duplicate...", " ")
+	edges = IJ.getImage()
+	detectEdges(edges)
+	edges.show()
+	analyzeRois(edges, 5, outPth)
+	binary.changes = False
+	binary.close()
+	forRed = shortTitle + "-2.tif"
+	forGra = shortTitle + ".tif"
+	# need to convert the map img to 8 bit for overlay
+	IJ.run(imp,"8-bit","")
+	strArg2 = "c1=%s c4=%s create" % (forRed, forGra)
+	IJ.run("Merge Channels...", strArg2)
+	comp = IJ.getImage()
+	IJ.run("Stack to RGB")
+	final = IJ.getImage()
+	final.setTitle(shortTitle + "-ovl")
+	final.show()
+	comp.changes = False
+	comp.close()
+	return (final)
+
+
+def findAndCloseImage(title):
+	"""findAndCloseImage(title)
+	Find the image with the name `title' and immediately close it."""
+	imp = WindowManager.getImage(title)
+	imp.changes = False
+	imp.close()
+
+def binarizeXrayMap(imp):
+	"""binarizeXrayMap(imp)
+	For each row in an image of an oriented X-ray EDS map, find the 
+	maximum value. Average these values to find the mean maximum
+	intensity. Set the threshold and binarize the image.
+	Return the binary image."""
+	IJ.run(imp, "Duplicate...", " ")
+	wrk = IJ.getImage()
+	# use a median filter to reduce noise
+	IJ.run(wrk, "Median...", "radius=2")
+	IJ.run(wrk, "32-bit", "")
+	ip = wrk.getProcessor()
+	w = ip.getWidth()
+	h = ip.getHeight()
+	print((w,h))
+	pix = ip.getPixels()
+	# an array to hold the maximum
+	lMax = []
+	# loop over the rows
+	for j in range(h):
+		mv = 0.
+		for i in range(w):
+			k = j*w+i
+			test = pix[k]
+			if (test > mv):
+				mv = test
+		lMax.append(mv)
+	l = len(lMax)
+	print(l)
+	sum = 0.
+	hi = 0.
+	for i in range(l):
+		v = lMax[i]
+		sum += v
+		if (v > hi):
+			hi = v
+	mv = sum / l
+	print(mv, 2*hi)
+
+	IJ.setThreshold(wrk, 0.5*mv, 2*hi)
+	IJ.run(wrk, "Make Binary", "");
+	IJ.run(wrk, "Convert to Mask", "");
+	return(wrk)
 
 
 def reduceMapNoise(imp):
@@ -177,7 +272,7 @@ def analyzeRois(imp, vAvg, outPath):
 
 	# prepare the output file
 	f=open(outPath, 'w')
-	strLine = 'n, width.nm\n'
+	strLine = 'n, width.%s\n' % cal.getUnit()
 	f.write(strLine)
 	for k in range(len(lRoi)):
 		strLine = "%d, %.2f\n" % (lRoi[k], lLw[k] )
