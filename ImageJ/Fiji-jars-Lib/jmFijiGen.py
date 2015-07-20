@@ -59,6 +59,7 @@
 #                         and anaLineFromXrayMap. The latter writes the
 #                         overlay into the image.
 # 2015-07-17	JRM	1.1.53  Minor clean-up...
+# 2015-07-20	JRM	1.1.54  Added horizProfileFromROI
 
 import sys
 import os
@@ -108,6 +109,68 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg"""
+
+def horizProfileFromROI(imp, lRoi, sFact, outPathCsv, iDigits=3, bHeadless=True):
+	"""horizProfileFromROI(imp, lRoi, sFact, outPathCsv, iDigits=3, bHeadless=True)
+	Generate an averaged horizontal profile from a rectangular ROI from
+	an ImagePlus. Note: the image should be calibrated...
+
+	Inputs:
+	imp        - the ImagePlus
+	lRoi       - a list with the parameters to construct the ROI
+	sFact      - a scale factor, defaults to 1 for pixels.
+	outPathCsv - path to write a csv profile
+	iDigits    - number of digits to round
+	bHeadless  - a flag (default True) to suppress display for headless operation
+
+	Returns:
+	a list with two arrays, distance and intensity"""
+	if (len(lRoi) != 4):
+		IJ.error("Not a proper rectangle","This function expects a 4 item list for the ROI")
+		return None
+	if bHeadless == False:
+		imp.show()
+	cal = imp.getCalibration()
+	ti = imp.getShortTitle()
+	na = "%s-roi[%d,%d,%d,%d]" % (ti, lRoi[0],lRoi[1],lRoi[2],lRoi[3])
+	impROI = imp.duplicate()
+	impROI.setCalibration(cal)
+	impROI.setRoi(lRoi[0],lRoi[1],lRoi[2],lRoi[3])
+	IJ.run(impROI,"Crop","")
+	if bHeadless == False:
+		imp.close()
+		impROI.setTitle(na)
+		impROI.show()
+	w = impROI.getWidth()
+	h = impROI.getHeight()
+	ip = impROI.getProcessor()
+	ar = ip.getPixels()	
+	x = []
+	y = []
+	gAvgMax = 0.
+	for i in xrange(w):
+		x.append(round(sFact*i, iDigits))
+		gSum = 0.
+		for j in xrange(h):
+			iOff=j*w+i
+			gVal = float(ar[iOff])
+			gSum += gVal
+		gAvg = gSum / float(h)
+		if(gAvg > gAvgMax):
+			gAvgMax = gAvg
+		y.append(round(gAvg, 1))
+	ret = [x,y]
+	if bHeadless == False:
+		impROI.changes = False
+
+	f=open(outPathCsv, 'w')
+	strLine = 'x.%s, intensity\n' % cal.getUnit()
+	f.write(strLine)
+	for k in range(len(x)):
+		strLine = "%f, %f\n" % (x[k], y[k] / gAvgMax )
+		f.write(strLine)
+	f.close()
+	return impROI
 
 def anaLineFromXrayMap(imgPath, csvDir, unPerPx, units=-9, startClean=True):
 	"""anaLineFromXrayMap(imgPath, csvDir, unPerPx, units=-9, startClean=True)
