@@ -60,6 +60,7 @@
 #                         overlay into the image.
 # 2015-07-17	JRM	1.1.53  Minor clean-up...
 # 2015-07-20	JRM	1.1.54  Added horizProfileFromROI
+# 2015-07-21	JRM	1.1.55  Added bicubicRotate
 
 import sys
 import os
@@ -110,6 +111,33 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg"""
 
+def bicubicRotate(imp, angDeg, bHeadless=False):
+	"""bicubicRotate(imp, angDeg, bHeadless=False)
+	Rotate an image with bicubic interpolation and filling
+	Inputs:
+	imp       - the image plus
+	angDeg    - the rotation angle (degrees). + for CW, - for CCW
+	bHeadless - a flag (default False) to suppress display for headless
+	            operation
+
+	Returns
+	the Image Plus of a rotated image
+	"""
+	if bHeadless == False:
+		imp.show()
+	cal = imp.getCalibration()
+	ti = imp.getShortTitle()
+	wrk = imp.duplicate()
+	wrk.setCalibration(cal)
+	sArg2 = "angle=%g grid=1 interpolation=Bicubic enlarge" % angDeg
+	IJ.run(wrk, "Rotate... ", sArg2)
+	wrk.setTitle(ti + "-rot")
+	if bHeadless == False:
+		wrk.show()
+	return(wrk)
+
+
+
 def horizProfileFromROI(imp, lRoi, sFact, outPathCsv, iDigits=3, bHeadless=True):
 	"""horizProfileFromROI(imp, lRoi, sFact, outPathCsv, iDigits=3, bHeadless=True)
 	Generate an averaged horizontal profile from a rectangular ROI from
@@ -138,6 +166,7 @@ def horizProfileFromROI(imp, lRoi, sFact, outPathCsv, iDigits=3, bHeadless=True)
 	impROI.setRoi(lRoi[0],lRoi[1],lRoi[2],lRoi[3])
 	IJ.run(impROI,"Crop","")
 	if bHeadless == False:
+		imp.changes=False
 		imp.close()
 		impROI.setTitle(na)
 		impROI.show()
