@@ -1,3 +1,4 @@
+from __future__ import division
 # -*- coding: utf-8 -*-
 # jmFijiGen.py
 # ImageJ Jython - J. R. Minter - 2014-09-11
@@ -58,18 +59,24 @@
 # 2015-07-17	JRM	1.1.53	Added binarizeXrayMap, findAndCloseImage,
 #                         and anaLineFromXrayMap. The latter writes the
 #                         overlay into the image.
-# 2015-07-17	JRM	1.1.53  Minor clean-up...
-# 2015-07-20	JRM	1.1.54  Added horizProfileFromROI
-# 2015-07-21	JRM	1.1.55  Added bicubicRotate
+# 2015-07-17	JRM	1.1.53	Minor clean-up...
+# 2015-07-20	JRM	1.1.54	Added horizProfileFromROI
+# 2015-07-21	JRM	1.1.55	Added bicubicRotate
+# 2015-07-24	JRM	1.5.56	Added openOxfordRaw and computeChannel for EDS stack
+# 2015-07-25	JRM	1.5.57	Added computeEnergy and getStackSumSpectrum
 
 import sys
 import os
 import glob
 import shutil
+import datetime
 import time
 import math
 import csv
 
+import os, shutil
+
+from math import *
 from math import sqrt
 
 from colorsys import hsv_to_rgb
@@ -94,14 +101,20 @@ from ij.gui import Roi, TextRoi, ImageRoi, Overlay, ImageCanvas, ShapeRoi, Point
 from ij.measure import ResultsTable, Calibration, Measurements
 from ij.plugin import ImageCalculator, Duplicator, ChannelSplitter
 from ij.plugin import MontageMaker
-from ij.plugin.filter import ParticleAnalyzer
+from ij.plugin.filter import ParticleAnalyzer, Analyzer
 from ij.plugin.frame import RoiManager
 
-from ij.process import LUT, ImageProcessor, StackProcessor
+from ij.process import LUT, ImageProcessor, StackProcessor, ImageStatistics
+
+
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract	
 from script.imglib.algorithm import Gauss, Scale2D, Resample	
 from script.imglib import ImgLib 
+
+import mpicbg.imglib.image.ImagePlusAdapter
+import mpicbg.imglib.image.display.imagej.ImageJFunctions
+import fiji.process.Image_Expression_Parser
 
 
 
@@ -110,6 +123,146 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg"""
+
+def openOxfordRaw(strRaw, w, h, chan, strType="16-bit Signed"):
+	"""openOxfordRaw(strRaw, w, h, chan, strType="16-bit Signed")
+	Open a .raw file exported by AZtec 3.0
+	Input:
+	strRaw  - path to the .raw file
+	w       - width
+	h       - height
+	chan    - depth
+	strType - string with type, default is "16-bit Signed"
+	Returns:
+	An image plus to the stack
+	"""
+	strArg3 = "open=%s image=[%s] width=%d height=%d offset=0 number=%d gap=0 little-endian" % (strRaw, strType, w, h, chan)
+	IJ.run("Raw...", strArg3)
+	imp = IJ.getImage()
+	imp.show()
+	return imp
+
+def computeChannel(transEn, detGain=4.9833, detOff=-102.19):
+	"""computeChannel(transEn, detGain=4.9833, detOff=-102.19)
+	Compute the channel for a peak with transition energy (transEn, keV)
+	for a detector with gain (detGain, ev/ch) and offset (detOff, ev/ch).
+	Returns the channel number."""
+	# first convert transEn to eV
+	transEn *= 1000.
+	chan = (transEn-detOff)/detGain
+	chan = round(chan, 0)
+	return int(chan)
+
+def computeEnergy(chan, detGain=4.9833, detOff=-102.19):
+	"""computeChannel(chan, detGain=4.9833, detOff=-102.19)
+	Compute the transition energy (transEn, keV) for a channel (chan) for 
+	a detector with gain (detGain, ev/ch) and offset (detOff, ev/ch).
+	Returns the energy in keVr."""
+	# first convert transEn to eV
+	transEn = detGain * float(chan) + detOff
+	transEn /= 1000.
+	transEn = round(transEn, 6)
+	return transEn
+
+def getStackSumSpectrum(imp, outDir="C:/Temp/tmp", detGain=4.9833, detOff=-102.19, owner="jrminter"):
+	"""getStackSumSpectrum(imp, outDir="C:/Temp/tmp", detGain=4.9833, detOff=-102.19, owner="jrminter")
+	Get the sum spectrum for a stack with an optional roi"""
+	roi = imp.getRoi()
+	st = imp.getShortTitle()
+	stack = imp.getStack()
+	slices = imp.getNSlices()
+	frames = imp.getNFrames()
+	size = stack.getSize()
+	cal = imp.getCalibration()
+	analyzer = Analyzer(imp)
+	IJ.run(imp, "Set Measurements...", "integrated redirect=None decimal=3")
+	measurements = Analyzer.getMeasurements()
+	rt = Analyzer.getResultsTable()
+	for i in range(size):
+		imp.setSlice(i+1)
+		ip = stack.getProcessor(i+1)
+		ip.setRoi(roi)
+		stats = ImageStatistics.getStatistics(ip, measurements, cal)
+		analyzer.saveResults(stats, roi)
+	lKeV =[]
+	lIntens=[]
+	rt.show("Results")
+	nMeas = rt.getCounter()
+	
+	for i in range(nMeas):
+		mc = rt.getColumnIndex("IntDen")
+		intDen = rt.getValueAsDouble(mc, i)
+		keV = computeEnergy(i+1, detGain, detOff)
+		lKeV.append(keV)
+		lIntens.append(intDen)
+	tw = rt.getResultsWindow()
+	tw.close(False)
+	rt = ResultsTable()
+	cKeV = rt.getFreeColumn("keV")
+	cInt = rt.getFreeColumn("Intensity")
+	for i in range(nMeas):
+		rt.incrementCounter()
+		rt.addValue(cKeV, lKeV[i])
+		rt.addValue(cInt, lIntens[i])
+	rt.show(st + "sum")
+
+	now = datetime.datetime.now()
+	sz = str(now)
+	sp = sz.split(" ")
+	sp0 = sp[0]
+	sp1 =sp[1]
+	sp2 = sp1.split(".")[0]
+
+	# prepare the output file
+	outPath = outDir + "/" + st + "-sum.msa"
+	files = glob.glob(outPath)
+	for file in files:
+		os.unlink(file)
+		print("deleting")
+		time.sleep(2)
+	
+	f=open(outPath, 'w')
+	strLine = "#FORMAT      : EMSA/MAS Spectral Data File"
+	f.write(strLine +'\n')
+	strLine = "#VERSION     : 1.0"
+	f.write(strLine +'\n')
+	strLine = "#TITLE       : %s" % st
+	f.write(strLine +'\n')
+	strLine = "#DATE        : %s" % sp0
+	f.write(strLine +'\n')
+	strLine = "#TIME        : %s" % sp2
+	f.write(strLine +'\n')
+	strLine = "#OWNER       : %s" % owner
+	f.write(strLine +'\n')
+	strLine = "#NPOINTS     : %g." % nMeas
+	f.write(strLine +'\n')
+	strLine = "#NCOLUMNS    : 1."
+	f.write(strLine +'\n')
+	strLine = "#XUNITS      : keV"
+	f.write(strLine +'\n')
+	strLine = "#YUNITS      : counts"
+	f.write(strLine +'\n')
+	strLine = "#DATATYPE    : XY"
+	f.write(strLine +'\n')
+	strLine = "#XPERCHAN    : %.6f" % float(detGain/1000.)
+	f.write(strLine +'\n')
+	strLine = "#OFFSET      : %.6f" % float(detOff/1000.)
+	f.write(strLine +'\n')
+	strLine = "#SIGNALTYPE  : EDS"
+	f.write(strLine +'\n')
+	strLine = "#SPECTRUM    : Spectral Data Starts Here"
+	f.write(strLine +'\n')
+
+	for k in range(len(lKeV)):
+		strLine = "%.4f, %.2f\n" % (lKeV[k], lIntens[k] )
+		f.write(strLine)
+
+	strLine = "#ENDOFDATA   : "
+	f.write(strLine +'\n')
+
+	f.close()
+	print("done!")
+
 
 def bicubicRotate(imp, angDeg, bHeadless=False):
 	"""bicubicRotate(imp, angDeg, bHeadless=False)
