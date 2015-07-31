@@ -23,20 +23,20 @@ import jmFijiGen as jmg
 
 tic = time.time()
 
-barW    =    0.05        # bar width, microns
+barW    =      1        # bar width, microns
 barH    =      6        # bar height, pts
 barF    =     28        # bar font, pts
 barC    = "Black"       # bar color
 barL    = "Lower Right" # bar location
 
 imgRt  = os.environ['IMG_ROOT']
-relPrj = "/QM15-02-05B-Ferrar"
-labId  = "qm-04403"
-smpId  = "PGB2015-82s3"
+relPrj = "/QM15-11-01A-Muehlbauer"
+labId  = "qm-04406"
+smpId  = "JLM2015-055A"
 
 
 
-sDm3Path = imgRt + relPrj + "/" + labId + "-" + smpId + "/dm3/wrk/"
+sDm3Path = imgRt + relPrj + "/" + labId + "-" + smpId + "/dm3/"
 sPngPath = imgRt + relPrj + "/" + labId + "-" + smpId + "/png/"
 jmg.ensureDir(sPngPath)
 
