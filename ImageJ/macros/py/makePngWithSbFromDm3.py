@@ -31,8 +31,8 @@ barL    = "Lower Right" # bar location
 
 imgRt  = os.environ['IMG_ROOT']
 relPrj = "/QM15-11-01A-Muehlbauer"
-labId  = "qm-04406"
-smpId  = "JLM2015-055A"
+labId  = "qm-04418"
+smpId  = "JLM2015-060"
 
 
 
