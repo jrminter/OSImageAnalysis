@@ -41,8 +41,8 @@ def corImageFIB(imp, umPerPx):
 impWrk = WindowManager.getCurrentImage()
 impWrk.show()
 
-jmg.corImageFIB(impWrk, 0.008783)
-
+# jmg.corImageFIB(impWrk, 0.008783)
+jmg.corImageFIB(impWrk, 0.01757)
 
 
 
