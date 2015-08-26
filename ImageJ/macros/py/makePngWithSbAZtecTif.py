@@ -8,9 +8,12 @@
 # CCA licence
 #	date			 who	comment
 # ----------	---	-----------------------------------------------------
-# 2015-07-31	JRM	initial prototype. Assumes nLo low mag images and the
-#									rest are high mag. Assumes my "standard" Oxford
-#									project structure.
+# 2015-08-05 JRM	Set up for Loftus qm-04414
+# 2015-08-18 JRM	set up for Loftus qm-04429
+# 2015-08-21 JRM	set up for Loftus qm-04432
+# 2015-08-25 JRM	set up for Loftus qm-04437
+# 2015-08-26 JRM	set up for Huang  qm-04440-42
+
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -24,7 +27,7 @@ import jmFijiGen as jmg
 
 tic = time.time()
 
-barW = 1						# bar width, microns
+# barW = 1						# bar width, microns set from list...
 barH = 6						# bar height, pts
 barF = 28						# bar font, pts
 barC = "White"			# bar color
@@ -33,13 +36,17 @@ barL= "Lower Right"	# bar location
 homDir = os.environ['HOME']
 edsDir = os.environ['EDS_ROOT']
 imgRt = os.environ['IMG_ROOT']
-rPrjDir = "QM15-02-08A-Pyszczek"
-ePrjDir = "QM15-02-08A2-Pyszczek"
-labId = "qm-04411"
-smpId = "EP15-193-D"
-nLo = 3			# num Lo mag images
-fwLo = 57.9	# µm
-fwHi = 28.9	# µm
+rPrjDir = "QM15-06-01B-Huang"
+ePrjDir = "QM15-06-01B4-Huang"
+labId = "qm-04442"
+smpId = "IBF-Direct-T-acetone"
+nVLo  =   2  # num vLo mag images
+nLo   =   2  # num Lo mag images
+fwvLo = 289		# µm
+fwLo  = 28.9	# µm
+fwHi  =  5.79	# µm
+
+lBarW = [10.0, 1.0, 0.5]
 
 datDir	 = edsDir + "/Oxford/" + ePrjDir + "/reports/" + labId + "-" + smpId
 sTifPath = datDir + "/tif/"
@@ -68,10 +75,16 @@ for fi in lFiles:
 	print(strNum)
 	orig.setTitle(strNum)
 	# orig.show()
-	if (i <= nLo):
-		jmg.calibImage(orig, fwLo, units=-6)
+	if (i <= nVLo):
+		jmg.calibImage(orig, fwvLo, units=-6)
+		barW = lBarW[0]
 	else:
-		jmg.calibImage(orig, fwHi, units=-6)
+		if (i <= nLo+nVLo):
+			jmg.calibImage(orig, fwLo, units=-6)
+			barW = lBarW[1]
+		else:
+			jmg.calibImage(orig, fwHi, units=-6)
+			barW = lBarW[2]
 	strBar = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barW, barH, barF, barC, barL)
 	# a hack to get the scale bars to work reliably
 	foo = orig.duplicate()
