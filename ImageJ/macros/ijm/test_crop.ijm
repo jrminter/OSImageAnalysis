@@ -1,4 +1,4 @@
-open("C:\\Users\\jrminter\\Documents\\git\\OSImageAnalysis\\images\\map\\png\\9-ROI.png");
+run("Colors...", "foreground=black background=black selection=green");
 x = 200;
 y = 30;
 wd = 200;
