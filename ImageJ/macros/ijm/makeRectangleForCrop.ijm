@@ -1,1 +1,2 @@
-makeRectangle(0, 0, 1024, 199);
+run("Colors...", "foreground=black background=black selection=green");
+makeRectangle(0, 200, 1024, 430);
