@@ -36,17 +36,17 @@ barL= "Lower Right"	# bar location
 homDir = os.environ['HOME']
 edsDir = os.environ['EDS_ROOT']
 imgRt = os.environ['IMG_ROOT']
-rPrjDir = "QM15-06-01B-Huang"
-ePrjDir = "QM15-06-01B4-Huang"
-labId = "qm-04442"
-smpId = "IBF-Direct-T-acetone"
-nVLo  =   2  # num vLo mag images
-nLo   =   2  # num Lo mag images
+rPrjDir = "QM15-02-08A-Pyszczek"
+ePrjDir = "QM15-02-08A3-Pyszczek"
+labId = "qm-04461"
+smpId = "PDR11-246-1"
+nVLo  =   -1  # num vLo mag images
+nLo   =   5  # num Lo mag images
 fwvLo = 289		# µm
-fwLo  = 28.9	# µm
-fwHi  =  5.79	# µm
+fwLo  = 57.9	# µm
+fwHi  = 28.9	# µm
 
-lBarW = [10.0, 1.0, 0.5]
+lBarW = [10.0, 5.0, 5.0]
 
 datDir	 = edsDir + "/Oxford/" + ePrjDir + "/reports/" + labId + "-" + smpId
 sTifPath = datDir + "/tif/"
