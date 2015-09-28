@@ -64,6 +64,7 @@ from __future__ import division
 # 2015-07-21	JRM	1.1.55	Added bicubicRotate
 # 2015-07-24	JRM	1.5.56	Added openOxfordRaw and computeChannel for EDS stack
 # 2015-07-25	JRM	1.5.57	Added computeEnergy and getStackSumSpectrum
+# 2015-09-28	JRM	1.5.58	Added correctForeshortening, medianFilter
 
 import sys
 import os
@@ -123,6 +124,42 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg"""
+
+def correctForeshortening(imp, tiltDeg):
+	"""correctForeshortening(imp, tiltDeg)
+	Correct the foreshortening in a tilted SEM image. Assumes tilt 
+	Y direction.
+	Input:
+	imp     - the ImagePlus
+	tiltDeg -  the tilt angle in degrees
+	Returns:
+	The ImagePlus of the corrected image.
+	"""
+	ti = imp.getShortTitle() + "-tilt-cor"
+	invCosTheta = 1.0/math.cos(math.pi*tiltDeg/180.)
+	xNew = imp.getWidth()
+	yNew = invCosTheta * imp.getHeight()
+	strArg = "x=1.0 y=%.4f width=%d height=%d interpolation=Bicubic average create title=%s" % (invCosTheta, xNew, yNew, ti)
+	IJ.run(imp, "Scale...", strArg)
+	ret = IJ.getImage()
+	return ret
+
+def medianFilter(imp, radPx):
+	"""medianFilter(imp, radPx)
+	Perform a median filter on an image
+	Input:
+	imp   - the ImagePlus
+	radPx -  the radius (in pixels)
+	Returns
+	The ImagePlus of the filtered image.
+	"""
+	ti = imp.getShortTitle() + "-mf"
+	IJ.run(imp, "Median...", "radius=%g" % radPx)
+	ret = IJ.getImage()
+	ret.setTitle(ti)
+	return ret
+
+
 
 def openOxfordRaw(strRaw, w, h, chan, strType="16-bit Signed"):
 	"""openOxfordRaw(strRaw, w, h, chan, strType="16-bit Signed")
