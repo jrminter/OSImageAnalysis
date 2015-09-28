@@ -12,6 +12,8 @@
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
+from org.apache.commons.math3.stat.descriptive import DescriptiveStatistics as DSS
+from ij.measure import ResultsTable
 import os
 import glob
 import time
@@ -57,6 +59,31 @@ for fi in lFiles:
 	IJ.run(orig, "Measure","")
 	time.sleep(1)
 	orig.close()
+
+rt = ResultsTable.getResultsTable()
+nMeas = rt.getCounter()
+minC = rt.getColumnIndex("Min")
+maxC = rt.getColumnIndex("Max")
+minStats = DSS()
+maxStats = DSS()
+for i in range(nMeas): 
+	minVal = rt.getValueAsDouble(minC, i)
+	minStats.addValue(minVal)
+	maxVal = rt.getValueAsDouble(maxC, i)
+	maxStats.addValue(maxVal)
+
+meanMinVal = minStats.getMean()
+meanMaxVal = maxStats.getMean()
+
+strOut = "mean minimum gray = %.2f, mean maximum gray = %.2f" % (meanMinVal, meanMaxVal)
+
+print(strOut)
+
+rt.reset()
+# rt.updateResults()
+
+win = rt.getResultsWindow()
+win.close()
 
 toc = time.time()
 
