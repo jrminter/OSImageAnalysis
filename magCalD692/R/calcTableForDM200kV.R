@@ -16,7 +16,7 @@ df$mag.act <- px.size.nm / df$nm.per.px
 
 lm.fit <- lm(mag.act ~ mag.ind, data=df)
 df$mag.act <- round(df$mag.act, 2)
-print(summary(lm.fit))
+m.per.px
 
 print(head(df))
 
