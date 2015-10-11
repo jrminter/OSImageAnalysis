@@ -14,7 +14,7 @@
 #
 #  date       who  comment
 # ----------  ---  -----------------------------------------------------
-# 2015-10-10  JRM  initial prototype
+# 2015-10-10  JRM  initial prototype. Use env vars for paths
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 import os
@@ -28,7 +28,7 @@ from ij.measure import Calibration
 imgDir = "D:/Data/eds/hyperspy/qm-04355-Paint-xs-20kV-map1/"
 imgNam = "qm-04355-Paint-xs-20kV-map1.raw"
 
-def openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx=0.5156, evPerCh=10.0, evOff=-100.0):
+def openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx, evPerCh, evOff):
 	fi = FileInfo()
 	# fi.fileType = fi.GRAY16_SIGNED
 	fi.fileType = fi.GRAY16_UNSIGNED
@@ -79,8 +79,23 @@ def openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx=0.5156, evPer
 	print("Max intensity %.2f at channel %g" % (gMax, iMax ))
 	return tImp
 
+# homDir = os.environ['HOME']
+edsDir = os.environ['EDS_ROOT']
+rPrjDir = "QM15-01-02A-Minter"
+ePrjDir = "QM15-01-02A-Minter"
+labId = "qm-04355"
+smpId = "Paint-xs"
+mapId = "20kV-map1"
 
-orig = openRplRawImageCube(imgDir, imgNam, 256, 192, 2048)
+
+datDir = edsDir + "/Oxford/" + ePrjDir + "/reports/" + labId + "-" + smpId
+rawPat = datDir + "/" + labId + "-" + smpId + "-" +mapId + "/raw/"
+rawFil = labId + "-" + smpId + "-" +mapId + ".raw"
+
+print(rawPat)
+print(rawFil)
+
+orig = openRplRawImageCube(rawPat, rawFil, 256, 192, 2048, 0.5156, 10.0, -100.0)
 orig.show()
 
 
