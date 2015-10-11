@@ -25,9 +25,6 @@ from ij import IJ, ImagePlus, ImageStack
 from ij.io import FileInfo, FileOpener
 from ij.measure import Calibration
 
-imgDir = "D:/Data/eds/hyperspy/qm-04355-Paint-xs-20kV-map1/"
-imgNam = "qm-04355-Paint-xs-20kV-map1.raw"
-
 def openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx, evPerCh, evOff):
 	fi = FileInfo()
 	# fi.fileType = fi.GRAY16_SIGNED
@@ -79,6 +76,7 @@ def openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx, evPerCh, evO
 	print("Max intensity %.2f at channel %g" % (gMax, iMax ))
 	return tImp
 
+# test with the std Oxford paint data set in std location
 # homDir = os.environ['HOME']
 edsDir = os.environ['EDS_ROOT']
 rPrjDir = "QM15-01-02A-Minter"
