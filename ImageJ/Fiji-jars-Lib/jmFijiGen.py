@@ -65,6 +65,7 @@ from __future__ import division
 # 2015-07-24	JRM	1.5.56	Added openOxfordRaw and computeChannel for EDS stack
 # 2015-07-25	JRM	1.5.57	Added computeEnergy and getStackSumSpectrum
 # 2015-09-28	JRM	1.5.58	Added correctForeshortening, medianFilter
+# 2015-10-12	JRM	1.5.59	Added openRplRawImageCube
 
 import sys
 import os
@@ -95,7 +96,7 @@ import jarray
 
 from ij import IJ, ImagePlus, WindowManager, Prefs, ImageStack
 
-from ij.io import FileInfo
+from ij.io import FileInfo, FileOpener
 
 from ij.gui import Roi, TextRoi, ImageRoi, Overlay, ImageCanvas, ShapeRoi, PointRoi
 
@@ -124,6 +125,69 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg"""
+
+def openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx, evPerCh, evOff):
+	"""openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx, evPerCh, evOff)
+	Open a .raw Image Cube in LISPIX .rpl format
+	Input: fDir    - The directory (a string) for the .raw file
+	       fName   - The file name for the .raw file
+	       width   - Slice width (px)
+	       height  - Slice height (px)
+	       nChan   - number of slices
+	       umPerPx - microns per pixel for x- and y-axes
+	       evPerCh - ev/ch for the EDS spectra at each pixel
+	       evOff   - eV offset for the spectra 
+	Returns: a calibrated image stack
+	"""
+	fi = FileInfo()
+	# fi.fileType = fi.GRAY16_SIGNED
+	fi.fileType = fi.GRAY16_UNSIGNED
+	fi.fileFormat = fi.RAW
+	fi.directory = fDir
+	fi.fileName  = fName
+	fi.width = width
+	fi.height = height
+	fi.nImages = nChan
+	fi.gapBetweenImages = 0
+	fi.intelByteOrder = True      # little endian
+	fi.whiteIsZero = False        # no inverted LUT
+	fi.longOffset = fi.offset = 0 # header size, in bytes
+	fo = FileOpener(fi)
+	imp = fo.open(False)
+	cal = Calibration()
+	cal.xOrigin = 0.
+	cal.yOrigin = 0.
+	cal.zOrigin = evOff/evPerCh
+	cal.pixelWidth = umPerPx
+	cal.pixelHeight = umPerPx
+	cal.pixelDepth = evPerCh
+	mu = IJ.micronSymbol
+	scaUni	= mu + "m"
+	cal.setXUnit(scaUni)
+	cal.setYUnit(scaUni)
+	cal.setZUnit("eV")
+	tImp = ImagePlus()
+	tImp.setStack(imp.getTitle(), imp.getStack())
+	tImp.setCalibration(cal)
+	IJ.run(tImp, "32-bit", "")
+	stack = tImp.getImageStack()
+	gMin = 32000.
+	gMax = -32000.
+	iMax = 0
+	for i in xrange(1, tImp.getNSlices()+1):
+		ip = stack.getProcessor(i)
+		mV = ip.getMin()
+		if (mV < gMin):
+			gMin = mV
+		mV = ip.getMax()
+		if (mV > gMax):
+			gMax = mV
+			iMax = i
+	IJ.setMinAndMax(tImp, gMin, gMax)
+	# set to the channel with max intensity
+	tImp.setPosition(iMax)
+	print("Max intensity %.2f at channel %g" % (gMax, iMax ))
+	return tImp
 
 def correctForeshortening(imp, tiltDeg):
 	"""correctForeshortening(imp, tiltDeg)

@@ -25,6 +25,8 @@ from ij import IJ, ImagePlus, ImageStack
 from ij.io import FileInfo, FileOpener
 from ij.measure import Calibration
 
+import jmFijiGen as jmg
+
 def openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx, evPerCh, evOff):
 	fi = FileInfo()
 	# fi.fileType = fi.GRAY16_SIGNED
@@ -93,7 +95,7 @@ rawFil = labId + "-" + smpId + "-" +mapId + ".raw"
 print(rawPat)
 print(rawFil)
 
-orig = openRplRawImageCube(rawPat, rawFil, 256, 192, 2048, 0.5156, 10.0, -100.0)
+orig = jmg.openRplRawImageCube(rawPat, rawFil, 256, 192, 2048, 0.5156, 10.0, -100.0)
 orig.show()
 
 
