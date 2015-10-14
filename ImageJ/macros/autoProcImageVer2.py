@@ -7,7 +7,7 @@
 # @String(label = "barLoc", value="Lower Right") barLoc
 
 
-# autoProcImage2.py
+# autoProcImageVer2.py
 # A quick script to calibrate an Oxford AZtec image
 #  Modifications
 #   Date      Who  Ver                       What
