@@ -25,7 +25,7 @@ bClose = True
 
 imgDir  = os.environ['IMG_ROOT']
 rptDir  = os.environ['RPT_ROOT']
-relImg  = "/test/clumpAgX"
+relImg  = "/key-test/clumpAgX"
 sampID  = "qm-03966-KJL-031"
 nmPerPx = 1.213
 minCirc = 0.5
@@ -44,6 +44,7 @@ sRptImgPath = sRptPath + "png/"
 jmg.ensureDir(sRptImgPath)
 
 query = sImgPath + "*.dm3"
+print(query)
 lFiles = glob.glob(query)
 # create empty output vectors for results
 imgOut = []

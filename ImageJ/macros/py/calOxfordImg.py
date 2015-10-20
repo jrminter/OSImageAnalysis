@@ -12,10 +12,10 @@ from ij import IJ
 from ij.io import FileSaver
 import jmFijiGen as jmg
 
-gMin =  1500
-gMax = 11700
+gMin =  4000
+gMax = 1200
 fwUnits = 4.45
-sPath = "C:/Data/eds/Oxford/QM15-02-06B2-Wei/reports/qm-04499-282-14-81-face-off/tif/"
+sPath = "C:/Data/eds/Oxford/QM15-06-01D1-Huang/reports/qm-04502-Liberty-NXP-H2O/tif/"
 
 units = IJ.micronSymbol + "m"
 
