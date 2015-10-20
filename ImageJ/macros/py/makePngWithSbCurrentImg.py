@@ -1,10 +1,12 @@
-# makePngWithSbCurrentTif.py
+# makePngWithSbCurrentImg.py
 #
 # J. R. Minter
 #
-# Process a folder of AZtec tif image files. Calibrate and save the
-# TIF files, change to RGB and burn scale bars. Script expects a
-# subfolder "tif" in a sample folder. Test for annotated images
+# Process the current AZtec tif image. Assumes the image has previously
+# been calibrated. The script changes the image to RGB , burns a scale
+# bar. Script expects a subfolder "png" in a sample folder. It then
+# saves a ".png" file. The script assumes the standard EDS folder
+# structure for the project. 
 #
 # CCA licence
 #	date			 who	comment
@@ -22,10 +24,6 @@ from ij.io import FileSaver
 import jmFijiGen as jmg
 
 tic = time.time()
-
-bSetMinMax = True
-gMin =   500.
-gMax = 11600.
 
 barW = 1						# bar width, microns
 barH = 6						# bar height, pts
