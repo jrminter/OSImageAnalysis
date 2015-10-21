@@ -29,15 +29,15 @@ barW = 1						# bar width, microns
 barH = 6						# bar height, pts
 barF = 28						# bar font, pts
 barC = "White"			# bar color
-barL= "Lower Left"	# bar location
+barL= "Lower Right"	# bar location
 
 homDir = os.environ['HOME']
 edsDir = os.environ['EDS_ROOT']
 # imgRt = os.environ['IMG_ROOT']
 # rPrjDir = "QM15-09-02B-Rollins"
-ePrjDir = "QM15-02-06B2-Wei"
-labId = "qm-04499"
-smpId = "282-14-81-face-off"
+ePrjDir = "QM15-06-01D1-Huang"
+labId = "qm-04501"
+smpId = "Liberty-NXP-intact"
 
 datDir	 = edsDir + "/Oxford/" + ePrjDir + "/reports/" + labId + "-" + smpId
 sPngPath = datDir + "/png/"

@@ -8,24 +8,36 @@
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
+import os
 from ij import IJ
 from ij.io import FileSaver
 import jmFijiGen as jmg
 
-gMin =  4000
-gMax = 1200
-fwUnits = 4.45
-sPath = "C:/Data/eds/Oxford/QM15-06-01D1-Huang/reports/qm-04502-Liberty-NXP-H2O/tif/"
+homDir = os.environ['HOME']
+edsDir = os.environ['EDS_ROOT']
+ePrjDir = "QM15-06-01D1-Huang"
+labId = "qm-04503"
+smpId = "Liberty-NXP-H2O+MeOH"
+
+datDir	 = edsDir + "/Oxford/" + ePrjDir + "/reports/" + labId + "-" + smpId
+sTifPath = datDir + "/tif/"
+
+bSetMinMax = False
+gMin =  2000
+gMax = 20000
+fwUnits = 5.79
+
 
 units = IJ.micronSymbol + "m"
 
 imp = IJ.getImage()
 imp = jmg.calibImage(imp, fwUnits, units=-6)
-IJ.setMinAndMax(gMin, gMax)
+if(bSetMinMax == True):
+	IJ.setMinAndMax(gMin, gMax)
 imp.updateAndRepaintWindow()
 
 ti = imp.getShortTitle()
-fi = sPath + ti + ".tif"
+fi = sTifPath + ti + ".tif"
 fs = FileSaver(imp)
 imp.changes = False
 print(fi)
