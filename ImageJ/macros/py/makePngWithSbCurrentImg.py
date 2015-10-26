@@ -25,9 +25,9 @@ import jmFijiGen as jmg
 
 tic = time.time()
 
-barW = 1						# bar width, microns
+barW = 0.1						# bar width, microns
 barH = 6						# bar height, pts
-barF = 28						# bar font, pts
+barF = 24						# bar font, pts
 barC = "White"			# bar color
 barL= "Lower Right"	# bar location
 
@@ -35,9 +35,9 @@ homDir = os.environ['HOME']
 edsDir = os.environ['EDS_ROOT']
 # imgRt = os.environ['IMG_ROOT']
 # rPrjDir = "QM15-09-02B-Rollins"
-ePrjDir = "QM15-06-01D1-Huang"
-labId = "qm-04501"
-smpId = "Liberty-NXP-intact"
+ePrjDir = "QM15-06-01C3-Huang"
+labId = "qm-04514"
+smpId = "Mylan-SP2-MeOH+DPM-2h"
 
 datDir	 = edsDir + "/Oxford/" + ePrjDir + "/reports/" + labId + "-" + smpId
 sPngPath = datDir + "/png/"

@@ -28,18 +28,18 @@ import jmFijiGen as jmg
 
 tic = time.time()
 
-bDoTiltCorrect = True
+bDoTiltCorrect = False
 tiltDeg = 45.0
 
 
-bDoMedianFilter = True # True to run a median filter
+bDoMedianFilter = False # True to run a median filter
 radMF = 1.0            # filter radius
 
 # true to set manual gray levels
-bSetGrayLevels = True # Rollins
+bSetGrayLevels = False # Rollins
 gLo = 3086
 gHi = 14047
-
+gSatFac = 0.01
 
 # barW = 1						# bar width, microns set from list...
 barH = 6						# bar height, pts
@@ -50,16 +50,16 @@ barL= "Lower Right"	# bar location
 homDir = os.environ['HOME']
 edsDir = os.environ['EDS_ROOT']
 imgRt = os.environ['IMG_ROOT']
-rPrjDir = "QM15-09-02B-Rollins"
-ePrjDir = "QM15-09-02B2-Rollins"
-labId = "qm-04474"
-smpId = "7449-476-12F-UNKE-bad"
+rPrjDir = "QM15-02-08A-Pyszczek"
+ePrjDir = "QM15-02-08A4-Pyszczek"
+labId = "qm-04509"
+smpId = "PDR11-246-1"
 nVLo  =   -1  # num vLo mag images
-nLo   =   -1  # num Lo mag images
+nLo   =    3  # num Lo mag images
 fwvLo = 289		# µm
 fwLo  = 57.9	# µm
-# fwHi  = 28.9	# µm Lofftus
-fwHi  = 11.6	# µm Rollins
+fwHi  = 28.9	# µm Lofftus
+# fwHi  = 11.6	# µm Rollins
 
 lBarW = [10.0, 5.0, 1.0]
 
@@ -115,7 +115,8 @@ for fi in lFiles:
 	if (bSetGrayLevels == True):
 		IJ.setMinAndMax(orig, gLo, gHi)
 	else:
-		IJ.run(orig, "Enhance Contrast", "saturated=0.35")
+		sArgSat = "saturated=%.2f" % gSatFac
+		IJ.run(orig, "Enhance Contrast", sArgSat)
 
 	if(bDoTiltCorrect == True):
 		orig = jmg.correctForeshortening(orig, tiltDeg)

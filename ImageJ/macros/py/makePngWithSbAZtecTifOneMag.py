@@ -25,12 +25,14 @@ import jmFijiGen as jmg
 tic = time.time()
 
 bSetMinMax = True
-gMin =   500.
-gMax = 11600.
+gMin =  1500.
+gMax =  12600.
+bDoTiltCorrect = True
+tiltDeg = 45.0
 
 barW = 1						# bar width, microns
 barH = 6						# bar height, pts
-barF = 28						# bar font, pts
+barF = 24						# bar font, pts
 barC = "White"			# bar color
 barL= "Lower Right"	# bar location
 
@@ -38,13 +40,14 @@ homDir = os.environ['HOME']
 edsDir = os.environ['EDS_ROOT']
 # imgRt = os.environ['IMG_ROOT']
 # rPrjDir = "QM15-09-02B-Rollins"
-ePrjDir = "QM15-02-06B2-Wei"
-labId = "qm-04498"
-smpId = "SFN-2-face-off"
-fwImg = 8.27	# µm
+ePrjDir = "QM15-09-02B4-Rollins"
+labId = "qm-04516"
+smpId = "7749-484-11F-CEN"
+fwImg = 11.6	# µm
 sFac = 0.001 # saturation factor
 
 datDir	 = edsDir + "/Oxford/" + ePrjDir + "/reports/" + labId + "-" + smpId
+datDir = datDir.replace("\\", "/")
 sTifPath = datDir + "/tif/"
 sPngPath = datDir + "/png/"
 
@@ -80,6 +83,9 @@ for fi in lFiles:
 		IJ.setMinAndMax(gMin, gMax)
 	else:
 		IJ.run(orig, "Enhance Contrast", sSat)
+		
+	if(bDoTiltCorrect == True):
+		orig = jmg.correctForeshortening(orig, tiltDeg)
 	IJ.run(orig, "RGB Color", "")
 	IJ.run(orig, "Add Scale Bar", strBar)
 	orig.show()
@@ -90,7 +96,8 @@ for fi in lFiles:
 		print "png saved successfully at ", outPth  
 
 	time.sleep(1)
-	orig.close()
+	# orig.close()
+	IJ.run("Close All")
 
 toc = time.time()
 
