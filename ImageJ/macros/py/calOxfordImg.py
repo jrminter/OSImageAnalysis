@@ -15,17 +15,17 @@ import jmFijiGen as jmg
 
 homDir = os.environ['HOME']
 edsDir = os.environ['EDS_ROOT']
-ePrjDir = "QM15-06-01C3-Huang"
-labId = "qm-04515"
-smpId = "Mylan-SP2-MeOH+DPM-72h"
+ePrjDir = "QM15-02-13A2-DiLeo"
+labId = "qm-04513"
+smpId = "RAD-2015-0148Y-HCl-xs"
 
 datDir	 = edsDir + "/Oxford/" + ePrjDir + "/reports/" + labId + "-" + smpId
 sTifPath = datDir + "/tif/"
 
-bSetMinMax = True
-gMin =  500
-gMax = 13700
-fwUnits = 5.79
+bSetMinMax = False
+gMin =  1000
+gMax = 11400
+fwUnits = 28.9
 
 
 units = IJ.micronSymbol + "m"
