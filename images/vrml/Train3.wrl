@@ -1,0 +1,550 @@
+#VRML V2.0 utf8
+
+Group {
+    children [
+        Shape {
+            appearance DEF TrainBodyAppearance Appearance { 
+                material Material {
+                    ambientIntensity 0.5
+                    diffuseColor  1.0 1.0 1.0
+                    specularColor 0.6 0.6 0.6
+                    shininess 0.2
+                }
+            }
+        },
+    ]
+}
+
+####### The Engine ########
+DEF TrainEngine Group {
+    children [
+        ##### The Footplate
+        Shape {
+            appearance DEF Black0Colour Appearance { 
+                material Material { diffuseColor 0.0 0.0 0.0 }
+            }
+            geometry Box { size 2 0.1 5.5 }
+        },
+
+        ##### The Water Tank
+        Transform {
+            translation 0 1 -0.25
+            rotation 1 0 0 1.5708
+            children [
+                Shape {
+                    appearance USE TrainBodyAppearance
+                    geometry Cylinder {
+                        radius 0.8
+                        height 3
+                    }
+                }
+            ]
+        },
+        
+        # The Water Tank
+        Transform {
+            translation 0 1 -2.25
+            rotation 1 0 0 1.5708
+            children [
+                Shape {
+                    appearance USE Black0Colour
+                    geometry Cylinder {
+                        radius 0.8
+                        height 1
+                    }
+                }
+            ]
+        },
+
+        # The water tank support
+        Transform {
+            translation 0 0.15 -0.725
+            children [
+                Shape {
+                    appearance DEF Black3Colour Appearance { 
+                        material Material { diffuseColor 0.3 0.3 0.3 }
+                    }
+                    geometry Box { size 1.8 0.2 3.95 }
+                }
+            ]
+        },
+
+        # The water tank support
+        Transform {
+            translation 0.0 0.4 -0.725
+            children [
+                Shape {
+                    appearance DEF Black2Colour Appearance { 
+                        material Material { diffuseColor 0.2 0.2 0.2}
+                    }
+                    geometry Box { size 1.6 0.7 3.95 }
+                }
+            ]
+        },
+
+
+        DEF EngineSideWheelSupport Transform {
+            translation 0.9 -0.2 0
+            children [
+                # A wheel support
+                Transform {
+                    translation 0 0 -2.0
+                    children [
+                        DEF WheelSupport Shape {
+                            appearance USE Black0Colour
+                            geometry Box { size 0.2 0.4 0.2 }
+                        }
+                    ]
+                },
+        
+                # A wheel support
+                Transform {
+                    translation 0 0 -1
+                    children [
+                        USE WheelSupport
+                    ]
+                },
+        
+        
+                # A wheel strap
+                Transform {
+                    translation 0 -0.2 -1.5
+                    children [
+                        DEF WheelStrap Shape {
+                            appearance USE Black0Colour
+                            geometry Box { size 0.2 0.1 1 }
+                        }
+                    ]
+                },
+            ]
+        },
+        Transform {
+            translation -1.8 0 0
+            children [
+                USE EngineSideWheelSupport
+            ]
+        },
+        
+        DEF EngineSideWheel Transform {
+            translation 0.75 -0.45 0
+            children [
+                # A wheel
+                Transform {
+                    translation 0 0 -2
+                    rotation 0.5 0.5 0 3.1416
+                    children [
+                        DEF Wheel Shape {
+                            appearance USE Black2Colour
+                            geometry Cylinder {
+                                radius 0.5
+                                height 0.1
+                            }
+                        }
+                    ]
+                },
+        
+                # A wheel
+                Transform {
+                    translation 0 0 -1
+                    rotation 0.5 0.5 0 3.1416
+                    children [ USE Wheel ]
+                },
+        
+                # A big wheel
+                Transform {
+                    translation 0 0.2 0.3
+                    rotation 0.5 0.5 0 3.1416
+                    children [
+                        DEF BigWheel Shape {
+                            appearance USE Black2Colour
+                            geometry Cylinder {
+                                radius 0.75
+                                height 0.1
+                            }
+                        }
+                    ]
+                },
+                # A big wheel
+                Transform {
+                    translation 0 0.2 1.8
+                    rotation 0.5 0.5 0 3.1416
+                    children [ USE BigWheel ]
+                },
+
+            ]
+        },
+        Transform {
+            translation -1.5 0 0
+            children [ USE EngineSideWheel ]
+        },
+                
+        # drivers box wall
+        Transform {
+            translation 0 1.2 1.3
+            children [
+                Shape {
+                    appearance USE TrainBodyAppearance
+                    geometry Box { size 2 2.3 0.1 }
+                }
+            ]
+        },
+        
+        # drivers Window
+        Transform {
+            translation -0.7 1.95 1.3
+            rotation 1.0 0.0 0.0 1.5708
+            children [
+                DEF DriverWindow Shape {
+                    appearance DEF BlueColour Appearance {
+                        material Material { diffuseColor 0.0 0.8 1.0 }
+                    }	      
+                    geometry Cylinder {
+                        radius 0.25
+                        height 0.101
+                    }
+                }
+            ]
+        },
+
+        # drivers Window
+        Transform {
+            translation 0.7 1.95 1.3
+            rotation 1.0 0.0 0.0 1.5708
+            children [ USE DriverWindow ]
+        },
+
+        # drivers box side wall
+        Transform {
+            translation -0.95 0.675 2.05
+            children [
+                DEF DriverBoxSide Shape {
+                    appearance USE TrainBodyAppearance
+                    geometry Box { size 0.1 1.25 1.4 }
+                }
+            ]
+        },
+
+        # drivers box side wall
+        Transform {
+            translation 0.95 0.675 2.05
+            children [
+                USE DriverBoxSide
+            ]
+        },
+
+        # drivers box roof
+        Transform {
+            translation 0 2.3 2.05
+            children [
+                Shape {
+                    appearance USE TrainBodyAppearance
+                    geometry Box { size 2 0.1 1.4 }
+                }
+            ]
+        },
+
+        # Chimney
+        Transform {
+            translation 0 2.2 -2.25
+            children [
+                Shape {
+                    appearance DEF Black1Colour Appearance { 
+                        material Material { diffuseColor 0.1 0.1 0.1 }
+                    }
+                    geometry Cylinder {
+                        radius 0.25
+                        height 0.9
+                    }
+                }
+            ]
+        },
+
+        # Chimney
+        Transform {
+            translation 0 2.4 -2.25
+            children [
+                Shape {
+                    appearance USE Black2Colour
+                    geometry Cylinder {
+                        radius 0.35
+                        height 0.1
+                    }
+                }
+            ]
+        },
+
+        # SRV
+        Transform {
+            translation 0 1.9 0
+            children [
+                Shape {
+                    appearance Appearance { 
+                        material Material {
+                            ambientIntensity 0.4
+                            diffuseColor 0.25 0.25 0.0
+                            specularColor 0.71 0.71 0.56
+                            shininess 0.16
+                        }
+                    }
+                    geometry Cylinder {
+                        radius 0.25
+                        height 0.3
+                    }
+                }
+            ]
+        },
+
+        # Front Bumper
+        Transform {
+            translation 0.0 0.2 -2.75
+            children [
+                Shape {
+                    appearance Appearance {
+                        material Material { diffuseColor 0.9 0.0 0.0 }
+                    }
+                    geometry Box { size 2 0.5 0.05 }
+                }
+            ]
+        },
+
+        # The Front Bumper
+        DEF FrontBumper Transform {
+            translation 0.7 0.2 -2.85
+            children [
+                Transform {
+                    rotation 1 0 0 1.5708
+                    children [
+                        Shape {
+                            appearance USE Black3Colour
+                            geometry Cylinder {
+                                radius 0.12
+                                height 0.15
+                            }
+                        }
+                    ]
+                },
+                
+                Transform {
+                    translation 0 0 -0.15
+                    rotation 1 0 0 1.5708
+                    children [
+                        Shape {
+                            appearance USE Black1Colour
+                            geometry Cylinder {
+                                radius 0.1
+                                height 0.15
+                            }
+                        }
+                    ]
+                },
+                
+                Transform {
+                    translation 0 0 -0.25
+                    rotation 1 0 0 1.5708
+                    children [
+                        Shape {
+                            appearance USE Black2Colour
+                            geometry Cylinder {
+                                radius 0.2
+                                height 0.01
+                            }
+                        }
+                    ]
+                },
+            ]
+        },
+        
+        Transform {
+            translation -1.4 0 0
+            children [ USE FrontBumper ]
+        },
+    ]
+}
+
+####### The Coal Box ########
+# The base
+DEF TrainCoalBox Transform {
+    translation 0 0 5
+    children [
+        ##### The Base
+        Shape {
+            appearance USE Black0Colour
+            geometry Box { size 2 0.1 4 }
+        },
+
+        ##### The Sides
+        Transform {
+            translation 0.95 0.8 0
+            children [
+                DEF CoalBoxSide Shape {
+                    appearance USE TrainBodyAppearance
+                    geometry Box { size 0.1 1.5 4 }
+                }
+            ]
+        },
+
+        ##### The Sides
+        Transform {
+            translation -0.95 0.8 0
+            children [ USE CoalBoxSide ]
+        },
+
+        ##### The Front
+        Transform {
+            translation 0 0.8 -1.9
+            children [
+                DEF CoalBoxPlate Shape {
+                    appearance USE TrainBodyAppearance
+                    geometry Box { size 2 1.5 0.1 }
+                }
+            ]
+        },
+        ##### The Back
+        Transform {
+            translation 0 0.8 1.9
+            children [ USE CoalBoxPlate ]
+        },
+        DEF CoalBoxSideWheel Transform {
+            children [
+                # A Wheel   
+                Transform {
+                    translation 0.75 -0.45 1.3
+                    rotation 0.5 0.5 0 3.1416
+                    children [ USE Wheel ]
+                },
+        
+                # A Wheel   
+                Transform {
+                    translation 0.75 -0.45 -1.3
+                    rotation 0.5 0.5 0 3.1416
+                    children [ USE Wheel ]
+                },
+            ]
+        },
+        Transform {
+            translation -1.5 0 0
+            children [
+                USE CoalBoxSideWheel
+            ]
+        },
+    ]
+}
+
+
+####### Coaches ########
+DEF TrainCoach Transform {
+    translation 0 0 14.5
+    children [
+        ##### The Base
+        Shape {
+            appearance USE Black0Colour
+            geometry Box { size 2 0.1 14.5 }
+        },
+
+        ##### The main body
+        Transform {
+        translation 0 1.2 0
+            children [
+                Shape {
+                    appearance USE TrainBodyAppearance
+                    geometry Box { size 2 2.3 14.5 }
+                }
+            ]
+        },
+
+        ##### Side Windows
+        Transform {
+            translation 1 1.5 0
+            children [
+                DEF CoachSideWindows Group {
+                    children [
+                        Shape {
+                            appearance Appearance {
+                                material Material { 
+                                    diffuseColor 1.0 1.0 0.9
+                                }
+                            }
+                            geometry Box { size 0.001 1.2 14.5 }
+                        },
+                        ##### The Windows
+                        DEF Window Shape {
+                            appearance USE BlueColour
+                            geometry Box { size 0.003 0.8 2 }
+                        },
+                        Transform {
+                            translation 0 0 2.5
+                            children [ USE Window ]
+                        },
+                        Transform {
+                            translation 0 0 5
+                            children [ USE Window ]
+                        },
+                        Transform {
+                            translation 0 0 -2.5
+                            children [ USE Window ]
+                        },
+                        Transform {
+                            translation 0 0 -5
+                            children [ USE Window ]
+                        },
+                    ]
+                },
+            ]
+        },        
+        ##### Coach Windows on the other side
+        Transform {
+            translation -1 1.5 0
+            children [ USE CoachSideWindows ]
+        },
+
+        #### The Wheels
+        DEF CoachSideWheel Group {
+            children [
+                Transform {
+                    translation 0.75 -0.45 6.3
+                    rotation 0.5 0.5 0 3.1416
+                    children [ USE Wheel ]
+                },
+                Transform {
+                    translation 0.75 -0.45 5
+                    rotation 0.5 0.5 0 3.1416
+                    children [ USE Wheel ]
+                },
+                Transform {
+                    translation 0.75 -0.45 -6.3
+                    rotation 0.5 0.5 0 3.1416
+                    children [ USE Wheel ]
+                },
+                Transform {
+                    translation 0.75 -0.45 -5
+                    rotation 0.5 0.5 0 3.1416
+                    children [ USE Wheel ]
+                },
+            ]
+        },        
+        Transform {
+            translation -1.5 0 0
+            children [
+                USE CoachSideWheel
+            ]
+        },
+    ]
+},
+
+##### 2nd Coach
+Transform {
+    translation 0 0 15
+    children [ USE TrainCoach ]
+}
+
+##### 3rd Coach
+Transform {
+    translation 0 0 30
+    children [ USE TrainCoach ]
+}
+
+##### 4th Coach
+Transform {
+    translation 0 0 45
+    children [ USE TrainCoach ]
+}
