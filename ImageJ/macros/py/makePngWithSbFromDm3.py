@@ -23,16 +23,16 @@ import jmFijiGen as jmg
 
 tic = time.time()
 
-barW    =      0.1      # bar width, microns
+barW    =    1.0       # bar width, microns
 barH    =      6        # bar height, pts
 barF    =     28        # bar font, pts
 barC    = "Black"       # bar color
 barL    = "Lower Right" # bar location
 
 imgRt  = os.environ['IMG_ROOT']
-relPrj = "/QM15-02-05B-Ferrar"
-labId  = "qm-04518"
-smpId  = "PGB2015-121-1"
+relPrj = "/QM15-11-01A-Muehlbauer"
+labId  = "qm-04530"
+smpId  = "JLM2015-094"
 
 
 

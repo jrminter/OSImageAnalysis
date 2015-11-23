@@ -4,5 +4,5 @@ import jmFijiGen as jmg
 
 imp = IJ.getImage()
 
-ret = jmg.medianFilter(imp, 1.0)
-ret = jmg.correctForeshortening(imp, 45.0)
+# ret = jmg.medianFilter(imp, 1.0)
+ret = jmg.correctForeshortening(imp, 38.0)

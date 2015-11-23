@@ -12,7 +12,7 @@ from ij import IJ
 from ij.io import FileSaver
 import jmFijiGen as jmg
 
-fwUnits = 28.9
+fwUnits = 5.79
 
 units = IJ.micronSymbol + "m"
 
