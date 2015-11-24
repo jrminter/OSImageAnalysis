@@ -5,6 +5,8 @@ water.py
 @author Gael Varoquaux <gael.varoquaux@normalesup.org>
 # Copyright (c) 2008, Enthought, Inc.
 # License: BSD Style.
+
+Do "%gui qt" first
 """
 
 # Retrieve the electron localization data for H2O #############################

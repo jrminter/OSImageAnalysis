@@ -1,37 +1,31 @@
 # -*- coding: utf-8 -*-
 """
-displayCube.py
+displayVmrl.py
 
 Display a VMR file of a cube
 
-Created   JRM 2015-11-23
+Created   JRM 2015-11-24
+
+Do "%gui qt" first
 
 @author: John Minter
 """
 
 import os
-import mayavi
 from mayavi.sources.vrml_importer import VRMLImporter
 from mayavi.api import Engine
 
 
-def show_vrml(fname):
-    """Given a VRML file name it imports it into the scene.
-	"""
-	r = VRMLImporter()
-	r.initialize(fname)
-	eng.add_source(r)
-	return r
-
 gitDir = os.environ['GIT_HOME']
 relImg  = "/OSImageAnalysis/images/vrml/"
+fName = 'tree'
 
-filePath = gitDir + relImg + 'cube.wrl'
-
+filePath = gitDir + relImg + fName + '.wrl'
 print(filePath)
 
-
-
-
-
-
+e = Engine()
+e.start()
+s = e.new_scene()
+src = VRMLImporter()
+src.initialize(filePath)
+e.add_source(src)

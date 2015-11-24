@@ -5,6 +5,8 @@ mayaviSurf.py
 Adapted from
 http://scipy-cookbook.readthedocs.org/items/MayaVi_Surf.html
 
+Do "%gui qt" first
+
 @author: l837410
 """
 
