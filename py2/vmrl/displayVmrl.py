@@ -18,7 +18,7 @@ from mayavi.api import Engine
 
 gitDir = os.environ['GIT_HOME']
 relImg  = "/OSImageAnalysis/images/vrml/"
-fName = 'tree'
+fName = 'Lines'
 
 filePath = gitDir + relImg + fName + '.wrl'
 print(filePath)
