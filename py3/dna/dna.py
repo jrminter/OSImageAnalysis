@@ -13,6 +13,9 @@
   
   Note that since the skimage regionprops supplies the bounding
   box, we can just eliminate the features touching the borders.
+
+  2015-11-30  JRM  Updated skimage.filter to skimage.filters
+  
   
 
 """
@@ -22,7 +25,7 @@ import skimage.io as io
 import skimage.feature as fea       # peak_local_max
 import skimage.segmentation as seg  # find_boundaries, visualize_boundaries
 import skimage.morphology as mor    # watershed, disk
-import skimage.filter as fil        # threshold_otsu
+import skimage.filters as fil        # threshold_otsu
 import skimage.measure as mea       # regionprops
 import scipy
 import scipy.ndimage as nd
