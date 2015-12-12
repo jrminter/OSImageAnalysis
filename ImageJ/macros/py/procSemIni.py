@@ -19,13 +19,19 @@ import jmFijiGen as jmg
 from ij import IJ
 from ij import WindowManager
 import csv
-from ij.io import FileSaver
+from ij.io import FileSaver, DirectoryChooser
 import ConfigParser
 
 bConvertNmToUm = True
 sUser = "J. R. Minter"
 sMicroscope = "FEI Sirion D5557"
-basePath = '/Users/jrminter/dat/images/test/qm-04570-1421DJD-04-C03/'
+
+dc = DirectoryChooser("Choose directory with stacks")
+basePath = dc.getDirectory()
+# let's make it platform agnostic
+basePath.replace("\\", "/")
+
+# basePath = '/Users/jrminter/dat/images/test/qm-04570-1421DJD-04-C03/'
 iniPath = basePath + 'ImageMetadata.ini'
 os.chdir(basePath)
 mu = IJ.micronSymbol
