@@ -8,7 +8,7 @@
 #  Modifications
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
-# 2015-12-11  JRM 0.1.00  Initial prototype
+# 2015-12-11  JRM 0.1.00  Initial prototype. Now path separator agnostic
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -26,17 +26,15 @@ bConvertNmToUm = True
 sUser = "J. R. Minter"
 sMicroscope = "FEI Sirion D5557"
 
-dc = DirectoryChooser("Choose directory with stacks")
+dc = DirectoryChooser("Choose directory")
 basePath = dc.getDirectory()
-# let's make it platform agnostic
-basePath.replace("\\", "/")
 
 # basePath = '/Users/jrminter/dat/images/test/qm-04570-1421DJD-04-C03/'
-iniPath = basePath + 'ImageMetadata.ini'
+iniPath = basePath + os.sep + 'ImageMetadata.ini'
 os.chdir(basePath)
 mu = IJ.micronSymbol
 
-calibDir = basePath + "calib/"
+calibDir = basePath + "calib" + os.sep
 jmg.ensureDir(calibDir)
 
 
@@ -61,7 +59,7 @@ for imgName in sect:
 			fScaleY /= 1000.
 			sUnits =  mu + "m"
 	sComment = config.get(imgName, "Comment")
-	strPath = basePath + imgName + ".tif"
+	strPath = basePath + os.sep + imgName + ".tif"
 	imp = IJ.openImage(strPath)
 	cal = imp.getCalibration()
 	cal.setXUnit(sUnits)
@@ -77,8 +75,10 @@ for imgName in sect:
 	imp.changes = False
 	fs = FileSaver(imp)
 	strPath = calibDir + imgName + ".tif"
+	# let's make it platform agnostic
 	if fs.saveAsTiff(strPath):
-		print "Tif saved successfully at ", strPath
+		msg = "Tif saved successfully at " + strPath
+		print(msg) 
 	imp.close()
 
 
