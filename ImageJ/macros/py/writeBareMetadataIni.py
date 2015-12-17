@@ -19,16 +19,23 @@ iniPath = basePath + os.sep + 'ImageMetadata.ini'
 
 config = ConfigParser.RawConfigParser()
 
+names = []
+
 for file in os.listdir(basePath):
 	if file.endswith(".tif"):
 		name = os.path.splitext(file)[0]
-		print(name)
-		config.add_section(name)
-		config.set(name, "Mag", "35000.0")
-		config.set(name, "ScaleX", "0.008076172")
-		config.set(name, "ScaleY", "0.008076172")
-		config.set(name, "Units", "µm")
-		config.set(name, "Comment", "5 kV, S3, 5 mm, UHR ET, tilt -2 deg, C-coated")
+		names.append()
+
+names.sort()
+
+for name in names:
+	print(name)
+	config.add_section(name)
+	config.set(name, "Mag", "35000.0")
+	config.set(name, "ScaleX", "0.008076172")
+	config.set(name, "ScaleY", "0.008076172")
+	config.set(name, "Units", "µm")
+	config.set(name, "Comment", "5 kV, S3, 5 mm, UHR ET, tilt -2 deg, C-coated")
 
 # Writing our configuration file to 
 configfile = open(iniPath, 'w')
