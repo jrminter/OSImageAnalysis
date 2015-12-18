@@ -1,4 +1,4 @@
-# procSemIni.py
+# procSemSisIni.py
 #
 # Read a .ini file written by the Imaging C Module 'WriteImageInfoFolder'
 # reading the image name, magnification, X- and Y-axis scales and unit string.
