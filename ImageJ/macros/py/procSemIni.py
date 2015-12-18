@@ -16,8 +16,7 @@ codecs.setDefaultEncoding('utf-8')
 import os
 import time
 import jmFijiGen as jmg
-from ij import IJ
-from ij import WindowManager
+from ij import IJ, Prefs, WindowManager
 import csv
 from ij.io import FileSaver, DirectoryChooser
 import ConfigParser
@@ -26,8 +25,14 @@ bConvertNmToUm = True
 sUser = "J. R. Minter"
 sMicroscope = "FEI Sirion D5557"
 
+lastPath = Prefs.get("Last.Image.Dir", "None")
+if os.path.exists(lastPath):
+	os.chdir(lastPath)
+
 dc = DirectoryChooser("Choose directory")
 basePath = dc.getDirectory()
+
+Prefs.set("Last.Image.Dir", basePath)
 
 # basePath = '/Users/jrminter/dat/images/test/qm-04570-1421DJD-04-C03/'
 iniPath = basePath + os.sep + 'ImageMetadata.ini'
