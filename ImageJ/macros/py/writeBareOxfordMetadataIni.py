@@ -20,10 +20,11 @@ basePath = dc.getDirectory()
 
 iniPath = basePath + os.sep + 'ImageMetadata.ini'
 
-fMag     = 35000.
-fScale   = 0.008076172
+fMag     = 65000.
+fScaleX  = 0.0043457
+fScaleY  = 0.0055148
 sUnit    = "µm"
-sComment = "5 kV, S3, 5 mm, UHR TLD SE+BSE, tilt -2 deg, C-coated"
+sComment = "7 kV, S4, 5 mm, UHR TLD SE+BSE, tilt 52 deg"
 
 names = []
 
@@ -43,9 +44,9 @@ for name in names:
 	f.write(strLine +'\n')
 	strLine = "Mag = %.1f" % fMag
 	f.write(strLine +'\n')
-	strLine = "ScaleX = %.6f" % fScale
+	strLine = "ScaleX = %.6f" % fScaleX
 	f.write(strLine +'\n')
-	strLine = "ScaleY = %.6f" % fScale
+	strLine = "ScaleY = %.6f" % fScaleY
 	f.write(strLine +'\n')
 	strLine = "Units = %s" % sUnit
 	f.write(strLine +'\n')
