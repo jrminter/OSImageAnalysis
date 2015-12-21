@@ -66,6 +66,7 @@ from __future__ import division
 # 2015-07-25	JRM	1.5.57	Added computeEnergy and getStackSumSpectrum
 # 2015-09-28	JRM	1.5.58	Added correctForeshortening, medianFilter
 # 2015-10-12	JRM	1.5.59	Added openRplRawImageCube
+# 2015-12-21	JRM	1.5.60	Added correctCalibAspectRatio
 
 import sys
 import os
@@ -125,6 +126,35 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg"""
+
+def correctCalibAspectRatio(imp, bVerbose=False):
+	"""correctCalibAspectRatio(imp, bVerbose=False)
+	Correct the aspect ratio of a calibrated images that hes different scale factors.
+	Y direction.
+	Input:
+	imp  - the ImagePlus
+	bVerbose - a Boolean flag (default False) to print infor
+	Returns:
+	The ImagePlus of the A/R corrected image
+	
+	"""
+	imp.show()
+	h = imp.getHeight()
+	w = imp.getWidth()
+	cal = imp.getCalibration()
+	aspectRatio = cal.pixelHeight/cal.pixelWidth
+	newHeight = int(round(aspectRatio*h))
+	if (bVerbose==True):
+		print(aspectRatio)
+		print(newHeight)
+
+	newTitle = imp.getShortTitle() + "-arc"
+	strArg3 = "x=- y=- width=%d height=%d interpolation=Bicubic average create title=%s" % (w, newHeight, newTitle)
+
+	IJ.run(imp, "Scale...", strArg3)
+
+	impAR = IJ.getImage()
+	return impAR
 
 def openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx, evPerCh, evOff):
 	"""openRplRawImageCube(fDir, fName, width, height, nChan, umPerPx, evPerCh, evOff)
