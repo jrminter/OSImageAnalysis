@@ -22,9 +22,9 @@ iniPath = basePath + os.sep + 'ImageMetadata.ini'
 
 fMag     = 65000.
 fScaleX  = 0.0043457
-fScaleY  = 0.0055148
+fScaleY  = 0.0053716
 sUnit    = "µm"
-sComment = "7 kV, S4, 5 mm, UHR TLD SE+BSE, tilt 52 deg"
+sComment = "7 kV, S4, 5 mm, UHR TLD SE+BSE, tilt 54 deg"
 
 names = []
 
