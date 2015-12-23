@@ -3,6 +3,10 @@
   
   2013-12-14 J. R. Minter
   
+     Date     Who  Modifications
+  ----------  ---  ----------------------------------------------
+  2015-12-23  JRM  Current version of skimage uses .filters
+  
   Simple particle analysis of touching circles from an image from
   John Russ.
   
@@ -22,7 +26,7 @@ import scipy.ndimage as nd
 
 import skimage.exposure as expo
 import skimage.feature as fea       # peak_local_max
-import skimage.filter as fil        # rank
+import skimage.filters as fil       # rank, moved from .filter
 import skimage.io as io
 import skimage.measure as mea       # regionprops
 import skimage.morphology as mor    # watershed, disk

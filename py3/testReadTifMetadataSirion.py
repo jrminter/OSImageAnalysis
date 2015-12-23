@@ -7,16 +7,17 @@ tifffile code. A work in progress.
 
 Created   JRM 2014-08-18
 Modified  JRM 2014-10-10 Move images into test suite dir. Note neither
-                         read the metadata corectly. Grrrr.... 
+                         read the metadata corectly. Grrrr....
+          JRM 2015-12-23 Modified to get TiffFile from skimage
 
 @author: John Minter
 """
 
 import os
-import tifffile
+from skimage.external.tifffile import TiffFile #, imsave
+from skimage.io import imshow 
 import matplotlib.pyplot as plt
-import skimage.io as io
-import string
+# import string
 
 
 gitDir = os.environ['GIT_HOME']
@@ -33,10 +34,10 @@ else:
 filePath = gitDir + relImg + fName + '.tif'
 
 print(filePath)
-tif = tifffile.TiffFile(filePath)
+tif = TiffFile(filePath)
 im = tif[0].asarray()
 
-io.imshow(im, cmap=plt.cm.gray)
+imshow(im, cmap=plt.cm.gray)
 plt.show()
 
 det = 0
