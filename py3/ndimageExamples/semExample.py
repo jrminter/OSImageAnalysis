@@ -2,18 +2,26 @@
 """
 ndimage SEM image example
 
-from here:
+Original author:  Stefan van der Walt from here:
 http://www.scipy-lectures.org/intro/scipy.html#image-processing-scipy-ndimage
 
 1.5.11.16. Example of solution for the image processing exercise:
-           unmolten grains in glass
+           unmolten grains in glass.
 
-@author: jrminter
+Modified
+
+   Date        Who                         What
+----------  ------------  ----------------------------------------------------
+2015-12-24  J. R. Minter  Tweaked plotting, calibrated the image (using ImageJ)
+                          and computed the fiameter distribution histogram.
+                          This has a fat tail... Would need lots of images to
+                          get reliable statistics. Compatible with Python 3.5.1
+                          in Anaconda 2.4.1
 """
 import os, math
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import ndimage, misc
+from scipy import ndimage
 
 sizeFont=12
 umPerPx = 314./1000.
@@ -155,6 +163,18 @@ print("bubble diameter microns:")
 strLine ="mean %.3f, sd %.3f, median %.3f, count %d" % (mu_bubble_diam_um, sd_bubble_diam_um, median_bubble_diam_um , bubble_count)
 
 print(strLine)
+
+# 11. Let's plot the diameter histogram
+# It has a really fat tail....
+
+diaHisFig, ax = plt.subplots()
+plt.hist(bubble_diam_um, bins=40)
+diaHistFig = plt.gcf()
+ca = diaHistFig.gca()
+ca.set_xlabel(r'$\mathsf{bubble\ diameter\ \mu m}$')
+ca.set_ylabel('bubble count')
+ca.set_title('Bubble diameter distribution')
+diaHistFig.show()
 
 
 
