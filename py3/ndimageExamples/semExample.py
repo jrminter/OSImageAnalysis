@@ -10,12 +10,14 @@ http://www.scipy-lectures.org/intro/scipy.html#image-processing-scipy-ndimage
 
 @author: jrminter
 """
-import os
+import os, math
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage, misc
 
 sizeFont=12
+umPerPx = 314./1000.
+
 gitDir = os.environ['GIT_HOME']
 semImgPth = gitDir + os.sep + 'OSImageAnalysis' + os.sep + 'images' + os.sep + 'scipy_ex_MV_HFV_012.jpg'
 print(semImgPth)
@@ -61,7 +63,7 @@ fig, ax = plt.subplots()
 ax.plot(bin_edges[:-1], hi_dat, linewidth=1.0, color='r', label='cropped')
 ax.plot(bin_edges[:-1], hi_filtdat, linewidth=1.0, color='b', label='filtered')
 
-legend = ax.legend(loc='upper right', shadow=True)
+legend = ax.legend(loc='upper left', shadow=True)
 # The frame is matplotlib.patches.Rectangle instance surrounding the legend.
 frame = legend.get_frame()
 frame.set_facecolor('0.90')
@@ -73,7 +75,7 @@ for label in legend.get_texts():
 for label in legend.get_lines():
     label.set_linewidth(1.5)  # the legend line width
 fig.show()
-ax.set_xlim([0,255])
+ax.set_xlim([0,175])
 ax.set_ylim([0,40000])
 fig.show()
 
@@ -87,14 +89,34 @@ void = filtdat <= 50
 sand = np.logical_and(filtdat > 50, filtdat <= 114)
 glass = filtdat > 114
 
+pFig, axes = plt.subplots(ncols=3, nrows=1, figsize=(9,3))
+ax0, ax1, ax2 = axes.flat 
+ax0.imshow(void, cmap=plt.cm.gray)
+ax0.set_title('Voids', fontsize=sizeFont)
+ax0.axis('off')
+ax1.imshow(sand, cmap=plt.cm.gray)
+ax1.set_title('Sand', fontsize=sizeFont)
+ax1.axis('off')
+ax2.imshow(glass, cmap=plt.cm.gray)
+ax2.set_title('Glass', fontsize=sizeFont)
+ax2.axis('off')
+pFig.tight_layout()
+pFig.show()
+
 # Display an image in which the three phases are colored with three different colors.
+# note that I changed the order between sand and glass to make it match intensity
+# Like this display **much** better than original...
+phases = void.astype(np.int)+ 2*sand.astype(np.int) + 3*glass.astype(np.int)
 
-phases = void.astype(np.int) + 2*glass.astype(np.int) + 3*sand.astype(np.int)
-
-pFig, pAx = plt.subplots()
-pAx.imshow(phases, cmap=plt.cm.Spectral)
+phFig, pAx = plt.subplots()
+# I like viridis too. Need a good 3 color map for this
+# avoid R/G/B maps because of R/G color blindness issues...
+im = pAx.imshow(phases, interpolation='nearest', cmap=plt.cm.inferno) 
 pAx.set_title('Phases', fontsize=sizeFont)
+cbar = phFig.colorbar(im, ticks=[1, 2, 3])
+cbar.ax.set_yticklabels(['void', 'sand', 'glass']) 
 pAx.axis('off')
+phFig.show()
 
 # 6. Use mathematical morphology to clean the different phases.
 
@@ -116,7 +138,29 @@ bubbles_labels, bubbles_nb = ndimage.label(void)
 bubbles_areas = np.bincount(bubbles_labels.ravel())[1:]
 mean_bubble_size = bubbles_areas.mean()
 median_bubble_size = np.median(bubbles_areas)
-print ((mean_bubble_size, median_bubble_size))
+bubble_count = len(bubbles_areas)
+print ((mean_bubble_size, median_bubble_size, bubble_count))
+
+
+# 9. compute the diameter for each bubble
+bubble_diam_um = 2.0*umPerPx*np.sqrt(bubbles_areas/math.pi)
+mu_bubble_diam_um = bubble_diam_um.mean()
+sd_bubble_diam_um = bubble_diam_um.std()
+median_bubble_diam_um = np.median(bubble_diam_um)
+
+# This is a really broad distribution. One would need to measure
+# **a lot** of fields to get meaningful statistics!!!
+# 10. print the diameter statistics
+print("bubble diameter microns:")
+strLine ="mean %.3f, sd %.3f, median %.3f, count %d" % (mu_bubble_diam_um, sd_bubble_diam_um, median_bubble_diam_um , bubble_count)
+
+print(strLine)
+
+
+
+
+
+
 
 
 
