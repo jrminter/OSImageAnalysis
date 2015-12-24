@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+sand_grain_problem.py
+
 ndimage SEM image example
 
 Original author:  Stefan van der Walt from here:
