@@ -13,6 +13,12 @@
 # for java 
 *.class
 
+# for python
+.ipynb_checkpoints
+*.py[co]
+__pycache_
+*.egg-info
+
 
 # From Wayne Rasband...
 *~
