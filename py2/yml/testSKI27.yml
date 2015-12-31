@@ -1,0 +1,17 @@
+name: testSKI27
+dependencies:
+- python=2.7
+- mkl
+- dill
+- h5py
+- ipython
+- jupyter
+- matplotlib
+- mayavi
+- nose
+- numpy
+- qt
+- scipy
+- setuptools
+- traits
+- traitsui
