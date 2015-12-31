@@ -103,3 +103,7 @@ jrm-r-pkgs/tikzDevice/src/tikzDevice.o
 # Rmd
 Rmd/Rickert-caret-demo/Rickert-caret-demo_files/*
 Rmd/Rickert-caret-demo/Rickert-caret-demo.html
+
+# skdemo
+skdemo/build
+skdemo/dist
