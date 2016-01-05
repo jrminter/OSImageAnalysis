@@ -18,16 +18,16 @@ from ij import WindowManager
 import csv
 from ij.io import FileSaver
 
-fLo    = 1000.
-fHi    = 15000.
+fLo    = 450.
+fHi    = 20700.
 fUmWid = 4.45 # microns
 
  
 imp = IJ.getImage()
 iWid = imp.getWidth() 
 
-sArg3 =  "distance=%d known=%f pixel=1 unit=um" % (iWid, fUmWid)
-IJ.run(imp, "Set Scale...", sArg3);
+# sArg3 =  "distance=%d known=%f pixel=1 unit=um" % (iWid, fUmWid)
+# IJ.run(imp, "Set Scale...", sArg3);
 ip = imp.getProcessor()
 ip.setMinAndMax(fLo, fHi)
 imp.updateAndRepaintWindow()
