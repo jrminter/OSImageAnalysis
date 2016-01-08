@@ -1,0 +1,22 @@
+name: py27
+dependencies:
+- python=2.7
+- mkl
+- dill
+- dask
+- h5py
+- ipython
+- jupyter
+- matplotlib
+- mayavi
+- networkx
+- nose
+- numpy
+- pillow
+- pyamg
+- qt
+- scipy
+- setuptools
+- six
+- traits
+- traitsui
