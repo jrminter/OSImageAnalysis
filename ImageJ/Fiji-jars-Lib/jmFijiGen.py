@@ -67,7 +67,7 @@ from __future__ import division
 # 2015-09-28	JRM	1.5.58	Added correctForeshortening, medianFilter
 # 2015-10-12	JRM	1.5.59	Added openRplRawImageCube
 # 2015-12-21	JRM	1.5.60	Added correctCalibAspectRatio
-# 2016-01-14	JRM	1.5-61	Added applyGrayLimitsToFolder, useSingleLUT,
+# 2016-01-14	JRM	1.5.61	Added applyGrayLimitsToFolder, useSingleLUT,
 #                         and openFolderWithSingleLUT
 
 import sys
