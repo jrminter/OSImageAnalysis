@@ -18,9 +18,9 @@ from ij import WindowManager
 import csv
 from ij.io import FileSaver
 
-fLo    = 450.
-fHi    = 20700.
-fUmWid = 4.45 # microns
+fLo    = 1800.
+fHi    = 11000.
+# fUmWid = 4.45 # microns
 
  
 imp = IJ.getImage()
@@ -30,5 +30,10 @@ iWid = imp.getWidth()
 # IJ.run(imp, "Set Scale...", sArg3);
 ip = imp.getProcessor()
 ip.setMinAndMax(fLo, fHi)
+imp.updateImage()
+imp.setDisplayRange(fLo, fHi)
 imp.updateAndRepaintWindow()
 
+
+luts = imp.getLuts()
+print(luts)

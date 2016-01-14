@@ -67,6 +67,8 @@ from __future__ import division
 # 2015-09-28	JRM	1.5.58	Added correctForeshortening, medianFilter
 # 2015-10-12	JRM	1.5.59	Added openRplRawImageCube
 # 2015-12-21	JRM	1.5.60	Added correctCalibAspectRatio
+# 2016-01-14	JRM	1.5-61	Added applyGrayLimitsToFolder, useSingleLUT,
+#                         and openFolderWithSingleLUT
 
 import sys
 import os
@@ -97,7 +99,7 @@ import jarray
 
 from ij import IJ, ImagePlus, WindowManager, Prefs, ImageStack
 
-from ij.io import FileInfo, FileOpener
+from ij.io import FileInfo, FileOpener,  DirectoryChooser, FileSaver
 
 from ij.gui import Roi, TextRoi, ImageRoi, Overlay, ImageCanvas, ShapeRoi, PointRoi
 
@@ -125,7 +127,152 @@ import fiji.process.Image_Expression_Parser
 and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
-import jmFijiGen as jmg"""
+import jmFijiGen as jmg""" 
+
+
+def applyGrayLimitsToFolder(folderPath, fLo, fHi, ext='.tif'):
+	"""applyGrayLimitsToFolder(folderPath, fLo, fHi, ext='.tif')
+
+	Apply gray level limits to all images in a folder
+
+	Input
+	-----
+	folderPath : string
+		The path to the folder to process. Expects a separator for the OS.
+
+	fLo : number
+		The lower gray level limit (black)
+
+	fHi : number
+		The upper gray level limit (white)
+
+	ext : string, default '.tif'
+		The file type to process
+
+	Returns
+	-------
+
+	None
+
+	Example
+	-------
+
+	import jmFijiGen as jmg
+	jmg.applyGrayLimitsToFolder("C:\\Temp\\test\\", 1800, 11000, ext='.tif')
+
+	"""
+	names = []
+	for file in os.listdir(folderPath):
+		if file.endswith(ext):
+			name = os.path.splitext(file)[0]
+			names.append(name)
+
+	names.sort()
+
+	for name in names:
+		imgPath = folderPath + name + ext
+		imp = IJ.openImage(imgPath)
+		imp.show()
+		ip = imp.getProcessor()
+		ip.setMinAndMax(fLo, fHi)
+		imp.updateImage()
+		imp.setDisplayRange(fLo, fHi)
+		imp.changes = False
+		fs = FileSaver(imp)
+		# let's make it platform agnostic
+		if fs.saveAsTiff(imgPath):
+			msg = "Tif saved successfully at " + imgPath
+			print(msg) 
+		imp.close()
+
+
+
+def useSingleLUT(imp, bVerbose=False):
+	"""useSingleLUT(imp)
+
+	Check an ImagePlus for a single LUT and activate if found
+
+	Input
+	-----
+	imp : ImagePlus
+		The ImagePlus to be queried for a LUT and have the LUT activated
+
+	bVerbose : A boolean flag (False)
+		A flag for verbose messages
+
+	Returns
+	-------
+		None
+
+	Example:
+	--------
+	from ij import IJ
+	import jmFijiGen as jmg
+	IJ.run("M51 Galaxy (177K, 16-bits)")
+	imp = IJ.getImage()
+	jmg.useSingleLUT(imp, bVerbose=True)
+
+
+	"""
+	if bVerbose:
+		minV = imp.getDisplayRangeMin()
+		maxV = imp.getDisplayRangeMax()
+		sMsg = "Current display range: %g - %g" % (minV, maxV)
+		print(sMsg)
+
+	luts = imp.getLuts()
+	lLUTS = len(luts)
+	if (lLUTS == 1):
+		if bVerbose:
+			print(luts[0])
+		imp.setLut(luts[0])
+		imp.updateAndRepaintWindow()
+	else:
+		if bVerbose:
+			if(lLUTS > 1):
+				sMsg = "Found %g LUTs %s" % (lLUTS, luts)
+				print(sMsg)
+			else:
+				print("No LUTs found")
+
+def openFolderWithSingleLUT(folderPath, ext = '.tif'):
+	"""openFolderWithSingleLUT(folderPath, ext = '.tif')
+	Open a folder of images and apply a saved LUT
+
+	Input
+	-----
+	folderPath : string
+		The path to the folder to process. Expects a separator for the OS.
+
+	ext : string, default '.tif'
+		The file type to process
+
+	Returns
+	-------
+		None
+
+	Example
+	-------
+
+	import jmFijiGen as jmg
+	jmg.openFolderWithSingleLUT("C:\\Temp\\test\\", ext='.tif')
+
+	"""
+	names = []
+	for file in os.listdir(folderPath):
+		if file.endswith(ext):
+			name = os.path.splitext(file)[0]
+			names.append(name)
+
+	names.sort()
+
+	for name in names:
+		imgPath = folderPath + name + ext
+		imp = IJ.openImage(imgPath)
+		useSingleLUT(imp)
+		imp.show()
+
+
 
 def correctCalibAspectRatio(imp, bVerbose=False):
 	"""correctCalibAspectRatio(imp, bVerbose=False)
