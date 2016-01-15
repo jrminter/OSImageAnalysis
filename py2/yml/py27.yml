@@ -17,6 +17,7 @@ dependencies:
 - qt
 - scipy
 - setuptools
+- spyder
 - six
 - traits
 - traitsui
