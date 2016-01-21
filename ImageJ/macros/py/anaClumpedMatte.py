@@ -1,47 +1,47 @@
-# anaClumpedAgX.py
+# anaClumpedMatte.py
 #  Modifications
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
-# 2014-07-26  JRM 0.1.00  initial prototype development. Note that Fiji 
-#                         can read .dm3 files directly. N.B. This version
-#                         adds the environment variable 'RPT_ROOT'
-# 2014-09-30  JRM 0.1.10  Moved some code to jmFijiGen and edit for ImageJ2
-# 2015-01-04  JRM 0.2.00  Changed to call anaParticlesWatershed() from
-#                         jmFijiGen and to compute contrast
-# 2015-01-05  JRM 0.2.10  Added image and particle number and fixed scale bar
-# 2015-01-06  JRM 0.2.20  Fixed Contrast
-# 2015-01-07  JRM 0.2.21  Changed numbering because files don't import in order
-#                         under Ubuntu...
+# 2016-01-21  JRM 0.1.00  Adaped from anaClumpedAgX
+
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 import os
 import glob
 import time
 
-from math import sqrt
+from math import sqrt, pi
 from ij import IJ
 from ij import ImagePlus
 import jmFijiGen as jmg
+
 
 tic = time.time()
 
 imgDir  = os.environ['IMG_ROOT']
 rptDir  = os.environ['RPT_ROOT']
-relImg  = "/key-test/clumpAgX"
-sampID  = "qm-03965-KJL-027"
-nmPerPx = 1.213
-minCirc = 0.5
-minSize = 1.0e1
-maxSize = 1.0e6
+relImg  = "/QM16-04-01A-Shevlin" 
+sampID  = "qm-04595-307-85120-3"
+umPerPx = 0.3647
+minCirc = 0.6
+maxAR   = 1.25
 
-barW    =    100  # bar width, nm
+minDiaUm =  7.0
+maxDiaUm = 20.0
+
+minRad = 0.5*minDiaUm
+maxRad = 0.5*maxDiaUm
+minArea = pi*minRad*minRad
+maxArea = pi*maxRad*maxRad
+
+barW    =     20  # bar width, um
 barH    =      6  # bar height, pts
 barF    =     28  # bar font, pts
 barC    = "Black" # bar color
 
 strBar = "width=%g height=%g font=%g color=%s location=[Lower Right] bold" % (barW, barH, barF, barC)
 
-sImgPath = imgDir + relImg + "/" + sampID + "/dm3/"
+sImgPath = imgDir + relImg + "/" + sampID + "/"
 sRptPath = rptDir + "/" + sampID + "/"
 jmg.ensureDir(sRptPath)
 sRptCsvPath = sRptPath + sampID + ".csv"
@@ -52,34 +52,32 @@ jmg.ensureDir(sRptImgPath)
 imgOut = []
 parOut = []
 ecdOut = []
-conOut = []
 cirOut = []
 rndOut = []
 solOut = []
 arOut  = []
 
-query = sImgPath + "*.dm3"
+query = sImgPath + "*.tif"
 print(query)
 lFiles = glob.glob(query)
 i = 0
 for fi in lFiles:
   i += 1
   orig = ImagePlus(fi)
-  strName = os.path.basename(fi)
-  strName = strName.split('.')[0]
-  lStr =  strName.split('-')
-  l = len(lStr)
-  strNum = lStr[l-1]
+  orig = jmg.calibImageDirect(orig, umPerPx, units=-6)
+  strName = orig.getShortTitle()
+  strNum = strName.split('IMAGE')[1]
   iNum = int(strNum)
-  orig.setTitle(strNum)
+  strName = "%s-%02d" % (sampID, iNum ) 
+  orig.setTitle(strName)
+  orig.show()
   if i == 1:
     # a hack to get the scale bars to work reliably
     foo = orig.duplicate()
     IJ.run(foo, "RGB Color", "")
     IJ.run(foo, "Add Scale Bar", strBar)
-  iZero = jmg.findI0(orig, maxSearchFrac=0.5, chAvg=5)
-  # print(iZero)
-  rt = jmg.anaParticlesWatershed(orig, minPx=30)
+
+  rt = jmg.anaParticlesWatershed(orig, strThrMeth="method=Otsu white", bFillHoles=True, minPx=minArea, maxPx=maxArea, minCirc=minCirc, maxAR=maxAR)
   nMeas = rt.getCounter()
   
   nCols = rt.getLastColumn()
@@ -94,17 +92,18 @@ for fi in lFiles:
   lAspRat = rt.getColumn(rt.getColumnIndex("AR"))
   lRound  = rt.getColumn(rt.getColumnIndex("Round"))
   lSolid  = rt.getColumn(rt.getColumnIndex("Solidity"))
+  k = 0
   for j in range(len(lArea)):
-    imgOut.append(iNum)
-    parOut.append(j+1)
-    ecd = 2.0*sqrt(lArea[j]/3.1415926)
-    ecdOut.append(ecd)
-    con = 1.0-(lMode[j]/iZero)
-    conOut.append(con)   
-    cirOut.append(lCirc[j])
-    arOut.append(lAspRat[j])
-    rndOut.append(lRound[j])
-    solOut.append(lSolid[j])
+  	if lAspRat[j] <= maxAR:
+  		k += 1
+    	imgOut.append(iNum)
+    	parOut.append(k)
+    	ecd = 2.0*sqrt(lArea[j]/3.1415926)
+    	ecdOut.append(ecd)
+    	cirOut.append(lCirc[j])
+    	arOut.append(lAspRat[j])
+    	rndOut.append(lRound[j])
+    	solOut.append(lSolid[j])
     
     
   orig.show()
@@ -120,27 +119,23 @@ for fi in lFiles:
 
 # prepare the output file
 f=open(sRptCsvPath, 'w')
-strLine = 'img, part, ecd.nm, contrast, circ, a.r, round, solidity\n'
+strLine = 'img, part, ecd.um, circ, a.r, round, solidity\n'
 f.write(strLine)
 for k in range(len(ecdOut)):
-  strLine = "%d, %d, %.2f, %.4f, %.4f, %.4f, %.4f, %.4f\n" % (imgOut[k], parOut[k], ecdOut[k],  conOut[k], cirOut[k], arOut[k], rndOut[k], solOut[k] )
+  strLine = "%d, %d, %.2f, %.4f, %.4f, %.4f, %.4f\n" % (imgOut[k], parOut[k], ecdOut[k], cirOut[k], arOut[k], rndOut[k], solOut[k] )
   f.write(strLine)
 
 f.close()
 
+
+
 toc = time.time()
 
 elapsed = toc - tic
-
 print("analyzed %g images" % i)
 print("completed in %g sec" % elapsed )
 
-# All with Oracle JDK 1.7.0_71
-#  53 sec on jrmFastMac   - Yosemite 16 GB RAM i7 4 cores MacBookPro11,3 2.3 GHz not much different w JVM 1.6.0.65
-#  64 sec on jrmfastMac   - Parallels Win 10 tech prev Java 6 VM         2.3 Ghz
-#  32 sec on crunch       - Win7-64  16 GB RAM i7-3370 8 cores           3.4 GHz
-#  52 sec on ROCPW6C6XDN1 - Win7-64  16 GB RAM Core Duo E8500 CPU        3.0 GHz
-#  48 sec on ROCTL185TXY1 - Win7-32   4 GB RAM i5-3340M CPU              2.7 GHz
-#  93 sec on parrot       - Ubuntu-64 2 GB RAM AMD 64 2Core              1.8 GHz         
+# All with Oracle JDK 1.6
+       
 
   

@@ -69,7 +69,7 @@ from __future__ import division
 # 2015-12-21	JRM	1.5.60	Added correctCalibAspectRatio
 # 2016-01-14	JRM	1.5.61	Added applyGrayLimitsToFolder, useSingleLUT,
 #                         and openFolderWithSingleLUT
-
+# 2016-01-21  JRM 1.5.62  Updated anaParticlesWatershed
 import sys
 import os
 import glob
@@ -847,22 +847,58 @@ def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
 	imp.setOverlay(ovl)
 	return imp
 
-def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minCirc=0.35, labCol=Color.white, linCol=Color.green, bDebug=False, sl=0.005):
-	"""anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minCirc=0.35, labCol=Color.white, linCol=Color.green, bDebug=False, sl=0.005)
-	A wrapper function to do particle analysis from an image after a watershed transformation and draw the detected
-	features into the overlay of the original image.
-	Inputs:
-	imp        - the ImagePlus instance that we will process
-	strThrMeth - a string specifying the threshold method
-	minPx      - the minimum pixels to detect
-	minCirc    - the minimum circularity to detect
-	labCol     - the color for labels in the overlay (default white)
-	linCol     - the color for line/stroke in the overlay (default green)
-	bDebug    - a flag (default False) that, if true, keeps the work image open
-	sl        - a time (default 0.005) to sleep when adding ROIs to not overload
+def anaParticlesWatershed(imp, strThrMeth="method=Default white", minArea=10, maxArea=100000, minCirc=0.35, maxAR = 1.05, labCol=Color.white, linCol=Color.green, bDebug=False, bFillHoles=False,  sl=0.005):
+	"""anaParticlesWatershed(imp, strThrMeth="method=Default white", minArea=10,
+		                       maxArea=100000,  minCirc=0.35, maxAR = 1.05,
+		                       labCol=Color.white, linCol=Color.green,
+		                       bFillHoles=False, bDebug=False, sl=0.005)
 
-	This adds the detected features to the overlay and returns the result table for
-	processing for output.
+	A wrapper function to do particle analysis from an image after a
+	watershed transformation and draw the detected features into the overlay
+	of the original image.
+
+
+	Input
+	-----
+
+	imp : ImagePlus
+		The image to process
+
+	strThrMeth : string ('method=Default white')
+		Used to specifying the threshold method
+
+	minArea : int (10)
+		The minimum area to detect. Will be in units from calibration.
+
+	maxArea : int (100000) 
+		The maximum area to detect. Will be in units from calibration.
+
+	minCirc : float (0.35)
+		The minimum circularity to detect
+
+	maxAR : float (1.05)
+		The maximum aspect ratio to detect
+
+	labCol : color (Color.white)
+		The color for labels in the overlay
+
+	linCol : color (Color.green)
+		The color for line/stroke in the overlay
+
+	bDebug : boolean (False)
+		A flag that, if true, keeps the work image open
+
+	bFillHoles : boolean (False)
+		A flag to fill holes in the detected image
+
+	sl : float (0.005)
+		Time to sleep when adding ROIs to not overload.
+
+	Output
+	------
+
+	rt : a results table
+		The results table for further processing.
 	"""
 	title = imp.getTitle()
 	shortTitle = imp.getShortTitle()
@@ -877,13 +913,16 @@ def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minC
 		IJ.run(wrk, "Enhance Contrast", "saturated=0.35")
 		IJ.run(wrk, "8-bit", "")
 	IJ.run(wrk, "Threshold", strThrMeth)
+	if bFillHoles == True:
+		IJ.run(wrk, "Fill Holes", "")
 	IJ.run(wrk, "Watershed", "")
 	wrk.show()
 	strMeas = "area mean modal min center perimeter bounding fit shape Feret's display redirect=%s decimal=3" % shortTitle
 	IJ.run(wrk, "Set Measurements...", strMeas)
-	strAna = "size=%d-Infinity circularity=%g-1.00	exclude clear include add" % (minPx, minCirc)
+	strAna = "size=%d-%d circularity=%g-1.00	exclude clear include add" % (minArea, maxArea, minCirc)
 	IJ.run(wrk, "Analyze Particles...", strAna)
 	rt = ResultsTable().getResultsTable()
+	lAspRat = rt.getColumn(rt.getColumnIndex("AR"))
 	rm = RoiManager.getInstance()
 	ra = rm.getRoisAsArray()
 	# Let's draw the particles into the overlay of the original
@@ -892,7 +931,9 @@ def anaParticlesWatershed(imp, strThrMeth="method=Default white", minPx=10, minC
 		i += 1
 		rLab = "%d" % i
 		r.setName(rLab)
-		imp = addRoiToOverlay(imp, r, labCol=labCol, linCol=linCol)
+		# only if the aspect ratio is OK
+		if lAspRat[i-1] <= maxAR:
+			imp = addRoiToOverlay(imp, r, labCol=labCol, linCol=linCol)
 		# needed to put in sleep here on cruch to let this complete and not overrun buffer
 		time.sleep(sl)
 	# let's put a PointRoi outside the image to get the overlays all the same color

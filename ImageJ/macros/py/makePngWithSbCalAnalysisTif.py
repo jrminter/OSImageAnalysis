@@ -25,7 +25,7 @@ import jmFijiGen as jmg
 tic = time.time()
 
 sFac = 0.0
-barW = 1						# bar width, microns
+barW = 5						# bar width, microns
 barH = 6						# bar height, pts
 barF = 24						# bar font, pts
 barC = "White"			# bar color

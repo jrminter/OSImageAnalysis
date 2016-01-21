@@ -23,15 +23,13 @@ import math
 import numpy as np
 import skimage.io as io
 import skimage.feature as fea       # peak_local_max
-import skimage.segmentation as seg  # find_boundaries, visualize_boundaries
+# import skimage.segmentation as seg  # find_boundaries, visualize_boundaries
 import skimage.morphology as mor    # watershed, disk
 import skimage.filters as fil        # threshold_otsu
 import skimage.measure as mea       # regionprops
-import scipy
+# import scipy
 import scipy.ndimage as nd
 import matplotlib.pyplot as plt
-import pymorph as pm
-import mahotas as mh
 
 bShowIntermed = False
 
