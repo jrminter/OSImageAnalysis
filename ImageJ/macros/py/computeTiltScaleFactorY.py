@@ -22,9 +22,10 @@ mu = IJ.micronSymbol
 stageTilt = 52.0
 
 scaUni	= mu + "m"
-scaleX  = 4.45/1024. # 65kX AZtec 4.45/1024	
+mag = "80K"
+scaleX  = 3.62 /1024. # 65kX AZtec 4.45/1024	
 tiltDeg = 90.0 - stageTilt
 
 scaleY = computeTiltScaleFactorY(scaleX, tiltDeg)
-strMsg = "Stage Tilt: %.1f, Foreshortening Tilt: %.1f deg, ScaleX: %.7f, ScaleY: %.7f %s"     % (stageTilt, tiltDeg, scaleX, scaleY, scaUni)
+strMsg = "Stage Tilt: %.1f, Foreshortening Tilt: %.1f deg, Mag = %s, ScaleX: %.7f, ScaleY: %.7f %s"     % (stageTilt, tiltDeg, mag, scaleX, scaleY, scaUni)
 print(strMsg)
