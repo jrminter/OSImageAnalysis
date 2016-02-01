@@ -1,4 +1,4 @@
-# procOxfordIni.py
+# procSirionOxfordIni.py
 #
 # Read a .ini file written by the the 'writeBareMetadataIni.py' script
 # after editing for AZtec metadata
@@ -11,6 +11,7 @@
 # ----------  --- ------  -------------------------------------------------
 # 2015-12-16  JRM 0.1.00  Initial prototype. Now path separator agnostic
 # 2015-12-17  JRM 0.1.10  Work from tif files to keep in order.
+# 2016-02-01  JRM 0.1.20  Add magnification to comment in Info field
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -76,7 +77,8 @@ for name in names:
 	cal.pixelWidth = fScaleX
 	cal.pixelHeight = fScaleY
 	obinfo = imp.getProperty("Info")
-	newInfo = "Microscope: " + sMicroscope + " Software: Oxford AZtec 3.0, User: " + sUser +  "\n" + sComment
+	sMag = "Mag: %.1f X, " % fMag
+	newInfo = "Microscope: " + sMicroscope + " Software: Oxford AZtec 3.0, User: " + sUser +  "\n" + sMag + sComment
 	imp.setProperty("Info", newInfo)
 	imp.setTitle(name)
 	imp.show()

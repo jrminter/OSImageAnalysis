@@ -70,6 +70,7 @@ from __future__ import division
 # 2016-01-14	JRM	1.5.61	Added applyGrayLimitsToFolder, useSingleLUT,
 #                         and openFolderWithSingleLUT
 # 2016-01-21  JRM 1.5.62  Updated anaParticlesWatershed
+# 2016-01-29  JRM 1.5.63  Updated addRoiToOverlay
 import sys
 import os
 import glob
@@ -828,12 +829,16 @@ def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
 	situations where ROIs are computed from a highly processed image and the analyst wants to
 	draw them into the overlay of the original image (e.g. particle analysis after a 
 	watershed separation. Adapted from addToOverlay() from Analyzer.java
+
 	Inputs:
+
 	imp		- the ImagePlus instance into which we draw the ROI
 	roi		- the ROI to draw
 	labCol - the color or the label (default white)
 	linCol - the color of the stroke/line (default white)
+
 	Returns
+	
 	imp		- the ImagePlus with the updated overlay"""
 	roi.setIgnoreClipRect(True)
 	ovl = imp.getOverlay()
@@ -841,10 +846,12 @@ def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
 		ovl = Overlay()
 	ovl.drawNames(True)
 	ovl.setStrokeColor(linCol)
-	ovl.setLabelColor(labCol);
-	ovl.drawBackgrounds(False);
+	ovl.setLabelColor(labCol)
+	ovl.drawBackgrounds(False)
 	ovl.add(roi)
 	imp.setOverlay(ovl)
+	imp.updateImage()
+	imp.updateAndRepaintWindow()
 	return imp
 
 def anaParticlesWatershed(imp, strThrMeth="method=Default white", minArea=10, maxArea=100000, minCirc=0.35, maxAR = 1.05, labCol=Color.white, linCol=Color.green, bDebug=False, bFillHoles=False,  sl=0.005):

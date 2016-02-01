@@ -21,7 +21,37 @@ from ij import IJ
 from ij import ImagePlus
 from ij.gui import Overlay, PointRoi, Roi
 from ij.measure import ResultsTable, Measurements
-import jmFijiGen as jmg
+
+def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
+	"""addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white)
+	A convenience function to draw a ROI into the overlay of an ImagePlus. This is useful for
+	situations where ROIs are computed from a highly processed image and the analyst wants to
+	draw them into the overlay of the original image (e.g. particle analysis after a 
+	watershed separation. Adapted from addToOverlay() from Analyzer.java
+
+	Inputs:
+
+	imp		- the ImagePlus instance into which we draw the ROI
+	roi		- the ROI to draw
+	labCol - the color or the label (default white)
+	linCol - the color of the stroke/line (default white)
+
+	Returns
+	
+	imp		- the ImagePlus with the updated overlay"""
+	roi.setIgnoreClipRect(True)
+	ovl = imp.getOverlay()
+	if ovl == None:
+		ovl = Overlay()
+	ovl.drawNames(True)
+	ovl.setStrokeColor(linCol)
+	ovl.setLabelColor(labCol)
+	ovl.drawBackgrounds(False)
+	ovl.add(roi)
+	imp.setOverlay(ovl)
+	imp.updateImage()
+	imp.updateAndRepaintWindow()
+	return imp
 
 def getLineLength(imp):
 	x1=-1
@@ -41,17 +71,19 @@ def getLineLength(imp):
 			x = (x2-x1)*pw
 			y = (y2-y1)*ph
 			l = sqrt(x*x+y*y)
-			jmg.addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.green)
+			imp = addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.green)
 			# imp.updateAndRepaintWindow()			
 			IJ.makePoint(-1,-1)
-			imp.updateAndRepaintWindow()
+			# imp.updateAndRepaintWindow()
 			return l, cal.getUnit()
 	return None
-
-	
+IJ.run("Set Measurements...", "display redirect=None decimal=3")
+IJ.run("Colors...", "foreground=black background=black selection=green")	
 imp = IJ.getImage()
+imp.updateAndRepaintWindow()
 foo = getLineLength(imp)
 imp.updateAndRepaintWindow()
+
 
 print(foo)
 
