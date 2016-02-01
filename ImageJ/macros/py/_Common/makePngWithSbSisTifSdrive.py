@@ -31,21 +31,20 @@ bDoMedianFilter = False # True to run a median filter
 radMF = 1.0            # filter radius
 
 # true to set manual gray levels
-bSetGrayLevels = False # Rollins
+bSetGrayLevels = False 
 gLo = 3086
 gHi = 14047
 gSatFac = 0.01
 
-barW =  1.0						# bar width, microns
 barH = 6						# bar height, pts
 barF = 24						# bar font, pts
 barC = "White"			# bar color
 barL= "Lower Right"	# bar location
 
 sBaseDir = "S:/Minter/2016/"
-rPrjDir = "Alaris16-01A-Kung"
-labId = "qm-04606"
-smpId = "RC16-001-27"
+rPrjDir = "QM16-06-01A-Dannhauser"
+labId = "qm-04609"
+smpId = "varnish"
 
 
 
@@ -56,6 +55,9 @@ sPngPath = datDir + "/png/"
 print(sTifPath)
 
 jmg.ensureDir(sPngPath)
+
+mu = IJ.micronSymbol
+scaUm	= mu + "m"
 
 
 query = sTifPath + "*.tif"
@@ -75,6 +77,14 @@ for fi in lFiles:
 	# iNum = int(strNum)
 	print(strNum)
 	orig.setTitle(strNum)
+	cal = orig.getCalibration()
+	u = cal.getUnit()
+	pw = cal.pixelWidth
+	if u == scaUm:
+		if pw <= 0.06:
+			barW =  1.0  # bar width, microns
+		else:
+			barW =  10.0
 
 	strBar = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barW, barH, barF, barC, barL)
 	# a hack to get the scale bars to work reliably
