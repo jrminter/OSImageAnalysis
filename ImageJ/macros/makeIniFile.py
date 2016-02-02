@@ -7,9 +7,10 @@
 # @int(label = "spot", value=3) iSpot
 # @double(label = "working distance", value = 5.0) dFWD
 # @double(label = "tilt Angle", value = 0) dTiltDeg
-# @double(label = "magKX", value = 1) magKX
+# @double(label = "mag (X)", value = 1) magX
 # @double(label = "fwMicrons", value = 1.23) fwMicrons
 # @String(label = "detector", value="UHR TLD") sDetector
+# @String(label = "scan", value="1X10us") sScan
 # @String(label = "Other Comment", value="Lower Right") sOtherComment
 
 # makeAZtecIni.py
@@ -21,10 +22,45 @@
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
-import os
+import os, math
 from ij import IJ, Prefs
 from ij.io import FileSaver 
 import jmFijiGen as jmg
 from ij.measure import Calibration
 
-print(sOtherComment)
+def computeTiltScaleFactorY(fScaleX, tiltDeg):
+	"""computeTiltScaleFactorY(fScaleX, tiltDeg)
+	Compute the fore-shortened Y-axis scale factor given the X-axis scale factor and tilt angle [deg]"""
+	factor = math.cos(tiltDeg*math.pi/180.0) # convert to radians and compute cos
+	fScaleY = fScaleX/factor
+	return fScaleY
+
+print(dir(file))
+print(file.path)
+
+if bAppend:
+	f = open(file.path, 'a')
+else:
+	f = open(file.path, 'w')
+f.write("[" + baseName + "]\n")
+strLine = "Mag=%.1f" %  magX + "\n"
+f.write(strLine)
+fScaleX = fwMicrons/imgWid
+strLine = "ScaleX=%.6f" %  fScaleX + "\n"
+f.write(strLine)
+if bFIB:
+	tiltDeg = 90.0 - dTiltDeg
+else:
+	tiltDeg = dTiltDeg
+
+fScaleY = computeTiltScaleFactorY(fScaleX, tiltDeg)
+strLine = "ScaleY=%.6f" %  fScaleY + "\n"
+f.write(strLine)
+strLine = "Units=µm\n"
+f.write(strLine)
+strLine = "Comment=%d kV, S%d, %.1f mm, %s, %.1f deg tilt, %s, %s\n\n" % (iKV, iSpot, dFWD, sDetector, dTiltDeg, sScan, sOtherComment )
+f.write(strLine)
+
+f.close()
+
+
