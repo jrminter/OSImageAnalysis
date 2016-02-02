@@ -43,8 +43,8 @@ barL= "Lower Right"	# bar location
 
 sBaseDir = "S:/Minter/2016/"
 rPrjDir = "QM16-06-01A-Dannhauser"
-labId = "qm-04609"
-smpId = "varnish"
+labId = "qm-04617"
+smpId = "SUG-primer"
 
 
 
