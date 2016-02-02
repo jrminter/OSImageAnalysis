@@ -21,6 +21,11 @@ if imp != None:
 			cal.setUnit(scaUni)
 			imp.setCalibration(cal)
 			imp.updateAndRepaintWindow()
+
+		else:
+			print(strU)
+			print(pw)
+			
 		print("done")
 			
 			
