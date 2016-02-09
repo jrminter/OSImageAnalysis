@@ -1,14 +1,13 @@
-# makePngWithSbAZtec.py
+# makePngFromCalibTifWithSb.py
 #
 # J. R. Minter
 #
-# Process a folder of calibrated AZtec.tif files and burn scale bars
+# Process a folder of calibrated .tif files and burn scale bars
 #
 # CCA licence
 #  date       who  Comment
 # ----------  ---  -----------------------------------------------------
 # 2016-02-02  JRM  Works with a directory chooser
-
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -24,8 +23,6 @@ import jmFijiGen as jmg
 
 tic = time.time()
 
-sUser = "J. R. Minter"
-sMicroscope = "FEI Sirion D5557"
 barH = 6						# bar height, pts
 barF = 24						# bar font, pts
 barC = "White"			# bar color

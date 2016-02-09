@@ -2,6 +2,7 @@ name: py27
 dependencies:
 - python=2.7
 - mkl
+- anaconda
 - dill
 - dask
 - h5py
@@ -21,3 +22,4 @@ dependencies:
 - six
 - traits
 - traitsui
+- wheel
