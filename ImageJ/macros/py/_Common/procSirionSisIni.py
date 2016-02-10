@@ -55,6 +55,7 @@ config = ConfigParser.RawConfigParser()
 config.read(iniPath)
 
 for name in names:
+	print(name)
 	path = basePath + os.sep + name + ".tif"
 	print(path)
 	fMag     = config.getfloat(name, "Mag")

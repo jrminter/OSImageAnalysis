@@ -35,7 +35,7 @@ def computeTiltScaleFactorY(fScaleX, tiltDeg):
 	fScaleY = fScaleX/factor
 	return fScaleY
 
-print(dir(file))
+# print(dir(file))
 print(file.path)
 
 if bAppend:
