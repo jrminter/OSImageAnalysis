@@ -18,6 +18,7 @@ goto :eof
 :amd64
 @rem
 @rem JM customized for py27
+@rem Use this for systems with the full VS-2008 installed
 @rem goes in C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC
 @rem
 if not exist "%~dp0bin\amd64\vcvarsamd64.bat" goto missing
