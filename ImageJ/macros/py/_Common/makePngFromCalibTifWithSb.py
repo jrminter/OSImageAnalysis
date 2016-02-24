@@ -8,6 +8,7 @@
 #  date       who  Comment
 # ----------  ---  -----------------------------------------------------
 # 2016-02-02  JRM  Works with a directory chooser
+# 2016-02-24  JRM  Added some error handling
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -20,13 +21,15 @@ from ij import ImagePlus
 from ij.io import FileSaver, DirectoryChooser
 import jmFijiGen as jmg
 
+bVerbose = False
+
 
 tic = time.time()
-
-barH = 6						# bar height, pts
-barF = 24						# bar font, pts
-barC = "White"			# bar color
-barL= "Lower Right"	# bar location
+barW =  1.0            # default bar width - note will be reset below in lines 106-112
+barH = 6			   # bar height, pts
+barF = 24			   # bar font, pts
+barC = "White"		   # bar color
+barL= "Lower Right"	   # bar location
 
 gSatFac = 0.01
 gLo = 3086
@@ -57,11 +60,13 @@ names.sort()
 
 for name in names:
 	path = basePath + os.sep + name + ".tif"
-	print(path)
+	if bVerbose:
+		print(path)
 
 sPngPath = basePath + "/png/"
 
-print(basePath)
+if bVerbose:
+	print(basePath)
 
 jmg.ensureDir(sPngPath)
 
@@ -70,13 +75,27 @@ scaUm	= mu + "m"
 
 
 query = basePath + "*.tif"
-print(query)
+
+if bVerbose:
+	print(query)
+
 lFiles = glob.glob(query)
 i = 0
 for fi in lFiles:
 	i += 1
 	fi = fi.replace("\\", "/")
-	print(fi)
+	fi = fi.replace("//", "/")
+	if bVerbose:
+		print(fi)
+	orig = ImagePlus(fi)
+	strName = os.path.basename(fi)
+	strName = strName.split('.')[0]
+	orig.setTitle(strName)
+	cal = orig.getCalibration()
+	u = cal.getUnit()
+	pw = cal.pixelWidth
+	if bVerbose:
+		print(pw)
 	orig = ImagePlus(fi)
 	strName = os.path.basename(fi)
 	strName = strName.split('.')[0]
@@ -88,7 +107,7 @@ for fi in lFiles:
 		if (pw <= 0.02):
 			barW =  0.10  # bar width, microns
 		elif (pw < 0.06):
-			barW =  1.0  # bar width, microns
+			barW =  1.0   # bar width, microns
 		else:
 			barW =  10.0
 
@@ -126,3 +145,5 @@ elapsed = toc - tic
 print("analyzed %g images" % i)
 print("completed in %g sec" % elapsed )
 
+
+	

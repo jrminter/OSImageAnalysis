@@ -25,8 +25,8 @@ tic = time.time()
 
 imgRt  = os.environ['IMG_ROOT']
 relPrj = "/QM16-01-02B-Lofftus"
-labId  = "qm-04607"
-smpId  = "JLM2015-113"
+labId  = "qm-04647"
+smpId  = "JLM2015-100A"
 
 sDm3Path = imgRt + relPrj + "/" + labId + "-" + smpId + "/dm3/"
 sPngPath = imgRt + relPrj + "/" + labId + "-" + smpId + "/png/"
@@ -35,7 +35,7 @@ mu = IJ.micronSymbol
 strMicron  = mu + "m"
 barH = 6                # bar height, pts
 barF = 24				# bar font, pts
-barC = "Black"			# bar color
+barC = "White"			# bar color
 barL = "Lower Right"	# bar location
 
 query = sDm3Path + "*.dm3"

@@ -18,8 +18,8 @@ from ij import WindowManager
 import csv
 from ij.io import FileSaver
 
-fLo    = 1800.
-fHi    = 11000.
+fLo    = 3300.
+fHi    = 16000.
 # fUmWid = 4.45 # microns
 
  
