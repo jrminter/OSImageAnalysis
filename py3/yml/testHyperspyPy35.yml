@@ -1,0 +1,24 @@
+# install scikit-image 12 from git and hyperspy to266/ENH_python3
+name: testHyperspyPy35
+dependencies:
+- python=3.5
+- dill
+- h5py
+- ipython
+- jupyter
+- matplotlib
+- mock
+- nose
+- numpy
+- qt
+- scikit-learn
+- scipy
+- setuptools
+- statsmodels
+- sympy
+- natsort
+- ncurses
+- pip:
+  - dask
+  - traits
+  - traitsui
