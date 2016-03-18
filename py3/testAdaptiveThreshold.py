@@ -36,5 +36,5 @@ binary_adaptive = threshold_adaptive(med_img, block_size, offset=10)
 
 binary_fill = ndi.binary_fill_holes(1-binary_global).astype(int)
 
-plt.imshow(binary_fill[400:600, 400:600]);
+plt.imshow(binary_fill[400:600, 400:600], cmap='gray');
 plt.show();

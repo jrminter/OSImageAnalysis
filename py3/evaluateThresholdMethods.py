@@ -20,7 +20,8 @@ def displayImg(img, name='image', fSize=12):
     ax0.imshow(img, cmap=plt.cm.gray)
     ax0.set_title(name, fontsize=fSize)
     ax0.axis('off')
-    iFig.show()
+    iFig.tight_layout();
+    iFig.show();
     return(iFig)
     
 def displayAll(ld, ln, fSize=12):
@@ -29,7 +30,8 @@ def displayAll(ld, ln, fSize=12):
         ax.imshow(ld[i], cmap=plt.cm.gray)
         ax.set_title(ln[i], fontsize=fSize)
         ax.axis('off')
-    iPan.show()
+    iPan.tight_layout();
+    iPan.show();
     return(iPan)
 
 gitHome = os.getenv('GIT_HOME')

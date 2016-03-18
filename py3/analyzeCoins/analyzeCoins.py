@@ -22,7 +22,7 @@ sizeFont = 18
 
 image = data.coins() # or any NumPy array!
 edges = filters.sobel(image)
-io.imshow(edges)
+io.imshow(edges);
 
 # Load a small section of the image.
 image = data.coins()[0:95, 70:370]
@@ -76,5 +76,5 @@ for region in regionprops(label_image):
     ax5.add_patch(rect)
 
 
-plt.tight_layout()
-plt.show()
+plt.tight_layout();
+plt.show();
