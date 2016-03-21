@@ -20,7 +20,7 @@ div #notebook { /* center the content */
     padding-left: 1em;
     padding-right: 1em;
     padding-top: 2ex;
-    text-align: left; /*was jsutify*/
+    text-align: left; /*was justify*/
 }
 
 #notebook li { /* More space between bullets. */
