@@ -1,0 +1,5 @@
+
+To get hyperspy on Win64
+
+
+conda install -c https://conda.anaconda.org/rdonnelly m2-msys2-ncurses
