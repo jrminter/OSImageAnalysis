@@ -1,0 +1,7 @@
+hyperspy py3 anaconda
+
+ncurses is not found for win64 in anaconda. Have to do this.
+
+
+conda install -c https://conda.anaconda.org/rdonnelly m2-msys2-ncurses
+
