@@ -48,6 +48,8 @@ if os.path.exists(lastPath):
 
 dc = DirectoryChooser("Choose directory")
 basePath = dc.getDirectory()
+
+print(basePath)
 Prefs.set("Last.Image.Dir", basePath)
 
 names = []
