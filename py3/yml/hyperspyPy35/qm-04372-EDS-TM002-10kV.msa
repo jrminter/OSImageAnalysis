@@ -1,36 +1,36 @@
 #FORMAT      : EMSA/MAS Spectral Data File
 #VERSION     : 1.0
+#OWNER       : 
 #CHOFFSET    : 10.0
-#OXINSTLABEL : 47, 2.634, Ag
+#FWHMMNKA    : 130.0
+#TITLE       : BAM EDS-TM002 10 kV
+#NPOINTS     : 1024
 #AZIMANGLE   : 0.0
+#YPOSITION mm: 67.6363
+#TIME        : 11:18
+#OXINSTPT    : 4
+#OXINSTSTROB : 48.23
+#PROBECUR    : 0.0
+#XPERCHAN    : 0.01
+#XTILTSTGE   : 0.0
+#YUNITS      : counts
+#XLABEL      : 
+#DATATYPE    : XY
+#COMMENT     : File created by HyperSpy version 0.8.4
+#LIVETIME    : 19.997292
+#XPOSITION mm: 45.7421
+#MAGCAM      : 236.0
 #OFFSET      : -0.1
 #OXINSTELEMS : 6,8,13,25,29,40,47
-#ELEVANGLE   : 37.0
-#XUNITS      : keV
-#SIGNALTYPE  : EDS_SEM
-#DATE        : 10-JAN-2011
-#OWNER       : 
 #BEAMKV      : 10.0
-#PROBECUR    : 0.0
+#DATE        : 10-JAN-2011
 #NCOLUMNS    : 1
-#XPERCHAN    : 0.01
-#REALTIME    : 39.593745
-#COMMENT     : File created by HyperSpy version 0.8.4
-#MAGCAM      : 236.0
-#YPOSITION mm: 67.6363
-#YUNITS      : counts
-#XPOSITION mm: 45.7421
-#TITLE       : BAM EDS-TM002 10 kV
-#FWHMMNKA    : 130.0
-#OXINSTSTROB : 48.23
-#XTILTSTGE   : 0.0
-#OXINSTPT    : 4
-#TIME        : 11:18
-#DATATYPE    : XY
-#XLABEL      : 
-#LIVETIME    : 19.997292
-#NPOINTS     : 1024
+#OXINSTLABEL : 47, 2.634, Ag
 #ZPOSITION mm: 40.7000
+#ELEVANGLE   : 37.0
+#SIGNALTYPE  : EDS_SEM
+#XUNITS      : keV
+#REALTIME    : 39.593745
 #SPECTRUM    : Spectral Data Starts Here
 -0.1, 0
 -0.09, 0

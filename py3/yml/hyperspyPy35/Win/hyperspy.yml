@@ -21,4 +21,5 @@ dependencies:
   - dask
   - traits
   - traitsui
+  - pyface
  
