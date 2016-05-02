@@ -17,9 +17,10 @@
 #  Modifications
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
-# 2016-02-02  JRM 0.1.00  Initial prototype - a work in progress
+# 2016-02-02  JRM 0.1.00  Initial prototype - a work in progress
 # 2016-04-05  JRM 0.1.10  Compute scale from inverse mag plot linear model
 #                         Also re-arranged dialog to minimize moves
+# 2016-04-08  JRM 0.1.15  Print some feedback...
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
@@ -72,7 +73,7 @@ def estimateAztecScaleFactorX(mag, scanWidthPx=1024, slope=289251.80, slopeSE=16
 	return sf
 
 # print(dir(file))
-print(file.path)
+# print(file.path)
 
 if bAppend:
 	f = open(file.path, 'a')
@@ -100,5 +101,8 @@ strLine = "Comment=%d kV, S%d, %.1f mm, %s, %.1f deg tilt, %s, %s\n\n" % (iKV, i
 f.write(strLine)
 
 f.close()
+
+strMsg = "Processed image %s at magification %.0f" % (baseName, magX)
+print(strMsg)
 
 
