@@ -9,6 +9,7 @@ from __future__ import division
 # 2014-09-11  JRM  1.1.00  First test ensureDir
 # 2016-01-21  JRM  1.5.62  Updated anaParticlesWatershed
 # 2016-05-02  JRM  1.5.63  Make more PEP8 compliant
+# 2016-05-03  JRM  1.5.64  Added functions for circular particles
 import sys
 import os
 import glob
@@ -139,13 +140,15 @@ def watershedBinaryImage(imp):
     wat.setTitle(name)
     return wat
 
-def anaCircParticles(imp, wat, csvPath, minCirc=0.85, imgNo=1,
+def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000, 
+                     minCirc=0.35, maxAR=1.05, imgNo=1,
                      font=20, colOut=Color.red, colLab=Color.black,
                      bAppend=False, bVerbose=False):
     """
-    anaCircParticles(imp, wat, csvPath, minCirc=0.85, imgNo=1,
+    imp, wat, csvPath, minArea=10, maxArea=100000, 
+                     minCirc=0.35, maxAR=1.05, imgNo=1,
                      font=20, colOut=Color.red, colLab=Color.black,
-                     bAppend=False, bVerbose=False):
+                     bAppend=False, bVerbose=False)
 
     Analyze ROIs from system ROI Manager and Results Table and draw
     the desired features into a specified image.
@@ -158,8 +161,14 @@ def anaCircParticles(imp, wat, csvPath, minCirc=0.85, imgNo=1,
         The ImagePlus of the watershed image
     csvPath: string
         Path for the output .csv file
-    minCirc: float (0.85)
-        The minimum circularity to include
+    minArea : int (10)
+        The minimum area to detect. Will be in units from calibration.
+    maxArea : int (100000) 
+        The maximum area to detect. Will be in units from calibration.
+    minCirc : float (0.35)
+        The minimum circularity to detect
+    maxAR : float (1.05)
+        The maximum aspect ratio to detect
     imgNo: int (1)
         Image number in series
     font: int (20)
@@ -188,22 +197,40 @@ def anaCircParticles(imp, wat, csvPath, minCirc=0.85, imgNo=1,
     out.setCalibration(cal)
     IJ.run(out, "Enhance Contrast", "saturated=0.0")
 
-    strS2 = "area centroid center fit shape redirect=None decimal=3"
-    IJ.run(wat, "Set Measurements...", strS2)
+    # strMeas = "area centroid center fit shape redirect=None decimal=3"
+    s1 = "area mean modal min centroid center perimeter bounding fit "
+    s2 = "shape Feret's display redirect=None decimal=3" # % shortTitle
+    strMeas = s1 + s2
 
-    strS2 = "display exclude clear add"
-    IJ.run(wat, "Analyze Particles...", strS2)
+    IJ.run(wat, "Set Measurements...", strMeas)
+
+    # strAna = "display exclude clear add"
+    strAna = "display exclude clear add"
+    IJ.run(wat, "Analyze Particles...", strAna)
     rt = ResultsTable().getResultsTable()
     lArea = rt.getColumn(rt.getColumnIndex("Area"))
+    lAR = rt.getColumn(rt.getColumnIndex("AR"))
     lCirc = rt.getColumn(rt.getColumnIndex("Circ."))
+    lPeri = rt.getColumn(rt.getColumnIndex("Perim."))
+    lRnd = rt.getColumn(rt.getColumnIndex("Round"))
+    lSol = rt.getColumn(rt.getColumnIndex("Solidity"))
     lXm = rt.getColumn(rt.getColumnIndex("XM"))
     lYm = rt.getColumn(rt.getColumnIndex("YM"))
     roim = RoiManager.getInstance()
+    
     nPart = len(lArea)
+    partAR = []
     partID = []
     partECD = []
+    partCir = []
+    partPeri = []
+    partRnd = []
+    partSol = []
+    lRois = []
+    
     k=0
     i=0 # ROI and particle number
+    # Try filtering ROIS by circularity
     for roi in roim.getRoisAsArray():
         area = lArea[i]
         circ = lCirc[i]
@@ -211,45 +238,60 @@ def anaCircParticles(imp, wat, csvPath, minCirc=0.85, imgNo=1,
         yM = lYm[i]
         ecd = 2.0 * math.sqrt(area/math.pi)
         if circ > minCirc:
-            labRoi = "%d" % i
-            partID.append(i+1)
+            # save the feature vector
+            partID.append(k+1)
             partECD.append(round(ecd, 4))
-            roi = roim.getRoi(i)
-            roi.setName(labRoi)
-            roi.setIgnoreClipRect(True)
-            ovl = out.getOverlay()
-            if ovl == None:
-                ovl = Overlay()
-            ovl.setLabelFont(jFont) 
-            ovl.drawLabels(True)
-            ovl.drawNames(True)
-            ovl.setStrokeColor(colOut)
-            ovl.setLabelColor(colLab)
-            ovl.drawBackgrounds(False)
-            ovl.add(roi)
-            out.setOverlay(ovl)
-            if bVerbose:
-                print(i+1, ecd)
+            partAR.append(lAR[i])
+            partCir.append(lCirc[i])
+            partPeri.append(lPeri[i])
+            partRnd.append(lRnd[i])
+            partSol.append(lSol[i])
+            # append the ROI to the list
+            lRois.append(roi)
+            k += 1
         i += 1
+    # clear the ROI manager and populate with 'good' particles
+    # then draw each in the overlay...
+    roim.reset()
+    for i in range(len(lRois)):
+        name = "%d" % (i+1)
+        roi = lRois[i]
+        roi.setName(name)
+        roim.addRoi(roi)
+        addRoiToOverlay(out, roi, label=name, bDrawLabels=True,
+                        font=font, labCol=colLab, linCol=colOut)
 
+    # Let's make certain everything displays properly...
+    r = PointRoi(-10, -10)
+    addRoiToOverlay(out, r, labCol=colLab, linCol=colOut)
+    ovl = out.getOverlay()
+    ovl.drawNames(True)
+    ovl.drawLabels(True)
     out.updateImage()
     out.updateAndRepaintWindow()
+
+    print(len(partID), len(partAR))
+
     # write the output file as .csv
     if bAppend:
         if isfile(csvPath):
             f=open(csvPath, 'a')
         else:
             f=open(csvPath, 'w')
-            strLine = 'imgNo, part, ecd.px\n' 
+            strLine = 'img, part, ecd, ar, cir, per, rnd, sol\n' 
     else:
         f=open(csvPath, 'w')
-        strLine = 'imgNo, part, ecd.px\n'
+        strLine = 'img, part, ecd, ar, cir, per, rnd, sol\n'
         f.write(strLine)
     for k in range(len(partECD)):
-        strLine = "%d, %d, %.5f\n" % (imgNo, partID[k], partECD[k] )
+        strLine  = "%d, %d, %.5f, " % (imgNo, partID[k], partECD[k])
+        strLine += "%.5f, %.5f, "   % (partAR[k], partCir[k])
+        strLine += "%.5f, %.5f, "   % (partPeri[k], partRnd[k])
+        strLine += "%.5f\n"         % (partSol[k])
         f.write(strLine)
     f.close()
     return out
+
 
 
 def applyGrayLimitsToFolder(folderPath, fLo, fHi, ext='.tif'):
