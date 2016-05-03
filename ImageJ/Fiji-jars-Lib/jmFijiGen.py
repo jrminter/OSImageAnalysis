@@ -46,11 +46,13 @@ from ij.gui import ShapeRoi, PointRoi
 from ij.measure import ResultsTable, Calibration, Measurements
 from ij.plugin import ImageCalculator, Duplicator, ChannelSplitter
 from ij.plugin import MontageMaker
-from ij.plugin.filter import ParticleAnalyzer, Analyzer
+from ij.plugin.filter import ParticleAnalyzer, Analyzer, EDM
 from ij.plugin.frame import RoiManager
 
 from ij.process import LUT, ImageProcessor, StackProcessor
-from ij.process import ImageStatistics
+from ij.process import ImageStatistics, AutoThresholder
+from ij.process.AutoThresholder import getThreshold
+from ij.process.AutoThresholder import Method 
 
 
 from script.imglib.math import Compute, Divide, Multiply, Subtract
@@ -68,6 +70,186 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg""" 
+
+def autoThresholdBinarize(imp, method=Method.Otsu,
+                          bWhite=True, bVerbose=False):
+    """autoThresholdBinarize(imp, method=Method.Otsu,
+                             bWhite=True, bVerbose=False)
+    Auto Threshold an Image and return a binary image
+
+    Parameters
+    ----------
+    imp: ImagePlus
+        The Image Plus of the image to be thresholded
+    method: An AutoThresholder.Method (Method.Otsu)
+        The method to use to threshold the image
+    bWhite: Boolean (True)
+        If True, objects from gray levels thr:max are 1, othereise.
+        objects from 0:thr are 1
+    bVerbose: Boolean (False)
+        If True, print the threshold value
+
+    Return
+    ------
+    bin: ImagePlus
+        The image plus of a binarized image (a duplicate)
+    """
+    cal = imp.getCalibration()
+    wrk = imp.createImagePlus()
+    ip = imp.getProcessor().duplicate().convertToByteProcessor()
+    name = imp.getShortTitle() + '-bin'
+    wrk.setProcessor(name, ip)
+    stats = wrk.getStatistics()
+    his = stats.histogram
+    thr = AutoThresholder().getThreshold(method, his)
+    if bVerbose:
+        print(thr)
+    if bWhite:
+        ip.setThreshold(thr, stats.max, ImageProcessor.NO_LUT_UPDATE)
+    else:
+        ip.setThreshold(stats.min, thr, ImageProcessor.NO_LUT_UPDATE)
+    # Call the Thresholder to convert the image to a mask
+    IJ.run(wrk, "Convert to Mask", "")
+    wrk.setCalibration(cal)
+    wrk.setTitle(name)
+    return wrk
+
+def watershedBinaryImage(imp):
+    """watershedBinaryImage(imp)
+    Perform a watershed segmentation on a binary image
+
+    Parameters
+    ----------
+    imp: ImagePlus
+        The Image Plus of the image to be thresholded
+
+    Return
+    ------
+    wat: ImagePlus
+        The image plus of a segmented image (a duplicate)
+
+    """
+    cal = imp.getCalibration()
+    wat = imp.createImagePlus()
+    ip = imp.getProcessor().duplicate()
+    name = imp.getShortTitle() + '-wat'
+    wat.setProcessor(name, ip)
+    EDM().toWatershed(ip)
+    wat.setCalibration(cal)
+    wat.setTitle(name)
+    return wat
+
+def anaCircParticles(imp, wat, csvPath, minCirc=0.85, imgNo=1,
+                     font=20, colOut=Color.red, colLab=Color.black,
+                     bAppend=False, bVerbose=False):
+    """
+    anaCircParticles(imp, wat, csvPath, minCirc=0.85, imgNo=1,
+                     font=20, colOut=Color.red, colLab=Color.black,
+                     bAppend=False, bVerbose=False):
+
+    Analyze ROIs from system ROI Manager and Results Table and draw
+    the desired features into a specified image.
+
+    Parameters
+    ----------
+    imp: ImagePlus
+        The ImagePlus of the original image
+    wat: ImagePlus
+        The ImagePlus of the watershed image
+    csvPath: string
+        Path for the output .csv file
+    minCirc: float (0.85)
+        The minimum circularity to include
+    imgNo: int (1)
+        Image number in series
+    font: int (20)
+        Font size
+    colOut: Color (Color.red)
+        Outline color
+    colLab: Color (Color.black)
+        Label color
+    bAppend: Boolean (False)
+        If True, append results to CSV file
+    bVerbose: Boolean (False)
+        If True, print info
+
+    Return
+    ------
+    out: ImagePlus
+        The ImagePlus of an original image with circular overlays
+        drawn. Note: the data has been written to csvPath
+    """
+    jFont = Font("SanSerif", Font.BOLD, font)
+    cal = imp.getCalibration()
+    out = imp.createImagePlus()
+    ip = imp.getProcessor().duplicate().convertToByteProcessor()
+    name = imp.getShortTitle() + '-det'
+    out.setProcessor(name, ip)
+    out.setCalibration(cal)
+    IJ.run(out, "Enhance Contrast", "saturated=0.0")
+
+    strS2 = "area centroid center fit shape redirect=None decimal=3"
+    IJ.run(wat, "Set Measurements...", strS2)
+
+    strS2 = "display exclude clear add"
+    IJ.run(wat, "Analyze Particles...", strS2)
+    rt = ResultsTable().getResultsTable()
+    lArea = rt.getColumn(rt.getColumnIndex("Area"))
+    lCirc = rt.getColumn(rt.getColumnIndex("Circ."))
+    lXm = rt.getColumn(rt.getColumnIndex("XM"))
+    lYm = rt.getColumn(rt.getColumnIndex("YM"))
+    roim = RoiManager.getInstance()
+    nPart = len(lArea)
+    partID = []
+    partECD = []
+    k=0
+    i=0 # ROI and particle number
+    for roi in roim.getRoisAsArray():
+        area = lArea[i]
+        circ = lCirc[i]
+        xM = lXm[i]
+        yM = lYm[i]
+        ecd = 2.0 * math.sqrt(area/math.pi)
+        if circ > minCirc:
+            labRoi = "%d" % i
+            partID.append(i+1)
+            partECD.append(round(ecd, 4))
+            roi = roim.getRoi(i)
+            roi.setName(labRoi)
+            roi.setIgnoreClipRect(True)
+            ovl = out.getOverlay()
+            if ovl == None:
+                ovl = Overlay()
+            ovl.setLabelFont(jFont) 
+            ovl.drawLabels(True)
+            ovl.drawNames(True)
+            ovl.setStrokeColor(colOut)
+            ovl.setLabelColor(colLab)
+            ovl.drawBackgrounds(False)
+            ovl.add(roi)
+            out.setOverlay(ovl)
+            if bVerbose:
+                print(i+1, ecd)
+        i += 1
+
+    out.updateImage()
+    out.updateAndRepaintWindow()
+    # write the output file as .csv
+    if bAppend:
+        if isfile(csvPath):
+            f=open(csvPath, 'a')
+        else:
+            f=open(csvPath, 'w')
+            strLine = 'imgNo, part, ecd.px\n' 
+    else:
+        f=open(csvPath, 'w')
+        strLine = 'imgNo, part, ecd.px\n'
+        f.write(strLine)
+    for k in range(len(partECD)):
+        strLine = "%d, %d, %.5f\n" % (imgNo, partID[k], partECD[k] )
+        f.write(strLine)
+    f.close()
+    return out
 
 
 def applyGrayLimitsToFolder(folderPath, fLo, fHi, ext='.tif'):
@@ -2356,12 +2538,22 @@ def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
     Calibrate the ImagePlus using the AZtec convention of a full
     width in sample space and a base image width.
 
-    Inputs:
-    theImp       - the ImagePlus to calibrate
-    fullWidth    - the full width of the image, typically in microns
-    baseImgWidth -the width, in px, of the base image
-    units        - the exponent w.r.t. meters. Defaults to -6 (microns)
-    Returns      - the ImagePlus of the calibrated image"""
+    Parameters
+    ----------
+    theImp: ImagePlus
+        Image to calibrate
+    fullWidth: float
+        The full width of the image, typically in microns
+    baseImgWidth: int
+        The width, in px, of the base image
+    units: int (-6)
+        The exponent w.r.t. meters. -6 = microns...
+
+    Returns
+    -------
+    theImp: ImagePlus
+        The calibrated image
+    """
     scaUni = getUnitString(units)
     w = float(baseImgWidth)
     sf = fullWidth/w
@@ -2376,12 +2568,25 @@ def calibAZtecImage(theImp, fullWidth, baseImgWidth, units=-6):
     return theImp
 
 def doCrop(theImp, lPar):
-    """doCrop(theImp, lPar)
-    Crop an ImagePlus to a rectangle with the parameter list, lPar
-    lPar = [x0,y0,width,height]
-    returns an ImagePlus with the cropped image."""
+    """
+    doCrop(theImp, lPar)
+
+    Crop an ImagePlus to a rectangle.
+
+    Parameters
+    ----------
+    theImp: ImagePlus
+        Input image
+    lPar: list
+        ROI parameters[x0,y0,width,height]
+
+    Returns
+    -------
+    theImp: ImagePlus
+        The calibrated image
+    """
     if (len(lPar) != 4):
-        IJ.log("You need to pass a list of 4 integers [x,y,w,h] to doCrop")
+        IJ.log("You need to pass a list of 4 int [x,y,w,h] to doCrop")
         return None            
     name = theImp.getShortTitle() + "-cr"
     cal = theImp.getCalibration()
@@ -2394,43 +2599,26 @@ def doCrop(theImp, lPar):
     IJ.run(imp,"Crop","")
     imp.setTitle(name)
     return (imp)
-    
-def makeTiles(inpDir, outDir, lNames, inExt='.png', cropPar=None, bDebug=False):
-    """makeTiles(inDir, outDir, lNames, inExt='.png', cropPar=None, bDebug=False)
-    Construct tile-#.tif files from a list of file names with default extension
-    png, cropping if a list is supplied.
-    This function is deprecated. Use makeMontage instead
-    Input parameters:
-    inpDir  - input directory (with / separators, no terminating)
-    outDir  - output directory ...
-    lNames  - a list of file names
-    iExt    - input file extension (default '.png') 
-    cropPar - a list [x0,y0,width,height] default = None
-    bDebug  - print debugging messages, default False"""
-    l = len(lNames)
-    for i in range(l):
-        if bDebug:
-            print(lNames[i])
-        inImg = inpDir + "/" + lNames[i] + inExt
-        if bDebug:
-            print(inImg)
-        raw = IJ.openImage(inImg)
-        # raw.show()
-        if (cropPar==None):
-            cr = raw
-        else:
-            cr = doCrop(raw, cropPar)
-        cr.show()
-        ensureDir(outDir)
-        outImg = "%s/tile-%g.tif" % (outDir, i+1)
-        if bDebug:
-            print(outImg)
-        IJ.saveAsTiff(cr, outImg)
-        cr.close()
 
 def makeStackFromDir(inpDir, inExt='.tif', bDebug=False):
-    """makeStackFromDir(inpDir, inExt='.tif', bDebug=False)
+    """
+    makeStackFromDir(inpDir, inExt='.tif', bDebug=False)
+
     Make a stack from all files in a directory
+
+    Parameters
+    ----------
+    inpDir: string
+        Input directory
+    inExt: string ('.tif')
+        Input file extension
+    bDebug: Boolean (False)
+        Flag to print info if True
+
+    Returns
+    -------
+    impStack: ImagePlus
+        The stack
     """
     for file in os.listdir(inpDir):
         if file.endswith(inExt):
@@ -2440,54 +2628,42 @@ def makeStackFromDir(inpDir, inExt='.tif', bDebug=False):
     IJ.run("Images to Stack")
     impStack = WindowManager.getCurrentImage()
     return impStack
-
-
-def stitchMaps(tifDir, cols, rows):
-    """stitchMaps(tifDir, cols, rows)
-    stitch images from an Oxford Map
-    This function is deprecated. Use makeMontage instead
-    Input Parameters:
-    tifDir - directory with tif files
-    cols   - number of columns ... e.g. 2
-    rows   - number of rows ...... e.g. 3
-    Returns:
-    imp    - an ImagePlus
+    
+def addScaleBar(theImp, scaFac, scaUni,
+                barWid, barHt, barFnt, barCol, barLoc):
     """
-    s1    = "Grid/Collection stitching"
-    s2a = "type=[Grid: column-by-column] order=[Down & Right                                ] "
-    s2b = "grid_size_x=%g grid_size_y=%g tile_overlap=0 first_file_index_i=1 directory=%s" % (cols, rows, tifDir)
-    s2c = " file_names=tile-{i}.tif output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] "
-    s2d = "regression_threshold=0.30 max/avg_displacement_threshold=2.50 "
-    s2e = "absolute_displacement_threshold=3.50 computation_parameters=[Save memory (but be slower)] "
-    s2f = "image_output=[Fuse and display] use"
-    
-    s2 = s2a + s2b +s2c + s2d +s2e + s2f
-    # print(s2)
-    IJ.run(s1, s2)
-    imp = WindowManager.getCurrentImage()
-    IJ.run("RGB Color")
-    imp.close()
-    imp = WindowManager.getCurrentImage()
-    return imp
-    
-def addScaleBar(theImp, scaFac, scaUni, barWid, barHt, barFnt, barCol, barLoc):
-    """addScaleBar(theImp, scaFac, scaUni, barWid, barHt, barFnt, barCol, barLoc)
-    Add a scale bar to an image 
-    Input Parameters:
-    theImp - the ImagePlus of the input image
-    scaFac - scale factor ........ e.g. 1.2
-    scaUni - scale units ......... e.g. "nm"
-    barWid - bar width (units) ... e.g. 100
-    barHt  - bar ht px ........... e.g. 9
-    barFnt - bar font ............ e.g. 48
-    barCol - bar color ........... e.g. "White"
-    barLoc - bar location ........ e.g. "Lower Right"
+    addScaleBar(theImp, scaFac, scaUni,
+                barWid, barHt, barFnt, barCol, barLoc)
+
+    Add a scale bar to an image
+
+    Parameters
+    ----------
+    theImp: ImagePlus
+        The input image
+    scaFac: float
+        Scale factor in units/px
+    scaUni: string
+         Scale units, e.g. "nm"
+    barWid: float
+        Bar width (units), e.g. 100
+    barHt: int
+        Bar height (px), e.g. 9
+    barFnt: int
+        Bar font, e.g. 48
+    barCol: string
+        Bar color, e.g. "White"
+    barLoc: string
+        Bar location, e.g. "Lower Right"
     """
     theImp.show()
     foo = theImp.duplicate()
     s1 = "distance=1 known=%f unit=%s" % (scaFac, scaUni)
     IJ.run(theImp, "Set Scale...", s1)
-    s2 = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barWid, barHt, barFnt, barCol, barLoc)
+    s2a = "width=%g height=%g " % (barWid, barHt)
+    s2b = "font=%g color=%s " % (barFnt, barCol)
+    s2c = "location=[%s] bold" % (barLoc)
+    s2 = s2a + s2b + s2c
     # dummy to get things set
     IJ.run(foo, "Add Scale Bar", s2)
     # explicitly save preferences
@@ -2497,13 +2673,25 @@ def addScaleBar(theImp, scaFac, scaUni, barWid, barHt, barFnt, barCol, barLoc):
     IJ.run(theImp, "Add Scale Bar", s2) 
     
 def flatFieldCorrectRGB(impImg, impFF, sigma=100):
-    """flatFieldCorrectRGB(impImg, impFF, sigma=100)
+    """
+    flatFieldCorrectRGB(impImg, impFF, sigma=100)
+
     Do a flat-field (shading) correction for an RGB image
-    Input Parameters:
-    impImg - The image plus for an RGB image to correct for shading
-    impFF  - An even illumination image (gain) 
-    sigma  - blur parameter for a Gaussian blur for the gain image. default = 100 (px)
-    Returns an ImagePlus for the corrected image which is displayed
+
+    Parameters
+    ----------
+    impImg: ImagePlus
+        The image plus for an RGB image to correct for shading
+    impFF: ImagePlus
+        An even illumination image (gain) 
+    sigma: number (100) px
+        Blur parameter for a Gaussian blur for the gain image
+
+    Returns
+    -------
+    impSc: ImagePlus
+        The corrected image
+
     TO DO: error checking
     """
     strSigma = "sigma=%g" % sigma
@@ -2575,15 +2763,27 @@ def flatFieldCorrectRGB(impImg, impFF, sigma=100):
     return impSc
     
 def smoothFlatField(theImp, scaFac=0.25, bShowIntermediate=False):
-    """smoothFlatField(theImp, scaFac=0.25, bShowIntermediate=False)
-    Smooth a flat field correction image to generate a gain reference image.
+    """
+    smoothFlatField(theImp, scaFac=0.25, bShowIntermediate=False)
+
+    Smooth a flat field correction image to generate a gain
+    reference image.
+
     Uses ideas from: http://www.ini.uzh.ch/~acardona/fiji-tutorial/
-    Input Parameters:
-    theImp - the ImagePlus of the input image
-    scaFac - scale factor ... default = 0.25
-    bShowIntermediate - show work ... default = False
-    Return:
-    an ImagePlus with the flat field corrected image
+
+    Parameters
+    ----------
+    theImp: ImagePlus
+        Input image
+    scaFac: float (0.25)
+        Scale factor for compression
+    bShowIntermediate: Boolean (False)
+        Flag to show work if True
+    
+    Returns
+    -------
+    impGain: ImagePlus
+        The smoothed, flat field image
     """
     # 1. wrap the ImagePlus to an ImgLib1 image
     name = theImp.getShortTitle()
@@ -2605,15 +2805,25 @@ def smoothFlatField(theImp, scaFac=0.25, bShowIntermediate=False):
     
 
 def flatField(theImp, scaFac=0.25, bShowIntermediate=False):
-    """flatField(theImp, scaFac=0.25, bShowIntermediate=False)
+    """
+    flatField(theImp, scaFac=0.25, bShowIntermediate=False)
+
     Do a flat field correction by generating a gain reference image.
     Uses ideas from: http://www.ini.uzh.ch/~acardona/fiji-tutorial/
-    Input Parameters:
-    theImp - the ImagePlus of the input image
-    scaFac - scale factor ... default = 0.25
-    bShowIntermediate - show work ... default = False
-    Return:
-    an ImagePlus with the flat field corrected image
+
+    Parameters
+    ----------
+    theImp: ImagePlus
+        Input image
+    scaFac: float (0.25)
+        Scale factor for compression
+    bShowIntermediate: Boolean (False)
+        Flag to show work if True
+
+    Returns
+    -------
+    impCor: imagePlus
+        The flat field corrected image
     """
     # 1. wrap the ImagePlus to an ImgLib1 image
     img = ImgLib.wrap(theImp)
@@ -2640,7 +2850,8 @@ def flatField(theImp, scaFac=0.25, bShowIntermediate=False):
         IJ.run("Enhance Contrast", "saturated=0.35") 
     
     # 5. Correct the illumination    
-    corrected = Compute.inFloats(Multiply(Divide(Subtract(img, gain),    Subtract(gain, darkcurrent)), mean))    
+    corrected = Compute.inFloats(Multiply(Divide(Subtract(img, gain), 
+                                 Subtract(gain, darkcurrent)), mean))    
     
     # 6. ... and show it in ImageJ    
     impCor = ImgLib.wrap(corrected)
@@ -2650,17 +2861,54 @@ def flatField(theImp, scaFac=0.25, bShowIntermediate=False):
     return impCor
 
 def median(imp, radius):
-    """ Apply a median filter to a copy
+    """
+    median(imp, radius)
+
+    Apply a median filter to a copy
     of the given ImagePlus, and return it.
-    from: http://fiji.sc/Jython_Scripting"""
+    from: http://fiji.sc/Jython_Scripting
+
+    Parameters
+    ----------
+    theImp: ImagePlus
+        Input image
+    radius: float
+        Filter size (px)
+
+    Returns
+    -------
+    copy: imagePlus
+        The media-filtered image
+    """
     copy = Duplicator().run(imp)
     IJ.run(copy, "Median...", "radius=" + str(radius))
     return copy
  
 def removeOutliers(imp, radius, threshold, bright):
-    """ Apply a remove outliers filter to a copy
+    """
+    removeOutliers(imp, radius, threshold, bright)
+
+    Apply a remove outliers filter to a copy
     of the given ImagePlus, and return it.
-    from: http://fiji.sc/Jython_Scripting"""
+
+    from: http://fiji.sc/Jython_Scripting
+
+    Parameters
+    ----------
+    imp: ImagePlus
+        The input image
+    radius: float
+        Region of mean filter
+    threshold: number
+        Deviation from the median
+    bright: Boolean
+        if True remove thos greater than median, otherwise less.
+
+    Returns
+    -------
+    copy: ImagePlus
+        Corrected image
+    """
     copy = Duplicator().run(imp)
     which = "Bright" if bright else "Dark"
     IJ.run(copy, "Remove Outliers...", "radius=" + str(radius) \
