@@ -10,6 +10,8 @@ from __future__ import division
 # 2016-01-21  JRM  1.5.62  Updated anaParticlesWatershed
 # 2016-05-02  JRM  1.5.63  Make more PEP8 compliant
 # 2016-05-03  JRM  1.5.64  Added functions for circular particles
+# 2016-05-03  JRM  1.5.65  Fixed addRoiToOverlay
+
 import sys
 import os
 import glob
@@ -29,7 +31,7 @@ from colorsys import hsv_to_rgb
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
-from java.awt import Color
+from java.awt import Color, Font
 
 import java.io as jio
 import java.lang as jl
@@ -1253,9 +1255,11 @@ def corImageFIB(imp, umPerPx):
     strArg = "distance=1 known=%f pixel=1 unit=%s" % (umPerPx, scaUni)
     IJ.run("Set Scale...", strArg)
 
-def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
+def addRoiToOverlay(imp, roi, label=None, bDrawLabels=False, font=20,
+                    labCol=Color.white, linCol=Color.white):
     """
-    addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white)
+    addRoiToOverlay(imp, roi, label="", bDrawLabels=False, font=20,
+                    labCol=Color.white, linCol=Color.white)
 
     A convenience function to draw a ROI into the overlay of an
     ImagePlus. This is useful for situations where ROIs are computed
@@ -1270,6 +1274,12 @@ def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
         Image into which we draw the ROI
     roi: ROI
         ROI to draw
+    label: string (None)
+        Optional label
+    bDrawLabels: Boolean (False)
+        Flag to draw ROI labels
+    font: int
+        Font size for label
     labCol: Color (Color.white)
         Color for the label
     linCol: Color (Color.white)
@@ -1280,11 +1290,14 @@ def addRoiToOverlay(imp, roi, labCol=Color.white, linCol=Color.white):
     imp: ImagePlus
         Image with the updated overlay
     """
+    jFont = Font("SanSerif", Font.BOLD, font)
     roi.setIgnoreClipRect(True)
     ovl = imp.getOverlay()
     if ovl == None:
         ovl = Overlay()
-    ovl.drawNames(True)
+    ovl.drawNames(bDrawLabels)
+    ovl.drawLabels(bDrawLabels)
+    ovl.setLabelFont(jFont) 
     ovl.setStrokeColor(linCol)
     ovl.setLabelColor(labCol);
     ovl.drawBackgrounds(False);
