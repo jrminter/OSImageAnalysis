@@ -205,9 +205,12 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
     strMeas = s1 + s2
 
     IJ.run(wat, "Set Measurements...", strMeas)
-
+    # manual set...
+    # "size=0-100000 circularity=0-1.00 display exclude clear add"
     # strAna = "display exclude clear add"
-    strAna = "display exclude clear add"
+    s1 = "size=%d-%d display " % (minArea, maxArea)
+    s2 = "exclude clear add"
+    strAna = s1 + s2
     IJ.run(wat, "Analyze Particles...", strAna)
     rt = ResultsTable().getResultsTable()
     lArea = rt.getColumn(rt.getColumnIndex("Area"))

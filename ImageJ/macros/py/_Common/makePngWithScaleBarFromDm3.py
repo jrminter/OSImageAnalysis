@@ -25,8 +25,8 @@ tic = time.time()
 
 imgRt  = os.environ['IMG_ROOT']
 relPrj = "/QM16-01-02B-Lofftus"
-labId  = "qm-04769"
-smpId  = "JLM2016-048"
+labId  = "qm-04778"
+smpId  = "JLM2016-050"
 
 sDm3Path = imgRt + relPrj + "/" + labId + "-" + smpId + "/dm3/"
 sPngPath = imgRt + relPrj + "/" + labId + "-" + smpId + "/png/"
