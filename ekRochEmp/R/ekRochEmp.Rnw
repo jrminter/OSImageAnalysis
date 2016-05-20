@@ -1,45 +1,9 @@
-% in R, run (twice) with
-% Sweave("/Users/jrminter/work/Sweave/ekRochEmp/R/ekRochEmp.Rnw")
-% tools::texi2dvi("ekRochEmp.tex", pdf=TRUE)
+% !TeX program = XeLaTeX
+% ======================= rept.Rnw ======================
+% 3456789012345678901234567890123456789012345678901234567890123456789012
+\documentclass[12pt]{article}
 
-\documentclass[12pt]{article} % use larger type; default would be 10pt
-
-%%% PACKAGES
-
-\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
-
-%%% PAGE DIMENSIONS
-\usepackage[margin=0.75in, letterpaper]{geometry}
-%   read geometry.pdf for detailed page layout information
-
-\usepackage{graphicx} % support the \includegraphics command and options
-
-% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
-
-\usepackage{booktabs} % for much better looking tables
-\usepackage{array} % for better arrays (eg matrices) in maths
-\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
-\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
-\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
-% These packages are all incorporated in the memoir class to one degree or another...
-
-%%% HEADERS & FOOTERS
-\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
-\pagestyle{fancy} % options: empty , plain , fancy
-\renewcommand{\headrulewidth}{0pt} % customise the layout...
-\lhead{}\chead{}\rhead{}
-\lfoot{}\cfoot{\thepage}\rfoot{}
-
-%%% SECTION TITLE APPEARANCE
-\usepackage{sectsty}
-\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
-% (This matches ConTeXt defaults)
-
-%%% ToC (table of contents) APPEARANCE
-\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
-\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
-\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
-\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+\input{./inc/tex/xelatex-cfg}
 
 %%% END Article customizations
 
@@ -48,6 +12,26 @@
 %\date{}
 
 \begin{document}
+%\VignetteEngine{knitr::knitr}
+
+<<setup, include=FALSE, cache=FALSE>>=
+rm(list=ls())
+# make sure needed packages & functions are loaded
+library(knitr)
+# set global chunk options
+opts_chunk$set(fig.path='figure/knitr-', fig.align='center', fig.show='hold')
+options(formatR.arrow=TRUE,width=90)
+
+options(digits=4, width=65, continue=" ")
+
+# set as needed
+str.wd <- '~/Documents/git/OSImageAnalysis/ekRochEmp/R/'
+setwd(str.wd)
+Sys.setenv(TEXINPUTS=str.wd)
+Sys.setenv(BIBINPUTS=str.wd)
+Sys.setenv(BSTINPUTS=str.wd)
+@
+
 
 \bibliographystyle{plain}	 % (uses file "plain.bst")
 
@@ -76,28 +60,25 @@ Source statistical software package, R. The analysis
 was performed using a ``no-web'' file and the R package
 Sweave processed the the file, analyzing the R code ``chunks''
 and preparing a \LaTeX \ output file which was subsequently
-processed with pdflatex from the \TeX Live 2011 distribution.
+processed with pdflatex from the \TeX Live 2015 distribution.
 All of this was controlled with a batch file.
 
-\section{Analysis}
 
 The regression produced the parameters shown in
-Table~\ref{tab:reg_sum} below.
+% Table~\ref{tab:reg_sum} below.
 
 
 \begin{center}
-<<echo=FALSE,results=tex>>=
 
-# set up for the plot and
-# make the table. 
+
+<<echo=FALSE, results='asis'>>=
 
 rm(list=ls())
 library(xtable)
 
-setwd("/Users/jrminter/git/OSImageAnalysis/ekRochEmp/R")
 strInFile <- "../dat/roc_emp.csv"
-
 raw.data <- read.csv(file=strInFile, head=TRUE, sep=",", as.is=TRUE)
+
 # print(names(raw.data))
 # let's make a vector of fractional years using
 # R's Date and POSIXlt classes
@@ -114,7 +95,7 @@ for(i in 1:lData)
 y <- raw.data$Rochester.Employment
 
 emp.lr <- lm(y~x)
-# print(summary(emp.lr))
+print(summary(emp.lr))
 dummy.x <- seq(1980,2020,1)
 nPts <- length(dummy.x)
 dummy.y <- vector(mode='numeric',length=nPts)
@@ -146,6 +127,7 @@ caption="Summary statistics for the regression model",
 label="tab:reg_sum")
 
 @
+
 \end{center}
 
 The regression had an adjusted $R^{2} =$ \Sexpr{str.adj.r.sq}
@@ -157,7 +139,10 @@ below.
 \begin{figure}[h!]
 \centering
 
-<<plot-reg, eval=TRUE, quiet=TRUE, echo=FALSE, term=FALSE, results=hide, fig=TRUE, include=TRUE, height=6,width=6>>=
+<<plot-reg, eval=TRUE, echo=FALSE, results='hide', fig.height=6, fig.width=6>>=
+
+
+# e, quiet=TRUE, echo=FALSE, term=FALSE, results=hide, fig=TRUE, include=TRUE, height=6,width=6>>=
 
 # set up constants for the plot
 v.cex  <- 1.2
@@ -200,5 +185,8 @@ legend("topright",
 \end{figure}
 
 % \bibliography{mybib}     % expects file "mybib.bib"
+
+
+
 
 \end{document}
