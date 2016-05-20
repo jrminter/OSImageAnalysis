@@ -25,7 +25,8 @@ bVerbose = False
 
 
 tic = time.time()
-barW =  1.0            # default bar width - note will be reset below in lines 106-112
+# for Ambro 2016-05-16
+barW =  100.0          # default bar width
 barH = 6			   # bar height, pts
 barF = 24			   # bar font, pts
 barC = "White"		   # bar color
@@ -33,9 +34,9 @@ barL= "Lower Right"	   # bar location
 
 gSatFac = 0.01
 
-bSetGrayLevels = False
+bSetGrayLevels = True
 # for Ambro 2016-05-16
-gLo = 500
+gLo = 200
 gHi = 3800
 
 bDoTiltCorrect = False
@@ -108,13 +109,6 @@ for fi in lFiles:
 	cal = orig.getCalibration()
 	u = cal.getUnit()
 	pw = cal.pixelWidth
-	if u == scaUm:
-		if (pw <= 0.02):
-			barW =  0.10  # bar width, microns
-		elif (pw < 0.06):
-			barW =  1.0   # bar width, microns
-		else:
-			barW =  10.0
 
 	strBar = "width=%g height=%g font=%g color=%s location=[%s] bold" % (barW, barH, barF, barC, barL)
 	# a hack to get the scale bars to work reliably
