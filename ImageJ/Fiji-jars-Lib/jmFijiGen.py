@@ -144,12 +144,12 @@ def watershedBinaryImage(imp):
 
 def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000, 
                      minCirc=0.35, maxAR=1.05, imgNo=1,
-                     font=20, colOut=Color.red, colLab=Color.black,
+                     labFont=20, colOut=Color.red, colLab=Color.black,
                      bAppend=False, bVerbose=False):
     """
     imp, wat, csvPath, minArea=10, maxArea=100000, 
                      minCirc=0.35, maxAR=1.05, imgNo=1,
-                     font=20, colOut=Color.red, colLab=Color.black,
+                     labFont=20, colOut=Color.red, colLab=Color.black,
                      bAppend=False, bVerbose=False)
 
     Analyze ROIs from system ROI Manager and Results Table and draw
@@ -173,7 +173,7 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
         The maximum aspect ratio to detect
     imgNo: int (1)
         Image number in series
-    font: int (20)
+    labFont: int (20)
         Font size
     colOut: Color (Color.red)
         Outline color
@@ -190,7 +190,7 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
         The ImagePlus of an original image with circular overlays
         drawn. Note: the data has been written to csvPath
     """
-    jFont = Font("SanSerif", Font.BOLD, font)
+    jFont = Font("SanSerif", Font.BOLD, labFont)
     cal = imp.getCalibration()
     out = imp.createImagePlus()
     ip = imp.getProcessor().duplicate().convertToByteProcessor()
@@ -208,7 +208,7 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
     # manual set...
     # "size=0-100000 circularity=0-1.00 display exclude clear add"
     # strAna = "display exclude clear add"
-    s1 = "size=%d-%d display " % (minArea, maxArea)
+    s1 = "size=%g-%g display " % (minArea, maxArea)
     s2 = "exclude clear add"
     strAna = s1 + s2
     IJ.run(wat, "Analyze Particles...", strAna)
@@ -264,7 +264,7 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
         roi.setName(name)
         roim.addRoi(roi)
         addRoiToOverlay(out, roi, label=name, bDrawLabels=True,
-                        font=font, labCol=colLab, linCol=colOut)
+                        font=labFont, labCol=colLab, linCol=colOut)
 
     # Let's make certain everything displays properly...
     r = PointRoi(-10, -10)
@@ -279,7 +279,7 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
 
     # write the output file as .csv
     if bAppend:
-        if isfile(csvPath):
+        if os.path.isfile(csvPath):
             f=open(csvPath, 'a')
         else:
             f=open(csvPath, 'w')
