@@ -7,10 +7,10 @@ gitHome=os.environ['GIT_HOME']
 pyReptDir = gitHome + "/OSImageAnalysis/dtsa2/productionScripts/stds Results/"
 
 def defineStd(elms,qty,name,density=None):
-	c=epq.Composition(map(element,elms),qty,name)
-	if density:
-		c=epq.Material(c,epq.ToSI.gPerCC(density))
-	Database.addStandard(c)
+    c=epq.Composition(map(element,elms),qty,name)
+    if density:
+        c=epq.Material(c,epq.ToSI.gPerCC(density))
+    Database.addStandard(c)
 
 defineStd(("Pd",),(1.000000,),"Pd",12.023000)
 defineStd(("Zn",),(1.000000,),"Zn standard",7.100000)

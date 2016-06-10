@@ -35,8 +35,12 @@ gSatFac = 0.01
 
 bSetGrayLevels = False
 # for Ambro 2016-05-16
-gLo = 500
-gHi = 3800
+# gLo = 500
+# gHi = 3800
+
+# for Kang LM  2016-05-24
+gLo = 730
+gHi = 2850
 
 bDoTiltCorrect = False
 

@@ -24,9 +24,9 @@ import jmFijiGen as jmg
 tic = time.time()
 
 imgRt  = os.environ['IMG_ROOT']
-relPrj = "/QM16-01-02B-Lofftus"
-labId  = "qm-04778"
-smpId  = "JLM2016-050"
+relPrj = "/QM16-Cerion-01A-Prok" # "/QM16-01-02A-Nair"
+labId  = "qm-04818"
+smpId  = "AGM-W910"
 
 sDm3Path = imgRt + relPrj + "/" + labId + "-" + smpId + "/dm3/"
 sPngPath = imgRt + relPrj + "/" + labId + "-" + smpId + "/png/"
