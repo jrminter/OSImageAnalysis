@@ -11,6 +11,10 @@ from __future__ import division
 # 2016-05-02  JRM  1.5.63  Make more PEP8 compliant
 # 2016-05-03  JRM  1.5.64  Added functions for circular particles
 # 2016-05-03  JRM  1.5.65  Fixed addRoiToOverlay
+# 2016-06-10  JRM  1.6.00  Added version info and fixed watershed
+
+__revision__ = "$Id: jmFijiGen.py John R. Minter $"
+__version__ = "1.6.00"
 
 import sys
 import os
