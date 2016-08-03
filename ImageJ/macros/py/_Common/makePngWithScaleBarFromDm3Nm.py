@@ -24,18 +24,18 @@ import jmFijiGen as jmg
 tic = time.time()
 
 imgRt  = os.environ['IMG_ROOT']
-relPrj = "/QM16-Cerion-01A-Prok" # "/QM16-01-02A-Nair"
-labId  = "qm-04818"
-smpId  = "AGM-W910"
+relPrj = "/QM16-Cerion-02A-Parsiegla" # "/QM16-01-02A-Nair"
+labId  = "qm-04832"
+smpId  = "AGFIN15"
 
 sDm3Path = imgRt + relPrj + "/" + labId + "-" + smpId + "/dm3/"
-sPngPath = imgRt + relPrj + "/" + labId + "-" + smpId + "/png/"
+sPngPath = imgRt + relPrj + "/" + labId + "-" + smpId + "/png-raw/"
 jmg.ensureDir(sPngPath)
 mu = IJ.micronSymbol
 strMicron  = mu + "m"
 barH = 6                # bar height, pts
 barF = 24				# bar font, pts
-barC = "White"			# bar color
+barC = "Black"			# bar color
 barL = "Lower Right"	# bar location
 
 query = sDm3Path + "*.dm3"

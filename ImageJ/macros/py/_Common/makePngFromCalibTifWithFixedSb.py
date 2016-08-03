@@ -26,7 +26,7 @@ bVerbose = False
 
 tic = time.time()
 # for Ambro 2016-05-16
-barW =  100.0          # default bar width
+barW =  1.0          # default bar width
 barH = 6			   # bar height, pts
 barF = 24			   # bar font, pts
 barC = "White"		   # bar color
@@ -34,7 +34,7 @@ barL= "Lower Right"	   # bar location
 
 gSatFac = 0.01
 
-bSetGrayLevels = True
+bSetGrayLevels = False
 # for Ambro 2016-05-16
 gLo = 200
 gHi = 3800
