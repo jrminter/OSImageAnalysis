@@ -11,6 +11,12 @@ from ij.gui import ShapeRoi, PointRoi
 
 import jmFijiGen as jmg
 
+
+
+
+
+
+
 def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
                          offset = -30, digits = 3,
                          font = 18, linCol = Color.YELLOW,
@@ -26,7 +32,7 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
     Manually measure the length of a feature in a calibrated ImagePlus
     and write the results to the overlay.
 
-    Version of 2016-08-03
+    Version of 2016-08-04
 
     Parameters
     ----------
@@ -64,6 +70,26 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
     With large line widths the length of the drawn line appears lw 
     pixels too long.
     """
+
+    # First define some convenience functions
+    def resetLastMeasureCount():
+        Prefs.set("JRM.meas.counter", 0)
+
+    def GetLastMeasureCount():
+        myCount = Prefs.get("JRM.meas.counter", int(-1))
+        if myCount < 0:
+            # it was not set, so set it to zero
+            resetLastMeasureCount()
+            return 0
+        else:
+            myCount = int(myCount)
+            return myCount
+
+    def setLastMeasureCount(count):
+        count = int(count)
+        Prefs.set("JRM.meas.counter", count)
+
+
     imp = IJ.getImage()
     if imp == None:
         print("You need an image...")
@@ -129,19 +155,25 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
                 if csvPath != None:
                     if bAppend:
                         if os.path.isfile(csvPath):
+                            theCount = GetLastMeasureCount() + 1
                             f=open(csvPath, 'a')
                         else:
                             f=open(csvPath, 'w')
-                            strLine = 'img, length (%s)\n' % unit
+                            resetLastMeasureCount()
+                            theCount = 1
+                            strLine = 'img, num, length (%s)\n' % unit
                             f.write(strLine)
                     else:
                         f=open(csvPath, 'w')
-                        strLine = 'img, length (%s)\n' % unit
+                        resetLastMeasureCount()
+                        theCount = 1
+                        strLine = 'img, num, length (%s)\n' % unit
                         f.write(strLine)
-                    strLine = "%s, %.6f\n" % (imp.getShortTitle(), length)
+                    strLine = "%s, %d, %.6f\n" % (imp.getShortTitle(), theCount, length)
                     f.write(strLine)
                     f.close()
-                strMsg = "measured %s" % imp.getShortTitle()
+                    setLastMeasureCount(theCount)
+                strMsg = "measured %s count = %d" % (imp.getShortTitle(), theCount)
                 print(strMsg)
 
             else:

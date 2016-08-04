@@ -12,10 +12,12 @@ from __future__ import division
 # 2016-05-03  JRM  1.5.64  Added functions for circular particles
 # 2016-05-03  JRM  1.5.65  Fixed addRoiToOverlay
 # 2016-06-10  JRM  1.6.00  Added version info and fixed watershed
-# 2016-08-04  JRM  1.6.05  Added measureFeatureLength
+# 2016-08-03  JRM  1.6.05  Added measureFeatureLength
+# 2016-08-04  JRM  1.6.06  Added measurement counter to 
+#                          measureFeatureLength
 
 __revision__ = "$Id: jmFijiGen.py John R. Minter 2014-08-04$"
-__version__ = "1.6.05"
+__version__ = "1.6.06"
 
 import sys
 import os
@@ -131,13 +133,27 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
     ------------
     With large line widths the length of the drawn line appears lw 
     pixels too long.
-
-    TO DO
-    -----
-    Need to find a way to implement a measurement counter. Look at how
-    ImageJ stores preferences. Also consider implementing a wrapper with
-    a menu for ease of use.
     """
+
+    # First define some convenience functions
+    def resetLastMeasureCount():
+        Prefs.set("JRM.meas.counter", 0)
+
+    def GetLastMeasureCount():
+        myCount = Prefs.get("JRM.meas.counter", int(-1))
+        if myCount < 0:
+            # it was not set, so set it to zero
+            resetLastMeasureCount()
+            return 0
+        else:
+            myCount = int(myCount)
+            return myCount
+
+    def setLastMeasureCount(count):
+        count = int(count)
+        Prefs.set("JRM.meas.counter", count)
+
+
     imp = IJ.getImage()
     if imp == None:
         print("You need an image...")
@@ -203,19 +219,25 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
                 if csvPath != None:
                     if bAppend:
                         if os.path.isfile(csvPath):
+                            theCount = GetLastMeasureCount() + 1
                             f=open(csvPath, 'a')
                         else:
                             f=open(csvPath, 'w')
-                            strLine = 'img, length (%s)\n' % unit
+                            resetLastMeasureCount()
+                            theCount = 1
+                            strLine = 'img, num, length (%s)\n' % unit
                             f.write(strLine)
                     else:
                         f=open(csvPath, 'w')
-                        strLine = 'img, length (%s)\n' % unit
+                        resetLastMeasureCount()
+                        theCount = 1
+                        strLine = 'img, num, length (%s)\n' % unit
                         f.write(strLine)
-                    strLine = "%s, %.6f\n" % (imp.getShortTitle(), length)
+                    strLine = "%s, %d, %.6f\n" % (imp.getShortTitle(), theCount, length)
                     f.write(strLine)
                     f.close()
-                strMsg = "measured %s" % imp.getShortTitle()
+                    setLastMeasureCount(theCount)
+                strMsg = "measured %s count = %d" % (imp.getShortTitle(), theCount)
                 print(strMsg)
 
             else:
@@ -223,6 +245,7 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
 
             # finally deselect
             IJ.run("Select None")
+
 
 
 
