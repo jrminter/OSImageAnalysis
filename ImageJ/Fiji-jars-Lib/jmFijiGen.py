@@ -12,9 +12,9 @@ from __future__ import division
 # 2016-05-03  JRM  1.5.64  Added functions for circular particles
 # 2016-05-03  JRM  1.5.65  Fixed addRoiToOverlay
 # 2016-06-10  JRM  1.6.00  Added version info and fixed watershed
-# 2016-08-03  JRM  1.6.05  Added measureFeatureLength
+# 2016-08-04  JRM  1.6.05  Added measureFeatureLength
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter $"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2014-08-04$"
 __version__ = "1.6.05"
 
 import sys
@@ -94,7 +94,7 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
     Manually measure the length of a feature in a calibrated ImagePlus
     and write the results to the overlay.
 
-    Version of 2016-08-03
+    Version of 2016-08-04
 
     Parameters
     ----------
@@ -131,6 +131,12 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
     ------------
     With large line widths the length of the drawn line appears lw 
     pixels too long.
+
+    TO DO
+    -----
+    Need to find a way to implement a measurement counter. Look at how
+    ImageJ stores preferences. Also consider implementing a wrapper with
+    a menu for ease of use.
     """
     imp = IJ.getImage()
     if imp == None:
