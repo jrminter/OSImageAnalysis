@@ -206,7 +206,7 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
                 else:
                     yL = max(roi.y1, roi.y2)
                     yL += offset
-                length = round(length, 3)
+                length = round(length, digits)
                 label = "%g %s" % (length, unit)
                 tr = TextRoi(xL, yL, label)
                 tr.setColor(labCol)
