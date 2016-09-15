@@ -8,7 +8,7 @@
 # 2016-07-18  JRM  0.0.3   Added function anaCNO
 # 2016-07-19  JRM  0.0.4   Changed limits in anaCNO
 # 2016-09-15  JRM  0.0.5   Set probe current and live time in
-#                          StripBackground and added anaSi
+#                          StripBackground and added anaSi and anCSi
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
 __version__ = "0.0.5"
@@ -69,15 +69,46 @@ def anaSi(spc, det, digits=2, display=True):
     bks = StripBackground(spc, det)
     if display:
         nam = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName) + '-bks'
-        sp = spc.getProperties()
-        sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
-        sp.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
-        sp.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
         bks.rename(nam)
         bks.display()
     siInt = compPeakIntegral(bks, 1.746, 240, 1)
 
     out = { "Si": (round(siInt[0]/dose, digits), round(siInt[1]/dose, digits)) }
+
+    return out
+
+def anaCSi(spc, det, digits=2, display=True):
+    """anaCSi
+
+    Strip continuum and analyze a spectrum for C and Si
+
+    Parameters
+    ----------
+    spc: A DTSA-II scriptable spectrum
+        The spectrum to process
+    det: The detector
+
+    Returns
+    -------
+    A dictionary of tuples for C and Si where each tuple is the
+    peak integral (in counts/nA-sec)  and the uncertainty.
+    """
+    sp = spc.getProperties()
+    pc = sp.getNumericProperty(epq.SpectrumProperties.FaradayBegin)
+    lt = sp.getNumericProperty(epq.SpectrumProperties.LiveTime)
+    dose = pc*lt
+    sp.setDetector(det)
+    bks = StripBackground(spc, det)
+    if display:
+        nam = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName) + '-bks'
+        bks.rename(nam)
+        bks.display()
+    cInt = compPeakIntegral( bks, 0.282, 180, 1)
+    siInt = compPeakIntegral(bks, 1.746, 240, 1)
+
+    out = { "C": (round(cInt[0]/dose, digits), round(cInt[1]/dose, digits)),
+            "Si": (round(siInt[0]/dose, digits), round(siInt[1]/dose, digits))
+          }
 
     return out
 
