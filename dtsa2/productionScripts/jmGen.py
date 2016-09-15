@@ -5,9 +5,13 @@
 #      Date   Who   Ver     What
 # ----------  ---  ------  ---------------------------------------------
 # 2016-05-14  JRM  0.0.2   Updated for Jupiter
+# 2016-07-18  JRM  0.0.3   Added function anaCNO
+# 2016-07-19  JRM  0.0.4   Changed limits in anaCNO
+# 2016-09-15  JRM  0.0.5   Set probe current and live time in
+#                          StripBackground and added anaSi
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.2"
+__version__ = "0.0.5"
 
 import sys
 import os
@@ -39,6 +43,79 @@ import dtsa2.mcSimulate3 as mc3
 """A series of wrapper scripts to make DTSA-II automation easy
 Place this file in DTSA_ROOT/lib/dtsa2/    call with
 import dtsa2.jmGen as jmg"""
+
+
+def anaSi(spc, det, digits=2, display=True):
+    """anaSi
+
+    Strip continuum and analyze a spectrum for Si
+
+    Parameters
+    ----------
+    spc: A DTSA-II scriptable spectrum
+        The spectrum to process
+    det: The detector
+
+    Returns
+    -------
+    A dictionary of tuples for C and Si where each tuple is the
+    peak integral (in counts/nA-sec)  and the uncertainty.
+    """
+    sp = spc.getProperties()
+    pc = sp.getNumericProperty(epq.SpectrumProperties.FaradayBegin)
+    lt = sp.getNumericProperty(epq.SpectrumProperties.LiveTime)
+    dose = pc*lt
+    sp.setDetector(det)
+    bks = StripBackground(spc, det)
+    if display:
+        nam = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName) + '-bks'
+        sp = spc.getProperties()
+        sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+        sp.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
+        sp.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
+        bks.rename(nam)
+        bks.display()
+    siInt = compPeakIntegral(bks, 1.746, 240, 1)
+
+    out = { "Si": (round(siInt[0]/dose, digits), round(siInt[1]/dose, digits)) }
+
+    return out
+
+def anaCNO(spc, det, digits=2, display=False):
+    """anaCNO
+
+    Strip continuum and analyze a spectrum for C, N, O
+
+    Parameters
+    ----------
+    spc: A DTSA-II scriptable spectrum
+        The spectrum to process
+    det: The detector
+
+    Returns
+    -------
+    A dictionary of tuples for C, N, and O where each tuple is the
+    peak integral (in counts/nA-sec)  and the uncertainty.
+    """
+    sp = spc.getProperties()
+    pc = sp.getNumericProperty(epq.SpectrumProperties.FaradayBegin)
+    lt = sp.getNumericProperty(epq.SpectrumProperties.LiveTime)
+    dose = pc*lt
+    sp.setDetector(det)
+    bks = StripBackground(spc, det)
+    if display:
+        nam = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName) + '-bks'
+        bks.rename(nam)
+        bks.display()
+    cInt = compPeakIntegral(bks, 0.282, 120, 1)
+    nInt = compPeakIntegral(bks, 0.392, 100, 1)
+    oInt = compPeakIntegral(bks, 0.525, 120, 1)
+
+    out = { "C":(round(cInt[0]/dose, digits), round(cInt[1]/dose, digits)),
+            "N":(round(nInt[0]/dose, digits), round(nInt[1]/dose, digits)),
+            "O":(round(oInt[0]/dose, digits), round(oInt[1]/dose, digits))}
+
+    return out
 
 
 def fixSpcName(spc):
@@ -82,6 +159,10 @@ def StripBackground(spc, det=None):
     res: ScriptabelSpectrum
         The stripped spectrum
     """
+    sp = spc.getProperties()
+    pc = sp.getNumericProperty(epq.SpectrumProperties.FaradayBegin)
+    lt = sp.getNumericProperty(epq.SpectrumProperties.LiveTime)
+
     nam = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName)
     new =  nam + '-bks'
     if det != None:
@@ -89,6 +170,10 @@ def StripBackground(spc, det=None):
     spc = epq.SpectrumUtils.applyZeroPeakDiscriminator(spc)
     spc = epq.PeakStripping.Clayton1987.getStrippedSpectrum(spc)
     spc = dt2.wrap(spc)
+    sp = spc.getProperties()
+    sp.setNumericProperty(epq.SpectrumProperties.FaradayBegin, pc)
+    sp.setNumericProperty(epq.SpectrumProperties.FaradayEnd, pc)
+    sp.setNumericProperty(epq.SpectrumProperties.LiveTime, lt)
     spc.rename(new)
     return spc
 
