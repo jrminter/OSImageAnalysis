@@ -9,9 +9,10 @@
 # 2016-07-19  JRM  0.0.4   Changed limits in anaCNO
 # 2016-09-15  JRM  0.0.5   Set probe current and live time in
 #                          StripBackground and added anaSi and anCSi
+# 2016-09-16  JRM  0.0.6   Added anaCCu
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 import sys
 import os
@@ -108,6 +109,41 @@ def anaCSi(spc, det, digits=2, display=True):
 
     out = { "C": (round(cInt[0]/dose, digits), round(cInt[1]/dose, digits)),
             "Si": (round(siInt[0]/dose, digits), round(siInt[1]/dose, digits))
+          }
+
+    return out
+
+def anaCCu(spc, det, digits=2, display=True):
+    """anaCCu
+
+    Strip continuum and analyze a spectrum for C and Cu
+
+    Parameters
+    ----------
+    spc: A DTSA-II scriptable spectrum
+        The spectrum to process
+    det: The detector
+
+    Returns
+    -------
+    A dictionary of tuples for C and Cu where each tuple is the
+    peak integral (in counts/nA-sec)  and the uncertainty.
+    """
+    sp = spc.getProperties()
+    pc = sp.getNumericProperty(epq.SpectrumProperties.FaradayBegin)
+    lt = sp.getNumericProperty(epq.SpectrumProperties.LiveTime)
+    dose = pc*lt
+    sp.setDetector(det)
+    bks = StripBackground(spc, det)
+    if display:
+        nam = spc.getProperties().getTextProperty(epq.SpectrumProperties.SpectrumDisplayName) + '-bks'
+        bks.rename(nam)
+        bks.display()
+    cInt = compPeakIntegral( bks, 0.282, 180, 1)
+    cuInt = compPeakIntegral(bks, 0.917, 425, 1)
+
+    out = { "C": (round(cInt[0]/dose, digits), round(cInt[1]/dose, digits)),
+            "Cu": (round(cuInt[0]/dose, digits), round(cuInt[1]/dose, digits))
           }
 
     return out
