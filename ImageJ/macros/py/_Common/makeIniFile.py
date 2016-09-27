@@ -1,16 +1,16 @@
 # @File file
 # @boolean(label = "append") bAppend
 # @boolean(label = "FIB") bFIB
-# @double(label = "imgWid", value=1024) imgWid
+# @int(label = "imgWid", value=1024) imgWid
 # @int(label = "kV", value=5) iKV
 # @int(label = "spot", value=3) iSpot
-# @double(label = "working distance", value = 5.0) dFWD
-# @double(label = "tilt Angle", value = 0) dTiltDeg
+# @String(label = "working distance", value="5.0") sFwd
+# @String(label = "tilt Angle [deg]", value="5.0") sTilt
 # @String(label = "detector", value="UHR TLD") sDetector
 # @String(label = "scan", value="1X10us") sScan
 # @String(label = "Other Comment", value="Lower Right") sOtherComment
-# @String(label = "baseName", value="qm-01234-sample") baseName
-# @double(label = "mag (X)", value = 1) magX
+# @String(label = "base image name", value="qm-01234-sample") sName
+# @String(label = "mag (X)", value="1.0") sMagX
 
 # makeAZtecIni.py
 # A script to write metadata for an AZtec image to an ini file
@@ -20,7 +20,8 @@
 # 2016-02-02  JRM 0.1.00  Initial prototype - a work in progress
 # 2016-04-05  JRM 0.1.10  Compute scale from inverse mag plot linear model
 #                         Also re-arranged dialog to minimize moves
-# 2016-04-08  JRM 0.1.15  Print some feedback...
+# 2016-04-06  JRM 0.1.15  Print better diagnostics
+# 2016-09-27  JRM 0.1.16  Latest scijava seems to not like integers and doubles
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
@@ -75,15 +76,20 @@ def estimateAztecScaleFactorX(mag, scanWidthPx=1024, slope=289251.80, slopeSE=16
 # print(dir(file))
 # print(file.path)
 
+dFWD = float(sFwd)
+dTiltDeg = float(sTilt)
+dMagX = float(sMagX)
+
+
 if bAppend:
 	f = open(file.path, 'a')
 else:
 	f = open(file.path, 'w')
-f.write("[" + baseName + "]\n")
-strLine = "Mag=%.1f" %  magX + "\n"
+f.write("[" + sName + "]\n")
+strLine = "Mag=%.1f" %  dMagX + "\n"
 f.write(strLine)
 # fScaleX = fwMicrons/imgWid
-fScale = estimateAztecScaleFactorX(magX, scanWidthPx=imgWid, slope=289251.80, slopeSE=16.54, rDigits=7)
+fScale = estimateAztecScaleFactorX(dMagX, scanWidthPx=imgWid, slope=289251.80, slopeSE=16.54, rDigits=7)
 fScaleX = fScale[0]
 strLine = "ScaleX=%.6f" %  fScaleX + "\n"
 f.write(strLine)
@@ -102,7 +108,6 @@ f.write(strLine)
 
 f.close()
 
-strMsg = "Processed image %s at magification %.0f" % (baseName, magX)
+strMsg = "Processed image %s at magnification %.1fX" % (sName, dMagX)
 print(strMsg)
-
 
