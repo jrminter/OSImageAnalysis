@@ -9,6 +9,7 @@
 # ----------  ---  -----------------------------------------------------
 # 2016-02-02  JRM  Works with a directory chooser
 # 2016-02-24  JRM  Added some error handling
+# 2016-09-27  JRM  Permit periods (other than extension) in file names
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -98,20 +99,15 @@ for fi in lFiles:
 		print(fi)
 	orig = ImagePlus(fi)
 	strName = os.path.basename(fi)
-	strName = strName.split('.')[0]
+	# This permits file names to contains periods other than for the extension
+	strName = strName.rsplit('.', 1)[:-1][0]
+	print(strName)
 	orig.setTitle(strName)
 	cal = orig.getCalibration()
 	u = cal.getUnit()
 	pw = cal.pixelWidth
 	if bVerbose:
 		print(pw)
-	orig = ImagePlus(fi)
-	strName = os.path.basename(fi)
-	strName = strName.split('.')[0]
-	orig.setTitle(strName)
-	cal = orig.getCalibration()
-	u = cal.getUnit()
-	pw = cal.pixelWidth
 	if u == scaUm:
 		if (pw <= 0.02):
 			barW =  0.10  # bar width, microns
