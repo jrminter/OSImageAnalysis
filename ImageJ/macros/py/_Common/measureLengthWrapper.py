@@ -14,6 +14,7 @@
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
 # 2016-08-04  JRM 0.1.00  Initial prototype.
+# 2016-08-23  JRM 0.1.10  Fixed?
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
