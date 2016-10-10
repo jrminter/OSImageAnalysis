@@ -1,10 +1,10 @@
 # @string(label = "CSV File") csvPath
 # @boolean(label = "append") bAppend
 # @boolean(label = "debug", value=False) bDebug
-# @int(label = "line width", value=2) lw
-# @int(label = "offset", value=-30) offset
-# @int(label = "digits", value=-3) digits
-# @int(label = "font", value=18) font
+# @double(label = "line width", value=2) lw
+# @double(label = "offset", value=-30) offset
+# @double(label = "digits", value=-3) digits
+# @double(label = "font", value=18) font
 #
 # measureLengthWrapper.py
 #
@@ -14,6 +14,7 @@
 #   Date      Who  Ver                       What
 # ----------  --- ------  -------------------------------------------------
 # 2016-08-04  JRM 0.1.00  Initial prototype.
+# 2016-08-23  JRM 0.1.10  Fixed?
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -28,6 +29,7 @@ from ij.io import FileSaver, DirectoryChooser
 import ConfigParser
 
 imp = IJ.getImage()
-jmg.measureFeatureLength(imp, lw, csvPath, bAppend, offset, digits,
-                         font, Color.YELLOW, Color.WHITE, bDebug)
+
+jmg.measureFeatureLength(imp, int(lw), csvPath, bAppend, int(offset), int(digits),
+                         int(font), Color.YELLOW, Color.WHITE, bDebug)
 
