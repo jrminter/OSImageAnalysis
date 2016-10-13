@@ -1,18 +1,30 @@
 # -*- coding: utf-8 -*-
-# DTSA-II Script - J. R. Minter - 2013-10-16
-#
-#    Modifications
-#      Date   Who   Ver     What
-# ----------  ---  ------  ---------------------------------------------
-# 2016-05-14  JRM  0.0.2   Updated for Jupiter
-# 2016-07-18  JRM  0.0.3   Added function anaCNO
-# 2016-07-19  JRM  0.0.4   Changed limits in anaCNO
-# 2016-09-15  JRM  0.0.5   Set probe current and live time in
-#                          StripBackground and added anaSi and anCSi
-# 2016-09-16  JRM  0.0.6   Added anaCCu
+
+"""
+DTSA-II Script - J. R. Minter
+
+jmGen.py
+
+A series of wrapper scripts to make DTSA-II automation easy
+
+Place this file in DTSA_ROOT/lib/dtsa2/
+call with:
+
+import dtsa2.jmGen as jmg
+
+  Date      Who   Ver    Comment
+----------  ---  -----   ------------------------------------------
+2016-05-14  JRM  0.0.2   Updated for Jupiter
+2016-07-18  JRM  0.0.3   Added function anaCNO
+2016-07-19  JRM  0.0.4   Changed limits in anaCNO
+2016-09-15  JRM  0.0.5   Set probe current and live time in
+                         StripBackground and added anaSi and anCSi
+2016-09-16  JRM  0.0.6   Added anaCCu
+2016-10-12  JRM  0.0.7   Added getMassFractions
+"""
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
 import sys
 import os
@@ -41,9 +53,37 @@ from java.lang import Double
 import dtsa2 as dt2
 import dtsa2.mcSimulate3 as mc3
 
-"""A series of wrapper scripts to make DTSA-II automation easy
-Place this file in DTSA_ROOT/lib/dtsa2/    call with
-import dtsa2.jmGen as jmg"""
+def getMassFractions(compound, elemList, iDigits):
+    """"
+    getMassFractions(compound, elemList, iDigits)
+
+    A utility function to compute the mass fractions for a compound
+
+    Parameters
+    ----------
+    compound - string
+        The stoichiometry as a molecular formula
+    elemList = a list of type epq.element.symbol
+        the elements in the compound
+    iDigits - integer
+        decimal places to round
+
+    Returns
+    -------
+    A dictionary of {Symbol : mass-fraction}
+
+    Example
+    -------
+    elements = [epq.Element.Al, epq.Element.Zn, epq.Element.O]
+    massFra = getMassFractions("Al2Zn98O100", elements, 5)
+    """
+    mat = dt2.material(compound)
+    mf = {}
+    for el in elemList:
+        wf = round(mat.weightFractionU(el, True).doubleValue(), iDigits)
+        mf[el.toAbbrev().encode('ascii','ignore')] = wf
+    
+    return(mf)
 
 
 def anaSi(spc, det, digits=2, display=True):
