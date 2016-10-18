@@ -13,10 +13,12 @@ Modifications
                         nicest GUI but seems to work right. Also it uses
                         ab .ini file NOT the Windows registry...
 
+2016-10-17  JRM 0.6.00  Use Environment variable to locate last.ini file
+
 """
 
 __revision__ = "$Id: makeOxfordAZtecIni.py John R. Minter $"
-__version__ = "0.5.00"
+__version__ = "0.6.00"
 
 from tkinter import *
 from tkinter import filedialog as fd
@@ -239,7 +241,8 @@ class App:
         config['LAST']['basename'] = "%s" % self.mBaseName.get()
         config['LAST']['mag'] = "%.1f" % self.mMag.get()
         
-        strFile = '/data/AZtec/last.ini'
+        edsDir  = os.getenv('EDS_ROOT')
+        strFile = edsDir + '/Oxford/py/last.ini'
         with open(strFile, 'w') as configfile:
             config.write(configfile)
 
@@ -249,7 +252,8 @@ class App:
         return
         
     def read_file(self):
-        strFile = '/data/AZtec/last.ini'
+        edsDir  = os.getenv('EDS_ROOT')
+        strFile = edsDir + '/Oxford/py/last.ini'
         config = configparser.ConfigParser()
         config.read(strFile)
         self.mIniFile.set(config['LAST']['ini'])
