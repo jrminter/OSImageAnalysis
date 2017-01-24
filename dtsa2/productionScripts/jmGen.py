@@ -22,10 +22,11 @@ import dtsa2.jmGen as jmg
 2016-09-16  JRM  0.0.6   Added anaCCu
 2016-10-12  JRM  0.0.7   Added getMassFractions
 2017-01-23  JRM  0.0.8   Added addCompositionsToDatabase
+2017-01-24  JRM  0.0.81  Edited help strings
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.8"
+__version__ = "0.0.81"
 
 import sys
 import os
@@ -111,8 +112,9 @@ def getMassFractions(compound, elemList, iDigits):
 
     Example
     -------
+    import dtsa2.jmGen as jmg
     elements = [epq.Element.Al, epq.Element.Zn, epq.Element.O]
-    massFra = getMassFractions("Al2Zn98O100", elements, 5)
+    massFra = jmg.getMassFractions("Al2Zn98O98", elements, 5)
     """
     mat = dt2.material(compound)
     mf = {}
