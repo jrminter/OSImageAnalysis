@@ -13,12 +13,12 @@ wd = git + "/OSImageAnalysis/dtsa2/other-macros/testScripts"
 os.chdir(wd)
 pyrDir = wd + "/3_testCalDet Results/"
 
-spcDir = git + "/OSImageAnalysis/dtsa2/detectors/"
+spcDir = git + "/OSImageAnalysis/dtsa2/detectors/2-FEI Sirion"
 DataManager.clearSpectrumList()
-sDet    = "FEI FIB620 EDAX-RTEM"
+sDet    = "Oxford p4 05eV 2K"
 det     = findDetector(sDet)
 
-spcFil = spcDir + "FIB620-Cu-25-1.spc"
+spcFil = spcDir + '/' + "Cu-15kV-P4-10-2K-250s.txt"
 spc = wrap(ept.SpectrumFile.open(spcFil)[0])
 display(spc)
 print(spc.getChannelCount())

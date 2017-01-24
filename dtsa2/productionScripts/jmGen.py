@@ -21,10 +21,11 @@ import dtsa2.jmGen as jmg
                          StripBackground and added anaSi and anCSi
 2016-09-16  JRM  0.0.6   Added anaCCu
 2016-10-12  JRM  0.0.7   Added getMassFractions
+2017-01-23  JRM  0.0.8   Added addCompositionsToDatabase
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 
 import sys
 import os
@@ -51,10 +52,46 @@ from java.lang import Double
 
 
 import dtsa2 as dt2
+import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
 
+def addCompositionsToDatabase(compoList):
+    """
+    addCompositionsToDatabase(compoList)
+
+    A utility function to add compositions to the DTSA-II database
+    This is based on an exemplar from N. Ritchie.
+
+    Parameters
+    ----------
+    compoList - List of type epq.Composition
+        The list of compositions to be added to the database
+
+    Returns
+    -------
+    None
+
+    Example
+    -------
+    # Add Au/Pd and Ta coating materials to the database
+    import dtsa2.jmGen as jmg
+    aupd = epq.Material(epq.Composition([epq.Element.Au, epq.Element.Pd],
+                                        [0.60,0.40]),
+                                        epq.ToSI.gPerCC(0.6*19.30+0.4*11.9))
+    aupd.setName("Au-Pd")
+    ta = material("Ta", density=16.4)
+
+    compoList = [aupd, ta]
+    jmg.addCompositionsToDatabase(compoList)
+
+    """
+    for comp in compoList:
+        ses = gdtsa2.DTSA2.getSession()
+        if not ses.findStandard(comp.getName()):
+            ses.addStandard(comp)
+
 def getMassFractions(compound, elemList, iDigits):
-    """"
+    """
     getMassFractions(compound, elemList, iDigits)
 
     A utility function to compute the mass fractions for a compound

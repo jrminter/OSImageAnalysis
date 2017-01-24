@@ -16,8 +16,8 @@ from ij import IJ
 
 bT = True
 
-lo = 200.
-hi = 3000.
+lo = 0.
+hi = 3200.
 
  
 imp = IJ.getImage()
@@ -28,6 +28,6 @@ imp.setDisplayRange(lo, hi)
 imp.updateAndRepaintWindow()
 if bT:
 	IJ.run(imp, "RGB Color", "")
-	IJ.run("Add Scale Bar", "width=1 height=6 font=18 color=White location=[Lower Right] bold");
+	IJ.run("Add Scale Bar", "width=10 height=6 font=18 color=White location=[Lower Right] bold");
 	
 imp.updateAndRepaintWindow()
