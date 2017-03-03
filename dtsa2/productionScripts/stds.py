@@ -32,6 +32,16 @@ defineStd(("O","Al",),(0.470749,0.529251,),"Al2O3",3.950000)
 # Data from http://www.nist.gov/srm/upload/SP260-73.PDF
 # density from http://www.ask.com/answers/337173021/what-is-the-density-of-316-stainless-steel
 defineStd(("C","P","S","Cr","Mn","Fe","Ni","Cu","Mo",),(0.000300,0.000100,0.000060,0.254300,0.001400,0.534140,0.209100,0.000400,0.000200,),"SS-316",7.990000)
+defineStd(("C","F",),(0.240182,0.759818,),"C2F4",3.340000)
+defineStd(("B","Ti",),(0.311157,0.688843,),"TiB2",4.520000)
+defineStd(("H","O","Ca",),(0.027208,0.431875,0.540917,),"Ca(OH)2",2.221000)
+defineStd(("H","C","O",),(0.041960,0.625020,0.069042,),"PET",1.370000)
+defineStd(("O","Fe",),(0.30057,0.69943,),"Fe2O3",5.242000)
+defineStd(("O","Fe",),(0.27641,0.72359,),"Fe3O4",5.170000)
+defineStd(("O","Ti",),(0.40066,0.59934,),"TiO2",4.230000)
+defineStd(("Zn","O",),(0.80347,0.19653,),"ZnO",5.610000)
+defineStd(("Al","Zn","O",),(0.00669,0.79490,0.19841,),"AZO-2",5.610000)
+defineStd(("Al","Zn","O",),(0.01697,0.78174,0.20128,),"AZO-5",5.610000)
 
 # clean up cruft
 shutil.rmtree(pyReptDir)

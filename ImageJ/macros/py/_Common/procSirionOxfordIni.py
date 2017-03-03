@@ -56,7 +56,7 @@ config.read(iniPath)
 
 for name in names:
 	path = basePath + os.sep + name + ".tif"
-	print(path)
+	print(name, path)
 	fMag     = config.getfloat(name, "Mag")
 	fScaleX  = config.getfloat(name, "ScaleX")
 	fScaleY  = config.getfloat(name, "ScaleY")
