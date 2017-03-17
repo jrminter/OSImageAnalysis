@@ -15,9 +15,10 @@ from __future__ import division
 # 2016-08-03  JRM  1.6.05  Added measureFeatureLength
 # 2016-08-04  JRM  1.6.06  Added measurement counter to 
 #                          measureFeatureLength
+# 2017-03-17  JRM  1.6.07  Added denoise
 
 __revision__ = "$Id: jmFijiGen.py John R. Minter 2014-08-04$"
-__version__ = "1.6.06"
+__version__ = "1.6.07"
 
 import sys
 import os
@@ -80,6 +81,35 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg""" 
+
+def denoiseROF(imp, theta=15.0):
+    """denoiseROF(imp, theta=15.0)
+
+    A wrapper for the ROF Denoise plugin
+
+    Parameters
+    ----------
+    imp: ImagePlus
+        The image to process
+    theta: float (15.0)
+
+    Returns
+    -------
+    ret: ImagePlus
+        The denoised image
+    """
+    IJ.run(imp, "32-bit", "");
+    IJ.run(imp, "Enhance Contrast", "saturated=0.005")
+    ti = imp.getShortTitle() + "-rof"
+    strArgTi = "title=%s" % ti
+    IJ.run(imp, "Duplicate...", strArgTi);
+    ret = IJ.getImage()
+    strArg2 = "%.2f" % theta
+    IJ.run(ret, "ROF Denoise", strArg2);
+    IJ.run(ret, "Enhance Contrast", "saturated=0.005")
+    ret.setTitle(ti)
+    return ret
+
 
 def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
                          offset = -30, digits = 3,
