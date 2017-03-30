@@ -23,10 +23,12 @@ import dtsa2.jmGen as jmg
 2016-10-12  JRM  0.0.7   Added getMassFractions
 2017-01-23  JRM  0.0.8   Added addCompositionsToDatabase
 2017-01-24  JRM  0.0.81  Edited help strings
+2017-03-30  JRM  0.0.85  Added computePhiRhoReportZ to do a 
+                         Phi-Rho-Z analysis and report in Z (um)
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.81"
+__version__ = "0.0.85"
 
 import sys
 import os
@@ -338,7 +340,7 @@ def computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200):
     e0: float
         The beam energy in kV
     xrts: XRayTransitionSet
-        the thransitions to compute
+        the transitions to compute
     csv: string
         Path to .csv file
     nSteps: int (200)
@@ -346,7 +348,7 @@ def computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200):
 
     Returns
     -------
-    None - but writes ourput to file csv
+    None - but writes output to file csv
 
     """
     rhoZmax = epq.ElectronRange.KanayaAndOkayama1972.compute(mat, epq.ToSI.keV(e0))
@@ -363,6 +365,57 @@ def computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200):
     for step in range(0, nSteps):
         rz = step * rhoZmax / nSteps
         res = "%d,%g" % (step, 100.0 * rz) # in mg/cm^2
+        for xrt in xrts:
+            alg.initialize(mat, xrt.getDestination(), sp)
+            res = "%s,%g,%g" % (res, alg.computeCurve(rz), alg.computeAbsorbedCurve(xrt, rz))
+        line = res+"\n"
+        fi.write(line)
+        # print(res)
+    fi.close()
+
+def computePhiRhoReportZ(mat, det, e0, xrts, csv, nSteps=200):
+    """
+    computePhiRhoReportZ(mat, det, e0, xrts, csv, nSteps=200)
+
+    Compute a phi-rho-z curve and report a depth profile in Z
+    The Z values are in microns.
+
+    Parameters
+    ----------
+    mat: a material
+        A composition to compute
+    det: a detector
+        The detector to use
+    e0: float
+        The beam energy in kV
+    xrts: XRayTransitionSet
+        the transitions to compute
+    csv: string
+        Path to .csv file
+    nSteps: int (200)
+        The number of steps to compute
+
+    Returns
+    -------
+    None - but writes output to file csv
+
+    """
+    rhoZmax = epq.ElectronRange.KanayaAndOkayama1972.compute(mat, epq.ToSI.keV(e0))
+    zMax = rhoZmax / mat.getDensity()
+    alg = epq.PAP1991()
+    sp = epq.SpectrumProperties(det.getProperties())
+    sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
+    res = "Z(um)"
+    for xrt in xrts:
+        res = "%s,G(%s),E(%s)" % (res, xrt, xrt)
+    fi = open(csv, 'w')
+    line = res + '\n'
+    fi.write(line)
+
+    for step in range(0, nSteps):
+        rz = step * rhoZmax / nSteps
+        dz = step * zMax / nSteps
+        res = "%g" % (1.0e6 * dz) # in um
         for xrt in xrts:
             alg.initialize(mat, xrt.getDestination(), sp)
             res = "%s,%g,%g" % (res, alg.computeCurve(rz), alg.computeAbsorbedCurve(xrt, rz))
