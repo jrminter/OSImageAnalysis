@@ -20,13 +20,10 @@ from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
 import os
-import time
+from ij import IJ
+from java.awt import Color
 import jmFijiGen as jmg
-from ij import IJ, Prefs, WindowManager
-from java.awt import Color, Font
-import csv
-from ij.io import FileSaver, DirectoryChooser
-import ConfigParser
+
 
 imp = IJ.getImage()
 

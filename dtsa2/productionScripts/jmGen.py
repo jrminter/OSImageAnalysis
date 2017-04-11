@@ -25,10 +25,12 @@ import dtsa2.jmGen as jmg
 2017-01-24  JRM  0.0.81  Edited help strings
 2017-03-30  JRM  0.0.85  Added computePhiRhoReportZ to do a 
                          Phi-Rho-Z analysis and report in Z (um)
+2017-04-11  JRM  0.0.86  Modify two prz functions to choose between
+                         XPP119 and PAP1991 algorithms
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.85"
+__version__ = "0.0.86"
 
 import sys
 import os
@@ -325,10 +327,9 @@ def StripBackground(spc, det=None):
     spc.rename(new)
     return spc
 
-def computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200):
+def computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200, usePAP=True):
     """
-    computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200)
-
+    computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200, usePAP=True):
     Compute a phi-rho-z curve
 
     Parameters
@@ -345,6 +346,8 @@ def computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200):
         Path to .csv file
     nSteps: int (200)
         The number of steps to compute
+    usePAP: boolean (True)
+        PAP1991 if true otherwise XPP1991
 
     Returns
     -------
@@ -352,7 +355,10 @@ def computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200):
 
     """
     rhoZmax = epq.ElectronRange.KanayaAndOkayama1972.compute(mat, epq.ToSI.keV(e0))
-    alg = epq.PAP1991()
+    if usePAP:
+        alg = epq.PAP1991()
+    else:
+        alg = epq.XPP1991()
     sp = epq.SpectrumProperties(det.getProperties())
     sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
     res = "Idx,rhoz(mg/cm^2)"
@@ -373,9 +379,9 @@ def computePhiRhoZ(mat, det, e0, xrts, csv, nSteps=200):
         # print(res)
     fi.close()
 
-def computePhiRhoReportZ(mat, det, e0, xrts, csv, nSteps=200):
+def computePhiRhoReportZ(mat, det, e0, xrts, csv, nSteps=200, usePAP=True):
     """
-    computePhiRhoReportZ(mat, det, e0, xrts, csv, nSteps=200)
+    computePhiRhoReportZ(mat, det, e0, xrts, csv, nSteps=200, usePAP=True)
 
     Compute a phi-rho-z curve and report a depth profile in Z
     The Z values are in microns.
@@ -394,6 +400,8 @@ def computePhiRhoReportZ(mat, det, e0, xrts, csv, nSteps=200):
         Path to .csv file
     nSteps: int (200)
         The number of steps to compute
+    usePAP: boolean (True)
+        PAP1991 if true otherwise XPP1991
 
     Returns
     -------
@@ -402,7 +410,11 @@ def computePhiRhoReportZ(mat, det, e0, xrts, csv, nSteps=200):
     """
     rhoZmax = epq.ElectronRange.KanayaAndOkayama1972.compute(mat, epq.ToSI.keV(e0))
     zMax = rhoZmax / mat.getDensity()
-    alg = epq.PAP1991()
+    if usePAP:
+        alg = epq.PAP1991()
+    else:
+        alg = epq.XPP1991()
+    
     sp = epq.SpectrumProperties(det.getProperties())
     sp.setNumericProperty(epq.SpectrumProperties.BeamEnergy, e0)
     res = "Z(um)"

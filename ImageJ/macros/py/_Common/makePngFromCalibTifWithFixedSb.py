@@ -28,7 +28,7 @@ bConvertToNm = True
 
 tic = time.time()
 # for Ambro Ferrar 2017-02-20
-barW = 100.0          # default bar width in nm or default units (um)
+barW = 50.0          # default bar width in nm or default units (um)
 barH =   6            # bar height, pts
 barF = 24             # bar font, pts
 barC = "White"        # bar color
