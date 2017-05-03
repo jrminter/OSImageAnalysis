@@ -3,6 +3,7 @@
 #' Write an input file for GMRFilm to construct an input file for
 #' GMRFilm to compute the K-ratios for Ni Ka and Cu Ka for a
 #' specified thickness of Ni and Cu for a vector of kV values.
+#' This assumes a C substrate (not analyzed...)
 #'
 #' @param tNi Thickness of Ni in nm \code{tNi}
 #' @param tCu Thickness of Cu in nm \code{tCu}
@@ -36,9 +37,9 @@ writeInputNiCuSG <- function(tNi, tCu, vkV, fPath, toa=35){
   cat("1\n") # 1 element each
   cat("1\n")
   cat("1\n")
-  cat("NiKa\n")
-  cat("CuKa\n")
-  cat("C Ka\n")
+  cat("NiKa\n") # layer 1
+  cat("CuKa\n") # layer 2
+  cat("C Ka\n") # substrate
   cat("8.90\n")
   cat("8.96\n")
   cat("a\n")
