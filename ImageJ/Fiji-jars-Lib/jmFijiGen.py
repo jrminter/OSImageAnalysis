@@ -111,7 +111,9 @@ def autoExtractPDF(folderPathIn, folderPathOut, fileName):
     strTwo = "choose=%s" % (fIn)
     print(strTwo)
     IJ.run("Extract Images From PDF...", strTwo )
-    while (IJ.getImage() != None):
+    n = WindowManager.getImageCount()
+    # ignore the exception
+    while (n > 0):
         imp = IJ.getImage()
         basName = imp.getShortTitle()
         print(basName)
@@ -120,6 +122,7 @@ def autoExtractPDF(folderPathIn, folderPathOut, fileName):
         IJ.saveAs(imp,"PNG",fiOut)
         imp.changes = False
         imp.close()
+        n -= 1
 
 
 def denoiseROF(imp, theta=15.0):
