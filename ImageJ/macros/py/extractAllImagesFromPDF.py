@@ -22,9 +22,12 @@ from ij import ImagePlus
 from ij.io import FileSaver, DirectoryChooser
 import jmFijiGen as jmg
 
+litDir = os.getenv('LIT_ROOT')
+imgDir = os.getenv('IMG_ROOT')
+
 bVerbose = False
-inFold = "/Users/jrminter/Documents/lit/microanalysis/eds/"
-ouFold = "/Users/jrminter/Desktop/tmp/"
+inFold = litDir + "/microanalysis/eds/"
+ouFold = imgDir + "/extracted/"
 fName  = "Ritchie2011d"
 
 
@@ -47,7 +50,7 @@ def autoExtractPDF(folderPathIn, folderPathOut, fileName):
     Example:
     inFold = "/Users/myId/lit/eds/"
     ouFold = "/User"/myId/png/
-    fName = "author.pdf"
+    fName = "author"
     autoExtractPDF(inFold, ouFold, fName)
 
     """

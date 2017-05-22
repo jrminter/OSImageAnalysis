@@ -102,7 +102,7 @@ def autoExtractPDF(folderPathIn, folderPathOut, fileName):
     Example:
     inFold = "/Users/myId/lit/eds/"
     ouFold = "/User"/myId/png/
-    fName = "author.pdf"
+    fName = "author"
     jmg.autoExtractPDF(inFold, ouFold, fName)
 
     """
