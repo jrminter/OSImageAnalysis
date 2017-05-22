@@ -16,9 +16,11 @@ from __future__ import division
 # 2016-08-04  JRM  1.6.06  Added measurement counter to 
 #                          measureFeatureLength
 # 2017-03-17  JRM  1.6.07  Added denoise
+# 2017-05-22  JRM  1.6.08  Added autoExtractPDF
+
 
 __revision__ = "$Id: jmFijiGen.py John R. Minter 2014-08-04$"
-__version__ = "1.6.07"
+__version__ = "1.6.08"
 
 import sys
 import os
@@ -81,6 +83,44 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg""" 
+
+def autoExtractPDF(folderPathIn, folderPathOut, fileName):
+    """autoExtractPDF(folderPathIn, folderPathOut, fileName)
+
+    A wrapper function to extract all images from a PDF file
+    and store them as PDF files in an output folder.
+
+    Parameters
+    ----------
+    folderNameIn : string
+        The path to the input folder (with a path terminator character)
+    folderNameOut : string
+        The path to the output folder (with a path terminator character)
+    fileName : string
+        base name of the PDF file (foo)
+
+    Example:
+    inFold = "/Users/myId/lit/eds/"
+    ouFold = "/User"/myId/png/
+    fName = "author.pdf"
+    jmg.autoExtractPDF(inFold, ouFold, fName)
+
+    """
+    IJ.run("Close All")
+    fIn = folderPathIn + fileName + ".pdf"
+    strTwo = "choose=%s" % (fIn)
+    print(strTwo)
+    IJ.run("Extract Images From PDF...", strTwo )
+    while (IJ.getImage() != None):
+        imp = IJ.getImage()
+        basName = imp.getShortTitle()
+        print(basName)
+        fiOut = folderPathOut + basName + ".png"
+        print(fiOut)
+        IJ.saveAs(imp,"PNG",fiOut)
+        imp.changes = False
+        imp.close()
+
 
 def denoiseROF(imp, theta=15.0):
     """denoiseROF(imp, theta=15.0)
