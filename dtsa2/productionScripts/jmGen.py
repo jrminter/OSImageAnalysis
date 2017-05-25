@@ -27,10 +27,11 @@ import dtsa2.jmGen as jmg
                          Phi-Rho-Z analysis and report in Z (um)
 2017-04-11  JRM  0.0.86  Modify two prz functions to choose between
                          XPP119 and PAP1991 algorithms
+2017-05-25  JRM  0.0.87  Added multiFilmBSE
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.86"
+__version__ = "0.0.87"
 
 import sys
 import os
@@ -59,6 +60,92 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+import dtsa2.__init__ as bar 
+
+def multiFilmBSE(layers, e0=20.0, nTraj=1000, bOutFull=False,
+                 outDir='C:/Temp/',fullOutFile='BSE.csv'):
+    """multiFilmBSE(layers, det, e0=20.0, withPoisson=True,
+                    nTraj=1000, dose=60.0, bOutFull=False,
+                    outDir='C:/Temp/',fullOutFile='BSE.csv')
+
+    Monte Carlo simulate the backscattered fraction from a multilayer
+    thin film.
+
+    Parameters
+    ----------
+    layers - an iterable list of [material,thickness].
+        Note thematerials must have associated densities.
+    e0 - float (20)
+        The accekerating voltage in kV
+    nTraj - integer
+        The number of trajectories to run
+    bOutFull - boolean (False)
+        A flag to write the full data to a csv file
+    outDir - string ('C:/Temp/')
+        Path for full output
+    fullOutFile - string ('BSE.csv')
+        name for full output file
+
+
+    Returns
+    -------
+    tuple - (layers, e0, nTraj, backscatterFraction, 
+             forwardscatterFraction)
+
+    Example
+    -------
+    import dtsa2.jmGen as jmg
+    al      = material("Al",  density=2.70)
+    c       = material("C",   density=2.267)
+    zno     = material("ZnO", density=5.61)
+    si      = material("Si",  density=2.3296)
+
+    layers = [ [c,   20*1.0e-9],
+               [zno, 20*1.0e-9],
+               [al,  20*1.0e-9],
+               [si,  50.0e-6]
+             ]
+
+    a = jmg.multiFilmBSE(layers, 7.0, nTraj=10000)
+    print(a)
+
+    """
+    monte = nm.MonteCarloSS()
+    monte.setBeamEnergy(epq.ToSI.keV(e0))
+    p = {}
+    p["Layers"] = layers
+    sr = monte.getChamber()
+    origin = (0.0, 0.0, 0.0)
+    pos = origin
+    for (mat, thickness,) in layers:
+        if thickness <= 0.0:
+            raise "The layer thickness must be larger than zero."
+        monte.addSubRegion(sr, mat, nm.MultiPlaneShape.createFilm([0.0, 0.0, -1.0], pos, thickness))
+        pos = epu.Math2.plus(pos, [0.0, 0.0, thickness + 1.0e-12])
+    bs0 = nm.BackscatterStats(monte, 100)
+    monte.addActionListener(bs0)
+    ann = nm.AnnularDetector(1.0e-3, 10, (0.0, 0.0, -1.0e-3), (0.0, 0.0, 1.0)) 
+    monte.addActionListener(ann)
+    monte.runMultipleTrajectories(nTraj)
+    if bOutFull:
+        fi = outDir + fullOutFile
+        print(u"Results -> %s" % fi)
+        fos = jio.FileOutputStream(fi)
+        try:
+            osw = jio.OutputStreamWriter(fos)
+            osw.append("Parameters:\n")
+            osw.append("E0\t%g keV\n" % e0)
+            for k, v in p.iteritems():
+                osw.append("%s\t%s\n" % (k, v))
+            ann.dump(osw)
+            osw.flush()
+            bs0.dump(fos)
+        finally:
+            fos.close()
+    return (layers, e0, nTraj, bs0.backscatterFraction(), bs0.forwardscatterFraction())
+
+
+
 
 def addCompositionsToDatabase(compoList):
     """
