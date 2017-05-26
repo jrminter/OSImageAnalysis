@@ -28,10 +28,11 @@ import dtsa2.jmGen as jmg
 2017-04-11  JRM  0.0.86  Modify two prz functions to choose between
                          XPP119 and PAP1991 algorithms
 2017-05-25  JRM  0.0.87  Added multiFilmBSE
+2017-05-26  JRM  0.0.88  Figured out import problem
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.87"
+__version__ = "0.0.88"
 
 import sys
 import os
@@ -60,7 +61,6 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
-import dtsa2.__init__ as bar 
 
 def multiFilmBSE(layers, e0=20.0, nTraj=1000, bOutFull=False,
                  outDir='C:/Temp/',fullOutFile='BSE.csv'):
@@ -110,6 +110,9 @@ def multiFilmBSE(layers, e0=20.0, nTraj=1000, bOutFull=False,
     print(a)
 
     """
+    # myRP = dt2.reportPath()
+    # myRP.replace("\\", "/")
+    # print(myRP)
     monte = nm.MonteCarloSS()
     monte.setBeamEnergy(epq.ToSI.keV(e0))
     p = {}
