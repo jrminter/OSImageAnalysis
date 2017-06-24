@@ -29,10 +29,11 @@ import dtsa2.jmGen as jmg
                          XPP119 and PAP1991 algorithms
 2017-05-25  JRM  0.0.87  Added multiFilmBSE
 2017-05-26  JRM  0.0.88  Figured out import problem
+2017-06-24  JRM  0.0.89  Added summarizeMaterial
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.88"
+__version__ = "0.0.89"
 
 import sys
 import os
@@ -61,6 +62,55 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+
+def summarizeMaterial(mat, iDigits=5):
+    """"
+    summarizeMaterial(mat, iDigits)
+
+    A utility function to summarize a material
+
+    Parameters
+    ----------
+
+    mat - a DTSA material
+        The material to list
+    iDigits - integer
+        decimal places to round
+
+    Returns
+    -------
+    A tuple: ( name, dictionary{Symbol : mass-fraction}, density)
+
+    Example
+    -------
+    import gov.nist.microanalysis.EPQLibrary as epq
+    import dtsa2.jmGen as jmg
+    kapton = epq.Material(epq.Composition([ epq.Element.C,
+                                            epq.Element.O,
+                                            epq.Element.N,
+                                            epq.Element.H],
+                                           [ 0.69113,
+                                             0.20924,
+                                             0.07327,
+                                             0.02636 ]
+                                          ),
+                                          epq.ToSI.gPerCC(1.420))
+    kapton.setName("Kapton")
+
+    out = jmg.summarizeMaterial(kapton, 5)
+    print(out)
+    """
+    density = round(mat.density/1000.0,iDigits) # in g/cc
+    name = mat.name
+    mf = {}
+    elemList = mat.getElementSet()
+    for el in elemList:
+        wf = round(mat.weightFractionU(el, True).doubleValue(), iDigits)
+        mf[el.toAbbrev().encode('ascii','ignore')] = wf
+
+    rv = (name, mf, density)
+    
+    return(rv)
 
 def multiFilmBSE(layers, e0=20.0, nTraj=1000, bOutFull=False,
                  outDir='C:/Temp/',fullOutFile='BSE.csv'):
@@ -1837,7 +1887,7 @@ def tabulateDetCalibrations(det, outPath):
     Example:
     import dtsa2.jmGen as jmg
     det = findDetector("FEI CM20UT EDAX-RTEM")
-    out = jmg.tabulateDetCalibrations(spc, './fei-cm20ut-det-cal.csv')
+    out = jmg.tabulateDetCalibrations(det, './fei-cm20ut-det-cal.csv')
     """
     print(det.getName())
     dp = det.getDetectorProperties()
