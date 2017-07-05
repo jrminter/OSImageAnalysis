@@ -30,10 +30,12 @@ import dtsa2.jmGen as jmg
 2017-05-25  JRM  0.0.87  Added multiFilmBSE
 2017-05-26  JRM  0.0.88  Figured out import problem
 2017-06-24  JRM  0.0.89  Added summarizeMaterial
+2017-07-05  JRM  0.0.90  summarizeMaterial returns both mass fraction 
+                         and atom fraction
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.89"
+__version__ = "0.0.90"
 
 import sys
 import os
@@ -79,7 +81,7 @@ def summarizeMaterial(mat, iDigits=5):
 
     Returns
     -------
-    A tuple: ( name, dictionary{Symbol : mass-fraction}, density)
+    A tuple: ( name, dictionary{Symbol : {mf : mass-fraction, af: atom-fraction}}, density)
 
     Example
     -------
@@ -106,7 +108,8 @@ def summarizeMaterial(mat, iDigits=5):
     elemList = mat.getElementSet()
     for el in elemList:
         wf = round(mat.weightFractionU(el, True).doubleValue(), iDigits)
-        mf[el.toAbbrev().encode('ascii','ignore')] = wf
+        af = round(mat.atomicPercentU(el,True).doubleValue(), iDigits)
+        mf[el.toAbbrev().encode('ascii','ignore')] = {"wf": wf, "af": af}
 
     rv = (name, mf, density)
     

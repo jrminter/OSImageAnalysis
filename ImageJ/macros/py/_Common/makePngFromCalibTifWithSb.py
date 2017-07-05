@@ -37,7 +37,7 @@ barF = 24            # bar font, pts
 barC = "White"       # bar color
 barL = "Lower Right" # bar location
 
-gSatFac = 0.25
+gSatFac = 0.05
 
 bSetGrayLevels = False
 
