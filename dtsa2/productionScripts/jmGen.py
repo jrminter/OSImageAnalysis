@@ -32,10 +32,12 @@ import dtsa2.jmGen as jmg
 2017-06-24  JRM  0.0.89  Added summarizeMaterial
 2017-07-05  JRM  0.0.90  summarizeMaterial returns both mass fraction 
                          and atom fraction
+2017-07-06  JRM  0.0.91  Added a addMatToDatabase. This will overwrite
+                         an existing (problem) entry...
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.90"
+__version__ = "0.0.91"
 
 import sys
 import os
@@ -64,6 +66,48 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+
+def addMatToDatabase(mat, name, density):
+    """addMatToDatabase(mat, name, density)
+
+    Add (or correct) an entry in the database.
+
+    Parameters
+    ----------
+
+    mat - a DTSA material
+        The material to add
+    name - string
+        The name to asssociate
+    density - float
+        the denisty in g/cm3
+
+    Returns
+    -------
+    none. It just prints a message.
+
+    Example
+    -------
+    import gov.nist.microanalysis.EPQLibrary as epq
+    import dtsa2.jmGen as jmg
+    kapton = epq.Material(epq.Composition([ epq.Element.C,
+                                            epq.Element.O,
+                                            epq.Element.N,
+                                            epq.Element.H],
+                                           [ 0.69113,
+                                             0.20924,
+                                             0.07327,
+                                             0.02636 ]
+                                          ),
+                                          epq.ToSI.gPerCC(1.420))
+
+    jmg.addMatToDatabase(kapton, "Kapton", 1.4200)
+
+    """
+    mat.setName(name)
+    mat.setDensity(epq.ToSI.gPerCC(density))
+    dt2.Database.addStandard(mat)
+    print("Added %s" % mat)
 
 def summarizeMaterial(mat, iDigits=5):
     """"
@@ -97,6 +141,7 @@ def summarizeMaterial(mat, iDigits=5):
                                              0.02636 ]
                                           ),
                                           epq.ToSI.gPerCC(1.420))
+
     kapton.setName("Kapton")
 
     out = jmg.summarizeMaterial(kapton, 5)
