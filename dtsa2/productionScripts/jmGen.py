@@ -34,10 +34,11 @@ import dtsa2.jmGen as jmg
                          and atom fraction
 2017-07-06  JRM  0.0.91  Added a addMatToDatabase. This will overwrite
                          an existing (problem) entry...
+2017-08-30  JRM  0.0.92  Added convenience functions writeMF and writeAF
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.91"
+__version__ = "0.0.92"
 
 import sys
 import os
@@ -66,6 +67,80 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+
+def writeMF(cf, density, name, norm=False):
+    """
+    writeMF(cf, density, name)
+
+    Create a material from a string and print out the weight percent string
+
+    Input
+    -----
+    cf: string
+        The chemical formula (can also be a sum of oxides...)
+    density: float
+        The density [g/cm3]
+    name: string
+        name for the material
+    norm: Boolean (False)
+        Force normalization of mass fraction
+
+    Return
+    ------
+    mat: DTSA material
+        The material object
+
+    Example
+    -------
+    import dtsa2.jmGen as jmg
+
+    mat = jmg.writeMF("CaF2", 3.18, "CaF2")
+
+    """
+
+    mat = dt2.parseChemicalFormula(cf, density, name)
+    if norm:
+        mat.forceNormalization()
+    val = mat.weightPercentString(True)
+    print(val)
+    return mat
+
+def writeAF(cf, density, name, norm=False):
+    """
+    writeAF(cf, density, name)
+
+    Create a material from a string and print out the stochiometry string
+
+    Input
+    -----
+    cf: string
+        The chemical formula (can also be a sum of oxides...)
+    density: float
+        The density [g/cm3]
+    name: string
+        name for the material
+    norm: Boolean (False)
+        Force normalization of mass fraction
+
+    Return
+    ------
+    mat: DTSA material
+        The material object
+
+    Example
+    -------
+    import dtsa2.jmGen as jmg
+
+    mat = jmg.writeAF("0.1933*MgO+0.0927*Al2O3+0.4535*SiO2+0.1525*CaO+0.0996*FeO", 2.600, "K412", True)
+    """
+    mat = dt2.parseChemicalFormula(cf)
+    if norm:
+        mat.forceNormalization()
+    val = mat.stoichiometryString()
+    print(val)
+    return mat
+
+
 
 def addMatToDatabase(mat, name, density):
     """addMatToDatabase(mat, name, density)
