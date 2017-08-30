@@ -26,6 +26,7 @@ defineStd(("Fe","Ni",),(0.500000,0.500000,),"FeNi",8.960000)
 defineStd(("Fe",),(1.000000,),"Fe standard",7.880000)
 defineStd(("Mn",),(1.000000,),"Mn standard",7.410000)
 defineStd(("Cr","Fe","Ni",),(0.250000,0.550000,0.200000,),"SS309",7.890000)
+defineStd(("Cl","K",),(0.475552,0.524448,),"KCl",1.984000)
 defineStd(("Cl","Ca",),(0.638885,0.361115,),"CaCl2",2.150000)
 defineStd(("Mg","Al",),(0.050000,0.950000,),"Henoc",2.652000)
 # NaCl data from Wikipedia
