@@ -1,5 +1,5 @@
 Instrument: FEI Sirion 400NC
-5 - 30 kV
+1 - 30 kV
 
 Oxford p4 05eV 2K
 Oxford p4 05eV 4K
@@ -11,7 +11,7 @@ Oxford p6 10eV 2K
 
 Moxtek AP 3.3 model
 TOA 35.0
-AZI 45.0
+AZI 45.0  270?
 OWD  5.0
 STD 54.265
 Area 80.0 
