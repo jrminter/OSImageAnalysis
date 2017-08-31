@@ -36,6 +36,7 @@ import dtsa2.jmGen as jmg
                          an existing (problem) entry...
 2017-08-30  JRM  0.0.92  Added convenience functions writeMF and writeAF
 2017-08-31  JRM  0.0.93  merged writeMF and writeAF into writeCompo
+                         and added calcMAN.
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
@@ -68,6 +69,36 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+
+def calcMAN(cf, name):
+    """
+    calcMAN(cf, name)
+
+    Create a matrial object from a chemical formula and output
+    the mean atomic number.
+
+    Input
+    -----
+    cf: string
+        The chemical formula (can also be a sum of oxides...)
+    name: string
+        name for the material
+
+    Return
+    ------
+    none: prints the MAN to the command line
+
+    Example
+    -------
+    import dtsa2.jmGen as jmg
+
+    jmg.calcMAN("0.1933*MgO+0.0927*Al2O3+0.4535*SiO2+0.1525*CaO+0.0996*FeO", "K412")
+
+    """
+    mat = dt2.parseChemicalFormula(cf, 0, name)
+    man = mat.meanAtomicNumber()
+    line = "%s mean atomic number: %.3f" % (name, man)
+    print(line)
 
 def writeCompo(cf, density, name, norm=False):
     """
