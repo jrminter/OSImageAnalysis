@@ -35,10 +35,11 @@ import dtsa2.jmGen as jmg
 2017-07-06  JRM  0.0.91  Added a addMatToDatabase. This will overwrite
                          an existing (problem) entry...
 2017-08-30  JRM  0.0.92  Added convenience functions writeMF and writeAF
+2017-08-31  JRM  0.0.93  merged writeMF and writeAF into writeCompo
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.92"
+__version__ = "0.0.93"
 
 import sys
 import os
@@ -68,11 +69,12 @@ import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
 
-def writeMF(cf, density, name, norm=False):
+def writeCompo(cf, density, name, norm=False):
     """
-    writeMF(cf, density, name)
+    writeCompo(cf, density, name, norm=False)
 
-    Create a material from a string and print out the weight percent string
+    Create a material from a string and print out the composition as
+    mass fraction and atom fraction.
 
     Input
     -----
@@ -94,53 +96,35 @@ def writeMF(cf, density, name, norm=False):
     -------
     import dtsa2.jmGen as jmg
 
-    mat = jmg.writeMF("CaF2", 3.18, "CaF2")
+    mat = jmg.writeCompo("0.1933*MgO+0.0927*Al2O3+0.4535*SiO2+0.1525*CaO+0.0996*FeO", 2.600, "K412", True)
 
     """
 
     mat = dt2.parseChemicalFormula(cf, density, name)
     if norm:
         mat.forceNormalization()
-    val = mat.weightPercentString(True)
-    print(val)
+    se = mat.getSortedElements() # an array highest mf to lowest
+    print("")
+    print(name)
+    print("element, mass-fraction, at-fraction")
+    sumMF = 0.
+    sumAF = 0.
+    for el in se:
+        line = "%s, " % (el)
+        d0 = mat.weightFractionU(el, True)
+        line += "%.6f, " % (round(d0.floatValue(), 6))
+        sumMF += round(d0.floatValue(), 6)
+        d1 = mat.atomicPercentU(el, True)
+        line += "%.6f" % (round(d1.floatValue(), 6))
+        sumAF += round(d1.floatValue(), 6)
+        print(line)
+    print("")
+    line = "sum mass fractions = %.6f" % round(sumMF, 6)
+    print(line)
+    line = "sum atom fractions = %.6f" % round(sumAF, 6)
+    print(line)
+    print("")
     return mat
-
-def writeAF(cf, density, name, norm=False):
-    """
-    writeAF(cf, density, name)
-
-    Create a material from a string and print out the stochiometry string
-
-    Input
-    -----
-    cf: string
-        The chemical formula (can also be a sum of oxides...)
-    density: float
-        The density [g/cm3]
-    name: string
-        name for the material
-    norm: Boolean (False)
-        Force normalization of mass fraction
-
-    Return
-    ------
-    mat: DTSA material
-        The material object
-
-    Example
-    -------
-    import dtsa2.jmGen as jmg
-
-    mat = jmg.writeAF("0.1933*MgO+0.0927*Al2O3+0.4535*SiO2+0.1525*CaO+0.0996*FeO", 2.600, "K412", True)
-    """
-    mat = dt2.parseChemicalFormula(cf)
-    if norm:
-        mat.forceNormalization()
-    val = mat.stoichiometryString()
-    print(val)
-    return mat
-
-
 
 def addMatToDatabase(mat, name, density):
     """addMatToDatabase(mat, name, density)
