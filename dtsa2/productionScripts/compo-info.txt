@@ -1,0 +1,37 @@
+
+# SRM 484. Data from Carpenter, Microanalysis Tools AMAS 2009 p. 32
+# NaCl data from Wikipedia
+# K496 data from Fournelle and SP260-112.pdf p.18
+# Type 316 SS
+# Data from http://www.nist.gov/srm/upload/SP260-73.PDF
+# density from http://www.ask.com/answers/337173021/what-is-the-density-of-316-stainless-steel
+
+
+Pyrex - Wikipedia
+https://en.wikipedia.org/wiki/Pyrex
+
+
+The composition of both Corning 7740 and Schott 8330 is given as 80.6% SiO2, 12.6% B2O3, 4.2% Na2O, 2.2% Al2O3, 0.1% CaO, 0.1% Cl, 0.05% MgO, and 0.04% Fe2O3, Pyrex glass cookware manufactured by World Kitchen is made of tempered soda-lime glass instead of borosilicate.
+
+before norm
+0.8060*SiO2+0.1260*B2O3+0.0042*Na2O+0.0022*Al2O3+0.0001*CaO+0.CopS001*Cl+0.0005*MgO+0.0004*Fe2O3
+
+after norm
+0.80689*SiO2+0.12614*B2O3+0.04205*Na2O+0.02202*Al2O3+0.00100*CaO+0.00100*Cl+0.00050*MgO+0.00040*Fe2O3
+
+http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=169
+defineStd(("B","O","Na","Mg","Al","Si","Cl","Ca","Fe",),(0.039175,0.538511,0.031195,0.000302,0.011654,0.377169,0.001000,0.000715,0.000280,),"Pyrex",2.230000)
+I trust corning and wikipedia
+
+Composition of Pyrex Glass:
+Density (g/cm3) =   2.23000E+00
+Mean Excitation Energy (eV) =   134.000000
+
+COMPOSITION:
+Atomic number   Fraction by weight
+B   0.040064
+O   0.539562
+Na  0.028191
+Al  0.011644
+Si  0.377220
+19  0.003321

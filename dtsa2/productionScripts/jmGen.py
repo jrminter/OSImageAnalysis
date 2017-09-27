@@ -37,10 +37,11 @@ import dtsa2.jmGen as jmg
 2017-08-30  JRM  0.0.92  Added convenience functions writeMF and writeAF
 2017-08-31  JRM  0.0.93  merged writeMF and writeAF into writeCompo
                          and added calcMAN.
+2017-09-26  JRM  0.0.94  Added printTimeNow
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.93"
+__version__ = "0.0.94"
 
 import sys
 import os
@@ -69,6 +70,29 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+
+
+def printTimeNow():
+    """printTimeNow()
+
+    Print the current date and time
+
+    Input
+    -----
+    None
+
+    Return
+    ------
+    None
+
+    Example
+    -------
+    import dtsa2.jmGen as jmg
+    jmg.printTimeNow()
+    """
+    from datetime import datetime
+    a = datetime.now()
+    print(a.strftime("%A, %d. %B %Y %I:%M%p"))
 
 def calcMAN(cf, name):
     """
