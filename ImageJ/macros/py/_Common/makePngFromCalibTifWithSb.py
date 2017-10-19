@@ -121,7 +121,7 @@ for fi in lFiles:
         print(fi)
     orig = ImagePlus(fi)
     if bDespeckle:
-    	IJ.run(orig, "Despeckle", "")
+        IJ.run(orig, "Despeckle", "")
     
     strName = os.path.basename(fi)
     # This permits file names to contains periods other than for the extension
@@ -145,9 +145,9 @@ for fi in lFiles:
     # a hack to get the scale bars to work reliably
     foo = orig.duplicate()
     if (bSetGrayLevels == True):
-    	bd = orig.getBitDepth()
-    	if(bd==16):
-        	IJ.setMinAndMax(foo, gLo, gHi)    
+        bd = orig.getBitDepth()
+        if(bd==16):
+            IJ.setMinAndMax(foo, gLo, gHi)    
     IJ.run(foo, "RGB Color", "")
     IJ.run(foo, "Add Scale Bar", strBar)
     foo.close()
