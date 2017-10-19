@@ -17,10 +17,10 @@ from __future__ import division
 #                          measureFeatureLength
 # 2017-03-17  JRM  1.6.07  Added denoise
 # 2017-05-22  JRM  1.6.08  Added autoExtractPDF
-# 2017-10-10  JRM  1.6.09  Cleaned up anaCircParticles
+# 2017-10-19  JRM  1.6.09  Added setFullGrayDisplay
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter Modified 2017-10-10 $"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2017-10-19$"
 __version__ = "1.6.09"
 
 import sys
@@ -83,7 +83,38 @@ import fiji.process.Image_Expression_Parser
 and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
-import jmFijiGen as jmg""" 
+import jmFijiGen as jmg
+""" 
+
+def setFullGrayDisplay(imp):
+    """setFullGrayDisplay(imp)
+
+    Set the display limits for a grayscale image to 0 to max value
+
+    Parameters
+    ----------
+    imp : ImagePlus
+        The ImagePlus of the image to process
+
+    Returns
+    -------
+    None : works in place
+
+    Example
+    -------
+
+
+    from ij import IJ
+    import jmFijiGen as jmg
+
+    imp = IJ.getImage()
+    jmg.setFullGrayDisplay(imp)
+
+    """
+    maxVal = imp.getDisplayRangeMax()
+    IJ.setMinAndMax(imp, 0, maxVal)
+
+
 
 def autoExtractPDF(folderPathIn, folderPathOut, fileName):
     """autoExtractPDF(folderPathIn, folderPathOut, fileName)
@@ -491,19 +522,18 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
         xM = lXm[i]
         yM = lYm[i]
         ecd = 2.0 * math.sqrt(area/math.pi)
-        if circ >= minCirc:
-            if ar <= maxAR:
-                # save the feature vector
-                partID.append(k+1)
-                partECD.append(round(ecd, 4))
-                partAR.append(lAR[i])
-                partCir.append(lCirc[i])
-                partPeri.append(lPeri[i])
-                partRnd.append(lRnd[i])
-                partSol.append(lSol[i])
-                # append the ROI to the list
-                lRois.append(roi)
-                k += 1
+        if circ > minCirc:
+            # save the feature vector
+            partID.append(k+1)
+            partECD.append(round(ecd, 4))
+            partAR.append(lAR[i])
+            partCir.append(lCirc[i])
+            partPeri.append(lPeri[i])
+            partRnd.append(lRnd[i])
+            partSol.append(lSol[i])
+            # append the ROI to the list
+            lRois.append(roi)
+            k += 1
         i += 1
     # clear the ROI manager and populate with 'good' particles
     # then draw each in the overlay...
@@ -525,6 +555,8 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
     out.updateImage()
     out.updateAndRepaintWindow()
 
+    print(len(partID), len(partAR))
+
     # write the output file as .csv
     if bAppend:
         if os.path.isfile(csvPath):
@@ -543,10 +575,6 @@ def anaCircParticles(imp, wat, csvPath, minArea=10, maxArea=100000,
         strLine += "%.5f\n"         % (partSol[k])
         f.write(strLine)
     f.close()
-
-    win = WindowManager.getWindow("Results")
-    win.close(False)
-
     return out
 
 

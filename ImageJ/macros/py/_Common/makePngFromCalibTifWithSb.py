@@ -30,6 +30,7 @@ from ij import ImagePlus
 from ij.io import FileSaver, DirectoryChooser
 import jmFijiGen as jmg
 
+bDespeckle = False
 bVerbose = False
 barW =  1.0          # default bar width - reset in lines 127-133
 barH = 6             # bar height, pts
@@ -37,9 +38,13 @@ barF = 24            # bar font, pts
 barC = "White"       # bar color
 barL = "Lower Right" # bar location
 
-gSatFac = 0.05
+gSatFac = 0.001
 
-bSetGrayLevels = False
+bSetGrayLevels = True
+# for Ferrar 2017-10-18
+gLo = 200
+gHi = 20000
+
 
 """
 # If True, set as below...
@@ -115,6 +120,9 @@ for fi in lFiles:
     if bVerbose:
         print(fi)
     orig = ImagePlus(fi)
+    if bDespeckle:
+    	IJ.run(orig, "Despeckle", "")
+    
     strName = os.path.basename(fi)
     # This permits file names to contains periods other than for the extension
     strName = strName.rsplit('.', 1)[:-1][0]
@@ -137,13 +145,17 @@ for fi in lFiles:
     # a hack to get the scale bars to work reliably
     foo = orig.duplicate()
     if (bSetGrayLevels == True):
-        IJ.setMinAndMax(foo, gLo, gHi)    
+    	bd = orig.getBitDepth()
+    	if(bd==16):
+        	IJ.setMinAndMax(foo, gLo, gHi)    
     IJ.run(foo, "RGB Color", "")
     IJ.run(foo, "Add Scale Bar", strBar)
     foo.close()
 
     if (bSetGrayLevels == True):
-        IJ.setMinAndMax(orig, gLo, gHi)
+        bd = orig.getBitDepth()
+        if(bd==16):
+            IJ.setMinAndMax(orig, gLo, gHi)
     else:
         sArgSat = "saturated=%.2f" % gSatFac
         IJ.run(orig, "Enhance Contrast", sArgSat)
