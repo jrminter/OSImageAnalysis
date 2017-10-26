@@ -87,7 +87,7 @@ Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """ 
 
-def setFullGrayDisplayRange(imp, bCvtToRgb=False, bVerbose=False):
+def setFullGrayDisplayRange(imp, factor=0.95, bCvtToRgb=False, bVerbose=False):
     """setFullGrayDisplayRange
 
     Sets the limits for most grayscale images from 0 to max
@@ -97,6 +97,8 @@ def setFullGrayDisplayRange(imp, bCvtToRgb=False, bVerbose=False):
     ----------
     imp : ImagePlus
         The ImagePlus of the image to process
+    factor: number (0.95)
+        The fraction of the upper limit for cutoff
     bCvtToRgb: Boolean (False)
         A flag to convert to RGB
     bVerbose: Boolean (False)
@@ -125,16 +127,16 @@ def setFullGrayDisplayRange(imp, bCvtToRgb=False, bVerbose=False):
         IJ.run(imp,"16-bit","")
         bd = 16
     if(bd==16):
-        setFullGrayDisplay(imp)
+        setFullGrayDisplay(imp, factor=factor)
         if(bCvtToRgb==True):
             IJ.run(imp,"RGB Color","")
     if(bd==8):
-        setFullGrayDisplay(imp)
+        setFullGrayDisplay(imp, factor=factor)
         if(bCvtToRgb==True):
             IJ.run(imp,"RGB Color","")
 
 
-def setFullGrayDisplay(imp):
+def setFullGrayDisplay(imp, factor=0.95):
     """setFullGrayDisplay(imp)
 
     Set the display limits for a grayscale image to 0 to max value
@@ -142,7 +144,9 @@ def setFullGrayDisplay(imp):
     Parameters
     ----------
     imp : ImagePlus
-        The ImagePlus of the image to process
+        The ImagePlus of the image to process:
+    factor : number (0.95)
+        The fraction of the upper limit for cutoff
 
     Returns
     -------
@@ -159,8 +163,9 @@ def setFullGrayDisplay(imp):
     jmg.setFullGrayDisplay(imp)
 
     """
-    maxVal = imp.getDisplayRangeMax()
-    IJ.setMinAndMax(imp, 0, maxVal)
+    ip = imp.getProcessor()
+    maxGray = ip.getMax()
+    IJ.setMinAndMax(imp, 0, factor*maxGray)
 
 
 
