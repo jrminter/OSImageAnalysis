@@ -16,8 +16,8 @@ import time
 
 from ij import IJ, Prefs
 
-gLo = 0
-gHi = 24000
+gLo = 1800
+gHi = 14973
 
 orig = IJ.getImage()
 bd = orig.getBitDepth()

@@ -18,10 +18,11 @@ from __future__ import division
 # 2017-03-17  JRM  1.6.07  Added denoise
 # 2017-05-22  JRM  1.6.08  Added autoExtractPDF
 # 2017-10-19  JRM  1.6.09  Added setFullGrayDisplay
+# 2017-10-26  JRM  1.6.10  Added setFullGrayDisplayRange
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2017-10-19$"
-__version__ = "1.6.09"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2017-10-26$"
+__version__ = "1.6.10"
 
 import sys
 import os
@@ -85,6 +86,53 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """ 
+
+def setFullGrayDisplayRange(imp, bCvtToRgb=False, bVerbose=False):
+    """setFullGrayDisplayRange
+
+    Sets the limits for most grayscale images from 0 to max
+    and optionally converts the result to RGB.
+
+    Parameters
+    ----------
+    imp : ImagePlus
+        The ImagePlus of the image to process
+    bCvtToRgb: Boolean (False)
+        A flag to convert to RGB
+    bVerbose: Boolean (False)
+        A flag to print diagnostic message
+
+    Returns
+    -------
+    None : works in place
+
+    Example
+    -------
+
+
+    from ij import IJ
+    import jmFijiGen as jmg
+
+    imp = IJ.getImage()
+    jmg.setFullGrayDisplayRange(imp)
+
+    """
+    imp = IJ.getImage()
+    bd = imp.getBitDepth()
+    if (bVerbose == True):
+        print(bd)
+    if(bd==24):
+        IJ.run(imp,"16-bit","")
+        bd = 16
+    if(bd==16):
+        setFullGrayDisplay(imp)
+        if(bCvtToRgb==True):
+            IJ.run(imp,"RGB Color","")
+    if(bd==8):
+        setFullGrayDisplay(imp)
+        if(bCvtToRgb==True):
+            IJ.run(imp,"RGB Color","")
+
 
 def setFullGrayDisplay(imp):
     """setFullGrayDisplay(imp)
