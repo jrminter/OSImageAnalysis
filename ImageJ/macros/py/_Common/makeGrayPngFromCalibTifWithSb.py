@@ -1,13 +1,18 @@
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
 
-
 """
 makeGrayPngFromCalibTifWithSb.py
 
 J. R. Minter
 
 Process a folder of calibrated .tif files and burn scale bars
+. This
+version computes the cumulative gray level histogram and sets the
+lower display limit to zero and the upper display limit to a specified
+fraction of the cumulative histogram. For most images a factor very close
+to 1 (i.e. 0.99995) is appropriate. Some images with charging can use a
+lower factor. The png file is written as an RGB image.
 
 CCA licence
 
@@ -18,8 +23,11 @@ CCA licence
 2016-09-27  JRM  0.0.12 Permit . (other than file ext) in file names
 2017-04-12  JRM  0.0.13 Move codecs to top, put what changes near top
                         Set for PEP8
+2017-10-27  JRM  0.0.14 Use jmg.calcMaxGrayLevelFromCumulativeHistogram
+                        
 """
-
+__revision__ = "$Id: makeGrayPngFromCalibTifWithSb.py John R. Minter 2017-10-27$"
+__version__ = "0.0.14"
 
 import os
 import glob
@@ -38,7 +46,7 @@ barF = 24            # bar font, pts
 barC = "White"       # bar color
 barL = "Lower Right" # bar location
 
-factor = 0.85
+factor = 0.99995
 
 bDoTiltCorrect = False
 
@@ -100,9 +108,9 @@ for fi in lFiles:
     fi = fi.replace("//", "/")
     if bVerbose:
         print(fi)
-	orig = ImagePlus(fi)
-	strName = os.path.basename(fi)
-	strName = strName.rsplit('.', 1)[:-1][0]
+    orig = ImagePlus(fi)
+    strName = os.path.basename(fi)
+    strName = strName.rsplit('.', 1)[:-1][0]
     print(strName)
     orig.setTitle(strName)
     orig.show()
@@ -124,9 +132,11 @@ for fi in lFiles:
     foo = orig.duplicate()
     bd = orig.getBitDepth()
     if(bd==16):
-        jmg.setFullGrayDisplayRange(orig, factor=factor, bCvtToRgb=False, bVerbose=False)
-        orig.updateImage()
-        orig.updateAndRepaintWindow()
+        thr = jmg.calcMaxGrayLevelFromCumulativeHistogram(foo, factor)
+        if bVerbose:
+            print(thr)
+        foo.updateImage()
+        foo.updateAndRepaintWindow()
         
     IJ.run(foo, "RGB Color", "")
     IJ.run(foo, "Add Scale Bar", strBar)
@@ -134,7 +144,9 @@ for fi in lFiles:
     foo.close()
     bd = orig.getBitDepth()
     if(bd==16):
-        jmg.setFullGrayDisplayRange(orig, factor=factor, bCvtToRgb=False, bVerbose=False)
+        thr = jmg.calcMaxGrayLevelFromCumulativeHistogram(orig, factor)
+        if bVerbose:
+            print(thr)
         orig.updateImage()
         orig.updateAndRepaintWindow()
 
