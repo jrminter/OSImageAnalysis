@@ -19,10 +19,11 @@ from __future__ import division
 # 2017-05-22  JRM  1.6.08  Added autoExtractPDF
 # 2017-10-19  JRM  1.6.09  Added setFullGrayDisplay
 # 2017-10-26  JRM  1.6.10  Added setFullGrayDisplayRange
+# 2017-10-26  JRM  1.6.11  Added calcMaxGrayLevelFromCumulativeHistogram
 
 
 __revision__ = "$Id: jmFijiGen.py John R. Minter 2017-10-26$"
-__version__ = "1.6.10"
+__version__ = "1.6.11"
 
 import sys
 import os
@@ -86,6 +87,68 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """ 
+
+def calcMaxGrayLevelFromCumulativeHistogram(imp, factor=0.95):
+    """calcMaxGrayLevelFromCumulativeHistogram(imp, factor=0.95)
+
+    Calculate the maximum gray level for a grayscale image from the cumulative histogram
+
+    Parameters
+    ----------
+    imp : ImagePlus
+        The ImagePlus of the image to process
+    factor: number (0.95)
+        The fraction of the upper limit for cutoff
+
+    Returns
+    -------
+    thr : Works in place on the image and returns the threshold value
+
+    Example
+    -------
+    from ij import IJ
+    import jmFijiGen as jmg
+
+    imp = IJ.getImage()
+    jmg.calcMaxGrayLevelFromCumulativeHistogram(imp, 0.90)
+    """
+
+    imp = IJ.getImage()
+    ip = imp.getProcessor()
+    maxGray = int(ip.getMax())
+    nBins = maxGray + 1
+    hist = ip.getHistogram(nBins)
+
+    glVal = jarray.zeros(nBins, 'd')
+    glCum = jarray.zeros(nBins, 'f')
+
+    glSum = 0.0
+    maxCts = 0
+    totCts = 0
+
+    for i in range(0, nBins):
+        glVal[i] = i
+        cts = hist[i]
+        if(cts > maxCts):
+            maxCts = cts
+        totCts += cts
+        glCum[i] = float(totCts)
+
+    for i in range(0, nBins):
+        glCum[i] /= totCts
+
+    frac = 1.0
+    n = 1
+    thr = 0
+    while(frac >= factor):
+        thr = nBins-n
+        frac = glCum[thr]
+        n += 1
+
+    IJ.setMinAndMax(imp, 0, thr)
+
+    return (thr)
+
 
 def setFullGrayDisplayRange(imp, factor=0.95, bCvtToRgb=False, bVerbose=False):
     """setFullGrayDisplayRange
