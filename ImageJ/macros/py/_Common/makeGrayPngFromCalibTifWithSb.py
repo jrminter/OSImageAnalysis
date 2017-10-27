@@ -38,7 +38,6 @@ from ij import ImagePlus
 from ij.io import FileSaver, DirectoryChooser
 import jmFijiGen as jmg
 
-bDespeckle = False
 bVerbose = True
 barW =  1.0          # default bar width - reset in lines 127-133
 barH = 6             # bar height, pts
