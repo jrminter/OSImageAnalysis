@@ -40,7 +40,7 @@ barL = "Lower Right" # bar location
 
 gSatFac = 0.001
 
-bSetGrayLevels = True
+bSetGrayLevels = False
 # for Ferrar 2017-10-18
 gLo = 200
 gHi = 20000

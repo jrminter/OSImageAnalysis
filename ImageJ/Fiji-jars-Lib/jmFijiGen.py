@@ -20,10 +20,11 @@ from __future__ import division
 # 2017-10-19  JRM  1.6.09  Added setFullGrayDisplay
 # 2017-10-26  JRM  1.6.10  Added setFullGrayDisplayRange
 # 2017-10-26  JRM  1.6.11  Added calcMaxGrayLevelFromCumulativeHistogram
+# 2017-11-01  JRM  1.6.12  Added cropImage
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2017-10-26$"
-__version__ = "1.6.11"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2017-11-01$"
+__version__ = "1.6.12"
 
 import sys
 import os
@@ -87,6 +88,49 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """ 
+
+def cropImage(imp, x0, y0, w, h, bTest=False):
+    """cropImage(imp, x0, y0, w, h, bTest=False)
+    
+    Crop an image from a duplicate and return the ImagePlus of the cropped image
+    
+    Parameters
+    ----------
+    imp: ImagePlus
+        The image to be cropped
+    x0: number
+        The x coordinate to begin drawing the crop rectangle
+    y0: number
+        The x coordinate to begin drawing the crop rectangle
+    w: number
+        The width in pixels for the box
+    h: number
+        The height in pixels for the box        
+    bTest: Boolean (False)
+        If True, just draw the rectangle
+
+    Returns
+    -------
+    ret: ImagePlus
+        The cropped image
+
+    Example
+    -------
+    from ij import IJ
+    import jmFijiGen as jmg
+
+    imp = IJ.getImage()
+    ret = jmg.cropImage(imp, 10, 10, 100, 100)
+    """
+    IJ.run("Colors...", "foreground=black background=black selection=green")
+    IJ.makeRectangle(x0, y0, w, h)
+    if(bTest==True):
+        return
+    else:
+        ret = imp.crop()
+        return ret
+
+
 
 def calcMaxGrayLevelFromCumulativeHistogram(imp, factor=0.95):
     """calcMaxGrayLevelFromCumulativeHistogram(imp, factor=0.95)
