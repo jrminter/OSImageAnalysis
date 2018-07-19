@@ -47,6 +47,10 @@ images/latex-cr.tif
 # don't track written ini files
 images/suite/*.ini
 
+# don't track files used to test simulations in progress...
+penepma/pe-spect-01.dat
+penepma/pe-spect-01.msa
+
 # py3
 py3/dna/features.csv
 py3/dna/output.png

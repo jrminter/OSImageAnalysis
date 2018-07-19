@@ -5,10 +5,10 @@ relDir <- "OSImageAnalysis/penepma"
 
 
 inFil <- sprintf("%s/%s/%s", gitDir, relDir,
-                 "bulk-Cu-20kV-8hr-sim.dat" )
+                 "pe-spect-01.dat" )
 
 outFil <- sprintf("%s/%s/%s", gitDir, relDir,
-                  "bulk-Cu-20kV-8hr-sim.msa" )
+                  "pe-spect-01.msa" )
 
 df <- penepmaSpcToDF(inFil)
 rownames(df) <- c()
@@ -16,4 +16,4 @@ print(head(df))
 print(summary(df))
 
 
-# penepmaToMsa(inFil, outFil, 20.0, "bulk-Cu-20kV-8hr-sim")
+penepmaToMsa(inFil, outFil, 20.0, "pe-spect-01")
