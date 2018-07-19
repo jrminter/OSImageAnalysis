@@ -10,7 +10,7 @@ inFil <- sprintf("%s/%s/%s", gitDir, relDir,
 outFil <- sprintf("%s/%s/%s", gitDir, relDir,
                   "pe-spect-01.msa" )
 
-df <- penepmaSpcToDF(inFil)
+df <- penepma_read_raw_data(inFil)
 rownames(df) <- c()
 print(head(df))
 print(summary(df))
