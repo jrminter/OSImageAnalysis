@@ -11,7 +11,7 @@ Modifications
 
 
 """
-from ij import Prefs
+from ij import IJ, Prefs
 
 st = Prefs.getPrefsDir()
 print(st)
