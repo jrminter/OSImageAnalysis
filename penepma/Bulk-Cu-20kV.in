@@ -1,7 +1,7 @@
 TITLE  Cu bulk 20 keV, simulation of Cu Ka line  
        .
        >>>>>>>> Electron beam definition.
-SENERG 15e3                      [Energy of the electron beam, in eV]
+SENERG 20e3                      [Energy of the electron beam, in eV]
 SPOSIT 0 0 1                     [Coordinates of the electron source]
 SDIREC 180 0              [Direction angles of the beam axis, in deg]
 SAPERT 0                                      [Beam aperture, in deg]
