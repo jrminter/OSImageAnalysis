@@ -16,4 +16,10 @@ print(head(df))
 print(summary(df))
 
 
-penepmaToMsa(inFil, outFil, 20.0, "pe-spect-01")
+plt <- penepma_plot_spectrum(inFil, "pe-spect-01")
+print(plt)
+
+plt <- penepma_plot_spectrum_logy(inFil, "pe-spect-01")
+print(plt)
+
+# penepmaToMsa(inFil, outFil, 20.0, "pe-spect-01")
