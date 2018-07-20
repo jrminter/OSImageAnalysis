@@ -7,6 +7,7 @@
 gitDir <- Sys.getenv('GIT_HOME')
 relDir <- "OSImageAnalysis/penepma"
 spcTi  <- "pe-spect-01"
+outTi <-  "penepma-Ir-500nm-Ag-250nm-Silica"
 e0     <- 30.0 # kV
 doMsa  <- FALSE # Usually only want to write the final one...
 
@@ -34,6 +35,7 @@ plt <- penepma_plot_spectrum_logy(inFil, spcTi)
 print(plt)
 
 if (doMsa == TRUE) {
-  penepma_to_msa(inFil, outFil, e0, spcTi)
+  outFil <- sprintf("%s/%s/%s.msa", gitDir, relDir, outTi )
+  penepma_to_msa(inFil, outFil, e0, outTi)
 }
 
