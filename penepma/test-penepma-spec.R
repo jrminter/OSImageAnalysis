@@ -1,4 +1,4 @@
-library(rEDS)
+library(rpenepma)
 
 gitDir <- Sys.getenv('GIT_HOME')
 relDir <- "OSImageAnalysis/penepma"
@@ -18,11 +18,11 @@ print(summary(df))
 
 plt <- penepma_plot_spectrum(inFil, "pe-spect-01")
 plt <- plt +
-      # coord_trans(y= "sqrt") +
+       # coord_trans(y= "sqrt") +
        NULL
 print(plt)
 
 plt <- penepma_plot_spectrum_logy(inFil, "pe-spect-01")
 print(plt)
 
-# penepmaToMsa(inFil, outFil, 20.0, "pe-spect-01")
+# penepma_to_msa(inFil, outFil, 30.0, "pe-spect-01")
