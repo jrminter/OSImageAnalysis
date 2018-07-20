@@ -1,0 +1,87 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX        
+C                                                                       
+C  Cylindrical layers - distances all in cm                             
+0000000000000000000000000000000000000000000000000000000000000000
+SURFACE (   1)   Plane Z=0 - surface plane                           
+INDICES=( 0, 0, 0, 1, 0)
+0000000000000000000000000000000000000000000000000000000000000000
+SURFACE (   2)   Plane Z=-250 nm (1st film, 100 nm thick)            
+INDICES=( 0, 0, 0, 1, 0)
+Z-SHIFT=(-5.000000000000000E-06,   0)       
+0000000000000000000000000000000000000000000000000000000000000000
+SURFACE (   3)   Plane Z=-400 nm (2nd film, 100 nm thick)            
+INDICES=( 0, 0, 0, 1, 0)
+Z-SHIFT=(-1.250000000000000E-05,   0)       
+0000000000000000000000000000000000000000000000000000000000000000
+SURFACE (   4)   Plane Z=-1 cm (3rd material, Bulk)                  
+INDICES=( 0, 0, 0, 1, 0)
+Z-SHIFT=(-1.000000000000000E+00,   0)       
+0000000000000000000000000000000000000000000000000000000000000000
+SURFACE (   5)   Cylinder, 1 cm radius                               
+INDICES=( 1, 1, 0, 0,-1)
+X-SCALE=( 1.000000000000000E+00,   0)       
+Y-SCALE=( 1.000000000000000E+00,   0)       
+0000000000000000000000000000000000000000000000000000000000000000
+BODY    (   1)   top Layer                                           
+MATERIAL(   1)
+SURFACE (   1), SIDE POINTER=(-1)
+SURFACE (   2), SIDE POINTER=( 1)
+SURFACE (   5), SIDE POINTER=(-1)
+0000000000000000000000000000000000000000000000000000000000000000
+BODY    (   2)   middle Layer                                        
+MATERIAL(   2)
+SURFACE (   2), SIDE POINTER=(-1)
+SURFACE (   3), SIDE POINTER=( 1)
+SURFACE (   5), SIDE POINTER=(-1)
+0000000000000000000000000000000000000000000000000000000000000000
+BODY    (   3)   bottom Layer                                        
+MATERIAL(   3)
+SURFACE (   3), SIDE POINTER=(-1)
+SURFACE (   4), SIDE POINTER=( 1)
+SURFACE (   5), SIDE POINTER=(-1)
+0000000000000000000000000000000000000000000000000000000000000000
+END      0000000000000000000000000000000000000000000000000000000
+
+
+
+*****************************************
+****     PENGEOM (version 2012)      ****
+****  Constructive Quadric Geometry  ****
+*****************************************
+
+
+
+************  Genealogical tree. 
+
+
+*** BODY   =    1,  KMOTH =    4,  MAT =  1
+KSURF =    1    2    5    6
+KFLAG =    1    2    1    1
+
+*** BODY   =    2,  KMOTH =    4,  MAT =  2
+KSURF =    2    3    5    6
+KFLAG =    1    2    1    1
+
+*** BODY   =    3,  KMOTH =    4,  MAT =  3
+KSURF =    3    4    5    6
+KFLAG =    1    2    1    1
+
+*** MODULE =    4,  KMOTH =    0,  MAT =  0
+KDGHT =    1    2    3    4
+KSURF =    6    1    2    5    3    4
+KFLAG =    1    4    4    4    4    4
+
+
+************  Adequacy of the geometry definition.
+
+The largest number of bodies in a module or
+     bodies limiting a single body is ............    4
+
+The largest number of limiting surfaces for
+     a single body or module is ..................    6
+
+
+The simulation of this geometry will be relatively fast,
+     no further optimization seems to be required.
+
+************  The end.

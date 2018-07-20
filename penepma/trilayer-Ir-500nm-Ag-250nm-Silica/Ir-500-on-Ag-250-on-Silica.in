@@ -16,7 +16,7 @@ MFNAME SiO2.mat                         [Material file, up to 20 chars]
 MSIMPA 9.0E+1 9.0E+1 1E+3 0 0 1E+3 1E+3       [EABS(1:3),C1,C2,WCC,WCR]
        .
        >>>>>>>> Geometry of the sample.
-GEOMFN tl_250_150nm.geo     [Geometry definition file, 20 chars]
+GEOMFN tl_500_250nm.geo     [Geometry definition file, 20 chars]
 DSMAX  1 1.0e-7             [IB, Maximum step length (cm) in body IB]
 DSMAX  2 1.5e-7             [IB, Maximum step length (cm) in body IB]
 DSMAX  3 1.5e-7             [IB, Maximum step length (cm) in body IB]
