@@ -82,8 +82,8 @@ def ensureDir(d):
 
 print("Date & time started: " + time.strftime("%c"))
 
-tNmIr   =   250.0  # nm of Ir top layer
-tNmAg   =   150.0  # nm of Ag 2nd layer
+tNmIr   =   500.0  # nm of Ir top layer
+tNmAg   =   250.0  # nm of Ag 2nd layer
 nTraj   = 10000    # num Traj to run per pt 10000 for a long run
 charF   =  True    # include characteristic fluorescence
 bremF   =  True    # include continuum fluorescence 
@@ -101,7 +101,9 @@ gitDir = os.environ['GIT_HOME']
 relPrj = "/OSImageAnalysis/penepma"
 pyDir  = gitDir + relPrj + "/dtsa/py"
 
-datDir = gitDir + relPrj + "/trilayer-Ir-250nm-Ag-150nm-Silica"
+finDir = "/trilayer-Ir-%gnm-Ag-%g-Silica" % (tNmIr, tNmAg)
+
+datDir = gitDir + relPrj + finDir
 csvDir = datDir + "/csv"
 simDir = datDir + "/sim"
 
