@@ -17,6 +17,9 @@ print(summary(df))
 
 
 plt <- penepma_plot_spectrum(inFil, "pe-spect-01")
+plt <- plt +
+      # coord_trans(y= "sqrt") +
+       NULL
 print(plt)
 
 plt <- penepma_plot_spectrum_logy(inFil, "pe-spect-01")
