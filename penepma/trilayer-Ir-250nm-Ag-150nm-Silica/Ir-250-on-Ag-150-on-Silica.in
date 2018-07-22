@@ -1,4 +1,4 @@
-TITLE  Thin Film On Substrate X-ray Production Model
+TITLE  250 nm Ir on 150 nm Ag on Silica at 30 kV
        .
        >>>>>>>> Electron beam definition.
 SENERG 3.0E+04                   [Energy of the electron beam, in eV]
@@ -41,12 +41,12 @@ NBPH   30                   [No. of bins for the azimuthal angle PHI]
                 IPSF=1, creates a phase-space file.
        .
 PDANGL 50.0 60.0 0.0 360.0 0             [Angular window, in deg, IPSF]
-PDENER 0 3.0E+04 4096                  [Energy window, no. of channels]
+PDENER 0 3.0E+04 250                   [Energy window, no. of channels]
        .
        >>>>>>>> Job properties
-RESUME dump1.dat               [Resume from this dump file, 20 chars]
-DUMPTO dump1.dat                  [Generate this dump file, 20 chars]
-DUMPP  120                                   [Dumping period, in sec]
+RESUME dump1.dat                 [Resume from this dump file, 20 chars]
+DUMPTO dump1.dat                    [Generate this dump file, 20 chars]
+DUMPP  120                                     [Dumping period, in sec]
        .
-NSIMSH 2.0e+09                  [Desired number of simulated showers]
-TIME   28800                 [8 hrs allotted simulation time, in sec]
+NSIMSH 2.0e+09                    [Desired number of simulated showers]
+TIME   36000                  [10 hrs allotted simulation time, in sec]
