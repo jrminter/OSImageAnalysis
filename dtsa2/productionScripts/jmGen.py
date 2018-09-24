@@ -37,7 +37,8 @@ import dtsa2.jmGen as jmg
 2017-08-30  JRM  0.0.92  Added convenience functions writeMF and writeAF
 2017-08-31  JRM  0.0.93  merged writeMF and writeAF into writeCompo
                          and added calcMAN.
-2017-09-26  JRM  0.0.94  Added printTimeNow
+2018-09-24  JRM  0.0.94  Modified compKRs to return a list of krs where
+                         each kr has [mean, uncertainty]
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
@@ -70,29 +71,6 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
-
-
-def printTimeNow():
-    """printTimeNow()
-
-    Print the current date and time
-
-    Input
-    -----
-    None
-
-    Return
-    ------
-    None
-
-    Example
-    -------
-    import dtsa2.jmGen as jmg
-    jmg.printTimeNow()
-    """
-    from datetime import datetime
-    a = datetime.now()
-    print(a.strftime("%A, %d. %B %Y %I:%M%p"))
 
 def calcMAN(cf, name):
     """
@@ -957,13 +935,14 @@ def updateCommonSpecProps(spc, det, name="", liveTime=-1, probeCur=-1, e0=-1, wr
 
 def compKRs(unSpc, stds, trs, det, e0, digits=5):
     """compKRs(unSpc, stds, trs, det, e0, digits=5)
-    Peforms a MLLSQ filter-fit of unknown spectrum (unSpc),
+    Performs a MLLSQ filter-fit of unknown spectrum (unSpc),
     to the standard spectra in a list of dictionaries of standards.
     Each standard in the list is a dictionary like
     {"El":element("C"), "Spc":cSpc} containing the element name
     and the standard spectrum. The function then computes the
     k-ratios for a list of transition sets (trs). The
-    function returns a list of k-ratios, rounded to the desired
+    function returns a list of [k-ratio, uncertainty],
+    rounded to the desired
     number of digits. The function performs an NaN test, setting
     NaNs to zero."""
     # Now set up the calc
@@ -981,7 +960,16 @@ def compKRs(unSpc, stds, trs, det, e0, digits=5):
     for i in range(0, n):
         tr=trs[i]
         k=round(checkNaN(krs.getKRatio(tr)), digits)
-        kr.append(k)
+        # if NAN, returns zero
+        if k == 0:
+            # just set ku to 0
+            ku = 0
+        else:
+            ku = round(krs.getKRatioU(tr).uncertainty(), digits)
+        krvals=[]
+        krvals.append(k)
+        krvals.append(ku)
+        kr.append(krvals)
     return kr
 
 def cropSpec(spc, start=0, end=2048, bClear=True):

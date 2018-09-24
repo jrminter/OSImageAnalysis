@@ -1,14 +1,23 @@
-# Plot a penepma spectrum and optionally convert to .msa format
-# 2018-07-21 requires the rpenepma package from github
+# Plot a penenepma spectrum from the penepma dir
+# A helper function to analyze penepma runs on-the-fly
+# and plot the final spectrum when finished
+#
+# 2018-07-22 requires the rpenepma package from github
 #
 #
 # set paths and kV
 
+library(here)
+print(here())
+
+print(getwd())
+
 gitDir <- Sys.getenv('GIT_HOME')
 relDir <- "OSImageAnalysis/penepma"
-spcTi  <- "pe-spect-01"
-outTi  <-  "20-nm-C-coated-EagleXG"
-e0     <-   15.0 # kV
+spcTi  <- "Ir-500-on-Ag-250-on-Silica-30kV-jw"
+outTi  <- "Ir-500-on-Ag-250-on-Silica-jwa"
+penPa  <- "C:/UserData/Penepma12/Penepma"
+e0     <-   30.0 # kV
 doMsa  <- FALSE # Usually only want to write the final one...
 pWid   <- 1024
 pHt    <-  768
@@ -18,7 +27,7 @@ ptSz   <-   12
 
 library(rpenepma)
 
-inFil <- sprintf("%s/%s/%s", gitDir, relDir, "pe-spect-01.dat" )
+inFil <- sprintf("%s/%s", penPa, "pe-spect-01.dat" )
 
 outFil <- sprintf("%s/%s/%s.msa", gitDir, relDir, spcTi )
 
