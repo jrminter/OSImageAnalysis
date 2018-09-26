@@ -39,6 +39,9 @@ import dtsa2.jmGen as jmg
                          and added calcMAN.
 2018-09-24  JRM  0.0.94  Modified compKRs to return a list of krs where
                          each kr has [mean, uncertainty]
+2018-09-26  JRM  0.0.95  Added a function to print a title string for 
+                         K-ratios and uncertainties output by the
+                         compKRs function.
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
@@ -72,11 +75,38 @@ import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
 
+def write_kr_titl_string(trs):
+    """
+    write_kr_titl_string(trs)
+
+    Write a title string for the list of lists of k-ratios and
+    uncertainties output from the compKRs function.
+
+    Input
+    -----
+    trs The transition set used to compute the K-ratios
+
+    Return
+    ------
+    A string with the title
+    """
+    titl = "["
+    for tr in trs:
+        trName = tr.toString().split("-")[0]
+        titl += "["
+        titl += trName + ".mu," + trName + ".unc],"
+    titl += "]"
+    titl = titl.replace("],]", "]]")
+    titl = titl.replace(" ", "")
+    titl = titl.replace("All", "K") # for light element when all there is is K
+    titl = titl.replace(",", ", ")  # add spaces in title at the end
+    return(titl)
+
 def calcMAN(cf, name):
     """
     calcMAN(cf, name)
 
-    Create a matrial object from a chemical formula and output
+    Create a material object from a chemical formula and output
     the mean atomic number.
 
     Input
