@@ -42,10 +42,11 @@ import dtsa2.jmGen as jmg
 2018-09-26  JRM  0.0.95  Added a function to print a title string for 
                          K-ratios and uncertainties output by the
                          compKRs function.
+2018-10-16  JRM. 0.0.96  Added pretty_print_unc_val function
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.94"
+__version__ = "0.0.96"
 
 import sys
 import os
@@ -74,6 +75,36 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+
+def pretty_print_unc_val(uv, n_digits):
+    """
+    pretty_print_unc_val(uv, n_digits)
+
+    Round and print an uncertain value
+
+    Input
+    -----
+    uv An uncertain value.
+        The value to be formatted for printing
+    n_digits An integer.
+        The number of digits to round both the mean and uncertainty
+
+    Return
+    ------
+    A string ready for printing
+
+    Example
+    -------
+    import dtsa2.jmGen as jmg
+    import gov.nist.microanalysis.Utility as nu
+    val = nu.UncertainValue2(1.2345678, 0.0005678)
+    print(jmg.pretty_print_unc_val(val, 5))
+    """
+    rc = round(uv.doubleValue(), n_digits)
+    uc = round(uv.uncertainty(), n_digits)
+    rv = u'%g \u00B1' % (rc)
+    rv += ' %g' % (uc)
+    return(rv)
 
 def write_kr_titl_string(trs):
     """
