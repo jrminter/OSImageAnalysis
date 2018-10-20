@@ -42,11 +42,13 @@ import dtsa2.jmGen as jmg
 2018-09-26  JRM  0.0.95  Added a function to print a title string for 
                          K-ratios and uncertainties output by the
                          compKRs function.
-2018-10-16  JRM. 0.0.96  Added pretty_print_unc_val function
+2018-10-16  JRM  0.0.96  Added pretty_print_unc_val function
+2018-10-20  JRM  0.0.97  Added make_list_unc_val_string
+
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.96"
+__version__ = "0.0.97"
 
 import sys
 import os
@@ -75,6 +77,53 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+
+def make_list_unc_val_string(id, luv):
+    """
+    make_list_unc_val_string(id, luv)
+
+    Make a formatted string from an ID string and a list of uncertain values.
+
+    Input
+    -----
+    id  A number or a string that will be output as a string.
+
+    luv A list of DTSA-II UncertainValue2 items. These will be printed
+        as comma-delimited pairs with 6 digits following the decimal.
+
+    Return
+    ------
+    A string with comma-delimited values with the ID and mean and uncertainty
+    for each item in the list. This is suitable for writing output to a .csv
+    file.
+
+    Example:
+    --------
+    import dtsa2.jmGen as jmg
+    import gov.nist.microanalysis.Utility as epu
+    nmZnO1   = 40.1
+    uvOKa1   = epu.UncertainValue2(0.269157,0.000126)
+    uvZnLa1  = epu.UncertainValue2(0.259251,9.4e-05)
+    uvSiKa1  = epu.UncertainValue2(0.654561,8.4e-05)
+    l_uvals = [uvOKa1, uvZnLa1, uvSiKa1]
+    out = make_list_unc_val_string(nmZnO1, l_uvals)
+    print(out)
+    
+    1> 40.1, 0.269157, 0.000126, 0.259251, 0.000094, 0.654561, 0.000084
+    """
+    lv = len(luv)
+    i = 0
+    rv = "%s, " % (id)
+    for uv in luv:
+        rc = round(uv.doubleValue(), 6)
+        uc = round(uv.uncertainty(), 6)
+        
+        if i == lv-1:
+            rv += "%g, %.6f" % (rc, uc)
+        else:
+            rv += "%g, %.6f, " % (rc, uc)
+        i += 1
+    return(rv)
 
 def pretty_print_unc_val(uv, n_digits):
     """
