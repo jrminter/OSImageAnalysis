@@ -44,11 +44,12 @@ import dtsa2.jmGen as jmg
                          compKRs function.
 2018-10-16  JRM  0.0.96  Added pretty_print_unc_val function
 2018-10-20  JRM  0.0.97  Added make_list_unc_val_string
+2018-11-05  JRM  0.0.97  Added create_material_from_mf
 
 """
 
 __revision__ = "$Id: jmGen.py John R. Minter $"
-__version__ = "0.0.97"
+__version__ = "0.0.98"
 
 import sys
 import os
@@ -77,6 +78,45 @@ from java.lang import Double
 import dtsa2 as dt2
 import gov.nist.microanalysis.dtsa2 as gdtsa2
 import dtsa2.mcSimulate3 as mc3
+
+def create_material_from_mf(l_comp, l_mf, density, name):
+    """
+    create_material_from_mf(l_comp, l_mf, density, name)
+
+    Create a material from lists of compositions and mass fractions
+    and the density and a name.
+
+    Input
+    -----
+    l_comp  A list of compositions.
+
+    l_mf    A list of mass fractions.
+
+    density A number. The density in g/cm3
+
+    name    A string. The name for the material. Use letters and numbers
+            without spaces or + or -. Simple mnemonics are better.
+
+    Return
+    ------
+    A material
+
+    Example
+    -------
+    import dtsa2.jmGen as jmg
+    # Note: composition came from J. Donovan:  Std 160 NBS K-412 mineral glass
+    l_comps = [epq.Element.O,  epq.Element.Si, epq.Element.Mg, epq.Element.Ca,
+               epq.Element.Fe, epq.Element.Al, epq.Element.Mn, epq.Element.Na]
+    l_mfs   = [0.43597 ,0.21199 ,0.11657 ,0.10899,
+               0.07742, 0.04906, 0.00077, 0.00043]
+    mat = jmg.create_material_from_mf(l_comps, l_mfs, 2.66, "K412")
+    print(mat)
+    print(mat.toHTMLTable())
+    """
+    comp = epq.Composition(l_comp, l_mf)
+    mat = epq.Material(comp, epq.ToSI.gPerCC(density))
+    mat.setName(name)
+    return(mat)
 
 def make_list_unc_val_string(id, luv):
     """
