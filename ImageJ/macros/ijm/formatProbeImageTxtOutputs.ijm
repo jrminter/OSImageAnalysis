@@ -1,4 +1,4 @@
-//ImageJ macro to format ProbeImage .txt outputs. 
+//ImageJ macro to format ProbeImage .txt outputs. By JonF.
 
 input = getDirectory("Input directory");
 output = getDirectory("Output directory");
