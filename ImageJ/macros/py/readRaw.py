@@ -11,11 +11,16 @@ codecs.setDefaultEncoding('utf-8')
 import os
 import time
 from ij import IJ
-# from ij.io import FileSaver
 import jmFijiGen as jmg
 
-imgDir  = "/Users/jrminter/Downloads/Image-Processing-2015-master/HW1/"
-outDir  = "/Users/jrminter/dat/images/key-test/EE-569/"
+#
+# Crunch
+imgDir = "D:/Data/images/key-test/EE-569/raw/"
+outDir = "D:/Data/images/key-test/EE-569/png/"
+#
+# MacBook, Pro
+# imgDir = "/Users/jrminter/dat/images/key-test/EE-569/raw/"
+# outDir = "/Users/jrminter/dat/images/key-test/EE-569/png/"
 
 imgFil  = "parrot_CFA"
 imgWid  = 424
@@ -23,11 +28,11 @@ imgHt   = 636
 # imgTyp  = "[24-bit RGB]"
 imgTyp  = "[8-bit]"
 
-strImport  = "open=%s" % (imgDir)
-strImport += "%s.raw " % (imgFil)
-strImport += "image=%s " % (imgTyp)
-strImport += " width=%g" % (imgWid)
-strImport += " height=%g" % (imgHt)
+strImport = "open=%s" %  (imgDir)
+strImport += "%s.raw " %  (imgFil)
+strImport += "image=%s " %  (imgTyp)
+strImport += "width=%g " %  (imgWid)
+strImport += "height=%g " %  (imgHt)
 
 
 print(strImport)

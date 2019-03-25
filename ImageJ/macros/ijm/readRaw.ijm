@@ -5,4 +5,4 @@
 
 
 run("Raw...",
-    "open=/Users/jrminter/Downloads/Image-Processing-2015-master/HW1/barn.raw image=[24-bit RGB] width=380 height=275");
+    "open=D:/Data/images/key-test/EE-569/raw/ image=[24-bit RGB] width=380 height=275");
