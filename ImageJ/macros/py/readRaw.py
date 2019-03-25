@@ -35,7 +35,7 @@ strImport += "width=%g " %  (imgWid)
 strImport += "height=%g " %  (imgHt)
 
 
-print(strImport)
+# print(strImport)
 
 IJ.run("Raw...", strImport);
 
