@@ -22,6 +22,7 @@ from ij.measure import ResultsTable
 from ij.plugin.filter import EDM
 from ij.plugin.frame import RoiManager
 from ij.plugin.filter import ParticleAnalyzer
+from com.minteranalytics.imagej import SingleParticleDetector
 
 from java.lang import Double
 import java.io as jio
@@ -52,4 +53,6 @@ raw.show()
 IJ.run("Auto Threshold", "method=Otsu white")
 IJ.run("Make Binary")
 IJ.run("Invert")
-IJ.run("Single Particle Detector", strSPD)
+parTwo =  "parameter=%s" % strSPD
+print(parTwo)
+IJ.runPlugIn("fiji.SingleParticleDetector", "parameter=%s", parTwo);
