@@ -12,7 +12,8 @@
 
 6. Download the example plugins
 
-    - ImageJ2: https://github.com/imagej/example-imagej-command
+    - [ImageJ2](https://github.com/imagej/example-imagej-command)
+    - [ImageJ1](https://github.com/imagej/example-legacy-plugin/)
 
 
 ## Files needed:
@@ -50,7 +51,7 @@ src/
 
 - Technically, you can override the default directory layout in the pom.xml, but why do so? It only breaks expectations and is more hassle than it is worth, really.
 
-- So the directory structure is: you put your .java files under `src/main/java/`` and the other files you need to be included into `src/main/resources/`. Should you want to apply the best practices called "regression tests" or even "test-driven development": your `tests.java` files go to `src/test/java/`` and the non-.java files you might require unsurprisingly go into `src/test/resources/`.
+- So the directory structure is: you put your .java files under `src/main/java/` and the other files you need to be included into `src/main/resources/`. Should you want to apply the best practices called "regression tests" or even "test-driven development": your `tests.java` files go to `src/test/java/` and the non-.java files you might require unsurprisingly go into `src/test/resources/`.
 
 
 ## Simple `pom.xml` example:
