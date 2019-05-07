@@ -6,6 +6,9 @@
 # ----------  --- ------  -------------------------------------------------
 # 2014-09-30  JRM 0.1.00  Test the SingleParticleDetector plug-in with the
 #                         blobs image
+# 2019-05-05  JRM 0.1.10  Rebuild this ImageJ1 legacy plug-in with Eclipse
+#                         for Java 1.8. What a slog! The jar file is in
+#                         /Applications/Fiji.app/jars on MacOSX
 
 from org.python.core import codecs
 codecs.setDefaultEncoding('utf-8')
@@ -22,7 +25,7 @@ from ij.measure import ResultsTable
 from ij.plugin.filter import EDM
 from ij.plugin.frame import RoiManager
 from ij.plugin.filter import ParticleAnalyzer
-from com.minteranalytics.imagej import SingleParticleDetector
+import SingleParticleDetector
 
 from java.lang import Double
 import java.io as jio
@@ -55,4 +58,5 @@ IJ.run("Make Binary")
 IJ.run("Invert")
 parTwo =  "parameter=%s" % strSPD
 print(parTwo)
-IJ.runPlugIn("fiji.SingleParticleDetector", "parameter=%s", parTwo);
+rv = IJ.runPlugIn("fiji.SingleParticleDetector", "parameter=%s", parTwo);
+print(rv)
