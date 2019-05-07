@@ -23,6 +23,6 @@
 				<attribute name="Built-By" value="${user.name}"/>
 			</manifest>
 		</jar>
-    <copy file="Scale_To8.jar" toDir="${pluginsDir}" />
-   </target>
+	<copy file="Scale_To8.jar" toDir="${pluginsDir}" />
+	</target>
 </project>

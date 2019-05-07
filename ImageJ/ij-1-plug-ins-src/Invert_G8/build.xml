@@ -23,6 +23,6 @@
 				<attribute name="Built-By" value="${user.name}"/>
 			</manifest>
 		</jar>
-    <copy file="Invert_G8.jar" toDir="${pluginsDir}" />
-   </target>
+		<copy file="Invert_G8.jar" toDir="${pluginsDir}" />
+	</target>
 </project>
