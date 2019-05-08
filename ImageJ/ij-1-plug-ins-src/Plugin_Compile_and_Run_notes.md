@@ -54,3 +54,5 @@ On Windows, you can create a double-clickable shortcut that uses Java 2 to run I
 6. Enter the path to the ImageJ folder (normally C:\ImageJ) in "Start in"; click "OK"
 
 `javaw` is a variation of the `java` command that runs Java applications without a DOS windows.
+
+
