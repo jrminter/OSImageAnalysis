@@ -55,4 +55,5 @@ On Windows, you can create a double-clickable shortcut that uses Java 2 to run I
 
 `javaw` is a variation of the `java` command that runs Java applications without a DOS windows.
 
-Saved compiled files, source, test images in the repo.
+Saved compiled files, source, test images in the repo. 
+Try to see if creds work...
