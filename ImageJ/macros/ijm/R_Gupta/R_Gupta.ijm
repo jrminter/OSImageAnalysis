@@ -18,6 +18,10 @@ selectWindow("Picture1.jpg (blue)");
 close();
 // This is our key original image
 selectWindow("Picture1.jpg (green)");
+//
+// Make an Oval ROI just inside the boundary
+makeOval(23, 11, 334, 338);
+//
 // We need to try some background correction. 
 // There are a LOT of intensity variations & artifacts in the image... 
 run("Duplicate...", "title=[for bkg]");
@@ -42,4 +46,5 @@ run("Set Measurements...",
 // 1. min and max sizes
 // 2. circularity. 0.5 seemed reasonable. Can vary and test effect..
 run("Analyze Particles...", "size=50-2000 circularity=0.5-1.00 show=Outlines display exclude clear add");
+// change the path to fit your system
 saveAs("Results", "/Users/jrminter/Downloads/Results.csv");
