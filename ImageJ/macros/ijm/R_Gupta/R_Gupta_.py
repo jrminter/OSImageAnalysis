@@ -36,7 +36,14 @@ impB.close()
 imgNamG = wName + " (green)"
 impG = WindowManager.getImage(imgNamG)
 impG.show()
+
+# create a gray image fo redirect...
+impGbare = impG.duplicate()
+impGbare.setTitle("green_channel")
+impGbare.show()
+
 impG.setRoi(OvalRoi(22,12,334,337))
+impG.show()
 
 w = impG.getWidth()
 h = impG.getHeight()
@@ -48,12 +55,26 @@ for i in range(len(pix)):
    pix[i] = -1
 
 blank.show()
-IJ.setAutoThreshold(impG, "Default")
-Prefs.blackBackground = False;
 
-impG.show()
-impG.setRoi(OvalRoi(22,12,334,337))
+IJ.selectWindow("original (green)");
 IJ.run("Copy")
-blank.show()
+IJ.selectWindow("blank")
+IJ.run("Paste")
 
+blank.show()
+impBlank = IJ.getImage()
+IJ.setAutoThreshold(impG, "Default")
+Prefs.blackBackground = False
+IJ.run(impBlank, "Convert to Mask", "")
+IJ.run("Watershed")
+#
+# My Original
+#
+# IJ.run("Set Measurements...", "area mean integrated add redirect=Picture1.jpg decimal=3")
+# IJ.run(impBlank, "Analyze Particles...", "  show=Outlines display exclude summarize")
+
+# From recorder
+
+# IJ.run("Set Measurements...", "area mean integrated add redirect=Picture1.jpg decimal=3")
+# IJ.run(impBlank, "Analyze Particles...", "  show=Outlines display exclude summarize")
 
