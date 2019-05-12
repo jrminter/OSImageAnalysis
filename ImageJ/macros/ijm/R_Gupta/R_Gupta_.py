@@ -62,19 +62,5 @@ IJ.selectWindow("blank")
 IJ.run("Paste")
 
 blank.show()
-impBlank = IJ.getImage()
-IJ.setAutoThreshold(impG, "Default")
-Prefs.blackBackground = False
-IJ.run(impBlank, "Convert to Mask", "")
-IJ.run("Watershed")
-#
-# My Original
-#
-# IJ.run("Set Measurements...", "area mean integrated add redirect=Picture1.jpg decimal=3")
-# IJ.run(impBlank, "Analyze Particles...", "  show=Outlines display exclude summarize")
 
-# From recorder
-
-# IJ.run("Set Measurements...", "area mean integrated add redirect=Picture1.jpg decimal=3")
-# IJ.run(impBlank, "Analyze Particles...", "  show=Outlines display exclude summarize")
 
