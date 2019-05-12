@@ -21,10 +21,11 @@ from __future__ import division
 # 2017-10-26  JRM  1.6.10  Added setFullGrayDisplayRange
 # 2017-10-26  JRM  1.6.11  Added calcMaxGrayLevelFromCumulativeHistogram
 # 2017-11-01  JRM  1.6.12  Added cropImage
+# 2019-05-11  JRM  1.6.13  Added shorten_title and separate_colors.
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2017-11-01$"
-__version__ = "1.6.12"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-11$"
+__version__ = "1.6.13"
 
 import sys
 import os
@@ -87,7 +88,70 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 (DRY) principle...
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
-""" 
+"""
+
+def separate_colors(imp):
+    """
+    separate_colors(imp)
+
+    separate a RGB image into component colors, retuning
+    the R, G, and B ImagePlus objects as a list.
+
+    Parameters
+    ----------
+    imp:
+        The ImagePlus of the RGB image to process
+
+    Returns
+    -------
+    A list of ImagePlus values, [R, G, B]
+
+    Example
+    -------
+    from ij import IJ
+    import jmFijiGen as jmg
+    imp = IJ.getImage()
+    [impR, impG, impB] = separate_colors(impOri)
+    impG.show()
+    """
+    work = imp.duplicate()
+    work.show()
+    name = imp.getShortTitle()
+    work.setTitle(name)
+    IJ.run("Split Channels")
+    imgNamR = name + " (red)"
+    impR = WindowManager.getImage(imgNamR)
+    impR.setTitle(name + "_r")
+    imgNamB = name + " (blue)"
+    impB = WindowManager.getImage(imgNamB)
+    impB.setTitle(name + "_b")
+    imgNamG = name + " (green)"
+    impG = WindowManager.getImage(imgNamG)
+    impG.setTitle(name + "-g")
+    return([impR, impB, impG])
+
+
+
+
+def shorten_title(imp):
+    """shorten_title(imp)
+
+    Removes filetype from title
+
+    Parameters
+    ----------
+    imp: ImagePlus
+        The image to process
+
+    Returns
+    -------
+    none  works in place
+    """
+    shortTitle = imp.getShortTitle()
+    imp.setTitle(shortTitle)
+
+
+
 
 def cropImage(imp, x0, y0, w, h, bTest=False):
     """cropImage(imp, x0, y0, w, h, bTest=False)
