@@ -21,11 +21,12 @@ from __future__ import division
 # 2017-10-26  JRM  1.6.10  Added setFullGrayDisplayRange
 # 2017-10-26  JRM  1.6.11  Added calcMaxGrayLevelFromCumulativeHistogram
 # 2017-11-01  JRM  1.6.12  Added cropImage
-# 2019-05-11  JRM  1.6.13  Added shorten_title and separate_colors.
+# 2019-05-11  JRM  1.6.13  Added shorten_title and separate_colors
+# 2019-05-13  JRM  1.6.14  Added FlatFieldCorrectGrayDivide and getVersion
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-11$"
-__version__ = "1.6.13"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-13$"
+__version__ = "1.6.14"
 
 import sys
 import os
@@ -89,6 +90,66 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+def getVersion():
+    """
+    getVersion()
+
+    get the version information for jmFijiGen.py
+
+    Parameters:
+    -----------
+    None
+
+    Returns
+    -------
+    The version string
+
+
+    Example:
+    -------
+    import jmFijiGen as jmg
+    jmg.getVersion
+    """
+    print( __revision__ )
+    print( __version__ )
+
+
+
+def FlatFieldCorrectGrayDivide(impImg, impFF):
+    """
+    FlatFieldCorrectGrayDivide(impImg, impFF)
+
+    Do a flat-field (shading) correction for a gray scale image
+
+    Parameters
+    ----------
+    impImg: ImagePlus
+        The image plus for a gray scale image to correct for shading
+    impFF: ImagePlus
+        A no-sample gray scale image (gain) 
+
+    Returns
+    -------
+    impSc: ImagePlus
+        The corrected image
+
+    TO DO: error checking
+
+    Example
+    -------
+    import os
+    from ij import IJ
+    import jmFijiGen as jmg
+
+    """
+    name = impImg.getShortTitle()
+    ic = ImageCalculator()
+    imp = ic.run("Divide create 32-bit", impImg, impFF)
+    imp.setTitle(name + "_ffc")
+    imp.show()
+    return imp
+
 
 def separate_colors(imp):
     """
