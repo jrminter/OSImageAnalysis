@@ -23,10 +23,11 @@ from __future__ import division
 # 2017-11-01  JRM  1.6.12  Added cropImage
 # 2019-05-11  JRM  1.6.13  Added shorten_title and separate_colors
 # 2019-05-13  JRM  1.6.14  Added FlatFieldCorrectGrayDivide and getVersion
+# 2019-05-17  JRM  1.6.15  Added convert_stack_4_to_rgb
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-13$"
-__version__ = "1.6.14"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-17$"
+__version__ = "1.6.15"
 
 import sys
 import os
@@ -90,6 +91,37 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+def convert_stack_4_to_rgb(imp):
+    """
+    Convert a 4 image stack with a uniform cyan channel 4
+    to a RGB image. This occurs on macOS when Use SCFIO
+    Beta is checked. Best to just leave it unchecked...
+
+    Parameters
+    ==========
+    imp ImagePlus
+        The image to be converted
+
+    Returns
+    =======
+    
+    """
+    title = imp.getShortTitle()
+    imp.setTitle(title)
+    IJ.run("Stack to Images")
+    impR = WindowManager.getImage("1")
+    impG = WindowManager.getImage("2")
+    impB = WindowManager.getImage("3")
+    IJ.run("Merge Channels...", "c1=1 c2=2 c3=3 ignore")
+    impRGB = WindowManager.getImage("RGB")
+    # impRGB.show()
+    impC = WindowManager.getImage("4")
+    impC.close()
+    impR.close()
+    impG.close()
+    impB.close()
+    return (impRGB)
 
 def getVersion():
     """
