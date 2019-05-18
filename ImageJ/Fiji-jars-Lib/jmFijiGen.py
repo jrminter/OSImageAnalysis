@@ -24,10 +24,11 @@ from __future__ import division
 # 2019-05-11  JRM  1.6.13  Added shorten_title and separate_colors
 # 2019-05-13  JRM  1.6.14  Added FlatFieldCorrectGrayDivide and getVersion
 # 2019-05-17  JRM  1.6.15  Added convert_stack_4_to_rgb
+# 2019-05-18  JRM  1.6.16  Added set_roi_color_and_stroke
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-17$"
-__version__ = "1.6.15"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-18$"
+__version__ = "1.6.16"
 
 import sys
 import os
@@ -91,6 +92,41 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+def set_roi_color_and_stroke(int_width, int_R, int_G, int_B):
+    """
+    set_roi_color_and_stroke(str_color, int_R, int_G, int_B)
+
+    Set the color and stroke of the current ROI
+
+    Parameters
+    ==========
+    int_width:  integer
+                the width of the stroke, i.e. 6
+                
+    int_R:      integer between 0 and 255
+                the red component, i.e. 255
+                
+    int_G       integer between 0 and 255
+                the green component, i.e. 0
+
+    int_B       integer between 0 and 255
+                the blue component, i.e. 0
+    
+
+    Returns
+    =======
+    None
+    
+    """
+    imp = IJ.getImage()
+    roi = imp.getRoi()
+    print(roi)
+    if roi != None:
+        roi.setStrokeWidth(int_width)       
+        roi.setStrokeColor(Color(int_R, int_G, int_B))
+        imp.updateAndRepaintWindow()
+
 
 def convert_stack_4_to_rgb(imp):
     """
