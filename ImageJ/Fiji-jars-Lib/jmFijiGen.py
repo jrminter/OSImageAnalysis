@@ -25,10 +25,12 @@ from __future__ import division
 # 2019-05-13  JRM  1.6.14  Added FlatFieldCorrectGrayDivide and getVersion
 # 2019-05-17  JRM  1.6.15  Added convert_stack_4_to_rgb
 # 2019-05-18  JRM  1.6.16  Added set_roi_color_and_stroke
+# 2019-05-19  JRM  1.6.17  Added changed separate_colors to return [R, G, B]
+# 2019-05-19  JRM  1.6.17  Added rgb_from_r_g_b
 
 
 __revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-18$"
-__version__ = "1.6.16"
+__version__ = "1.6.17"
 
 import sys
 import os
@@ -92,6 +94,39 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+def rgb_from_r_g_b(r, g, b, title):
+    """
+    rgb_from_r_g_b(r, g, b, title)
+
+    Generate an RGB image from three 8/bit per pixel
+    gray scale images
+
+    Parameters
+    ----------
+    r:  An ImagePlus
+        The red channel
+    g:  An ImagePlus
+        The green channel
+    b:  An ImagePlus
+        The blue channel
+    title: a string
+        The title for the image
+    
+    Returns
+    -------
+    impRGB: An ImagePlus
+        The RGB image
+    """
+    tiR = r.getTitle()
+    tiG = g.getTitle()
+    tiB = b.getTitle()
+
+    strTwo = "c1=[%s] c2=[%s] c3=[%s]" % (tiR, tiG, tiB)
+    IJ.run("Merge Channels...", strTwo)
+    impRecon = IJ.getImage()
+    impRecon.show()
+    return(impRecon)
 
 def set_roi_color_and_stroke(int_width, int_R, int_G, int_B):
     """
@@ -248,16 +283,19 @@ def separate_colors(imp):
     name = imp.getShortTitle()
     work.setTitle(name)
     IJ.run("Split Channels")
+
     imgNamR = name + " (red)"
     impR = WindowManager.getImage(imgNamR)
     impR.setTitle(name + "_r")
+
     imgNamB = name + " (blue)"
     impB = WindowManager.getImage(imgNamB)
     impB.setTitle(name + "_b")
+
     imgNamG = name + " (green)"
     impG = WindowManager.getImage(imgNamG)
-    impG.setTitle(name + "-g")
-    return([impR, impB, impG])
+    impG.setTitle(name + "_g")
+    return([impR, impG, impB])
 
 
 
