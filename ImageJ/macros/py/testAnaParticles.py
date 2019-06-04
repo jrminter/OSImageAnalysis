@@ -151,8 +151,8 @@ bVerbose = False
 
 imgDir  = os.environ['IMG_ROOT']
 rptDir  = os.environ['RPT_ROOT']
-relImg  = "/test/clumpAgX"
-sampID  = "qm-03966-KJL-031"
+relImg  = "/key-test/AgX"
+sampID  = "qm-03965-KJL-027"
 nmPerPx = 1.213
 minCirc = 0.5
 minSize = 1000.0
@@ -162,7 +162,8 @@ maxSize = 10000.0
 strScale = "distance=1 known=%.3f pixel=1 unit=nm global" % nmPerPx
 strAna   = "size=%g-%g circularity=%.3f-1.00 exclude clear include add" % (minSize, maxSize, minCirc)
 
-sImgPath = imgDir + relImg + "/" + sampID + "/" + sampID + "-01.dm3"
+sImgPath = imgDir + relImg + "/" + sampID + "/dm3/" + sampID + "-01.dm3"
+print(sImgPath)
 sRptPath = rptDir + "/" + sampID + "/"
 jmg.ensureDir(sRptPath)
 sRptCsvPath = sRptPath + sampID + ".csv"
@@ -174,9 +175,9 @@ orig = ImagePlus(sImgPath)
 strName = os.path.basename(sImgPath)
 strName = strName.split('.')[0]
 orig.setTitle(strName)
-# orig.show()
-iZero = jmg.findI0(orig, maxSearchFrac=0.5, chAvg=5)
-print(iZero)
+orig.show()
+# iZero = jmg.findI0(orig, maxSearchFrac=0.5, chAvg=5)
+# print(iZero)
 
 # [ana, rt] = anaParticles(orig, minSize, maxSize, minCirc, bHeadless=bHeadless)
 rt = jmg.anaParticlesWatershed(orig)

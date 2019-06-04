@@ -27,10 +27,12 @@ from __future__ import division
 # 2019-05-18  JRM  1.6.16  Added set_roi_color_and_stroke
 # 2019-05-19  JRM  1.6.17  Added changed separate_colors to return [R, G, B]
 # 2019-05-19  JRM  1.6.17  Added rgb_from_r_g_b
+# 2019-05-19  JRM  1.6.17  Added gaussian_blur_8_bks
+# 2019-06-03  JRM  1.6.18  Spell checked and other formatting
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-05-18$"
-__version__ = "1.6.17"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-06-03$"
+__version__ = "1.6.18"
 
 import sys
 import os
@@ -94,6 +96,36 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+def gaussian_blur_8_bks(imp, size):
+    """
+    gaussian_blur_8_bks(imp, size)
+
+    Perform a Gaussian Blur on an 8 bit gray scale
+    image, use that to do a background correction,
+    and return the background corrected image. The
+    blur size is 0.3*image width
+
+    Parameters
+    ==========
+    imp:    ImagePlus
+            The 8 bit gray scale input image
+
+    Returns
+    =======
+    bks:    The image plus of the background-subtracted
+            gray scale image
+    size:   The size in px of the blur. Should be about
+            40% of the image size   
+    """
+    strSize = "sigma=%i" % (size)
+    impBks = imp.duplicate()
+    impBks.setTitle(imp.getShortTitle())
+    IJ.run(impBks, "Gaussian Blur...", strSize)
+    ti = impBks.getShortTitle()
+    ti += "_gb"
+    imp.setTitle(ti)
+    return(impBks)
 
 def rgb_from_r_g_b(r, g, b, title):
     """
@@ -288,13 +320,14 @@ def separate_colors(imp):
     impR = WindowManager.getImage(imgNamR)
     impR.setTitle(name + "_r")
 
+    imgNamG = name + " (green)"
+    impG = WindowManager.getImage(imgNamG)
+    impG.setTitle(name + "_g")
+
     imgNamB = name + " (blue)"
     impB = WindowManager.getImage(imgNamB)
     impB.setTitle(name + "_b")
 
-    imgNamG = name + " (green)"
-    impG = WindowManager.getImage(imgNamG)
-    impG.setTitle(name + "_g")
     return([impR, impG, impB])
 
 
@@ -618,7 +651,7 @@ def measureFeatureLength(imp, lw = 2, csvPath=None, bAppend=True,
     labCol: A color constant (Color.WHITE)
         The color for the label
     bDebug: A Boolean (False)
-        A flag to print diagnostic incormation
+        A flag to print diagnostic information
 
     Returns
     -------
@@ -758,7 +791,7 @@ def autoThresholdBinarize(imp, method=Method.Otsu,
     method: An AutoThresholder.Method (Method.Otsu)
         The method to use to threshold the image
     bWhite: Boolean (True)
-        If True, objects from gray levels thr:max are 1, othereise.
+        If True, objects from gray levels thr:max are 1, otherwise.
         objects from 0:thr are 1
     bVerbose: Boolean (False)
         If True, print the threshold value
@@ -1518,7 +1551,7 @@ def bicubicRotate(imp, angDeg, bHeadless=False):
     angDeg: float
         Rotation angle (degrees); + for CW, - for CCW
     bHeadless: Boolean (False)
-        Flagt to suppress display for headless operation
+        Flag to suppress display for headless operation
 
     Returns
     the Image Plus of a rotated image
@@ -1841,7 +1874,7 @@ def analyzeRois(imp, vAvg, outPath):
     imp: Image plus
         Input image
     vAvg: int
-        Height to analyse
+        Height to analyze
     outPath: string
         Path for .csv file
 
