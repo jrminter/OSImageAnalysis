@@ -29,10 +29,11 @@ from __future__ import division
 # 2019-05-19  JRM  1.6.17  Added rgb_from_r_g_b
 # 2019-05-19  JRM  1.6.17  Added gaussian_blur_8_bks
 # 2019-06-03  JRM  1.6.18  Spell checked and other formatting
+# 2019-06-14  JRM  1.6.19  Added close_open_non_image_window
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-06-03$"
-__version__ = "1.6.18"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-06-14$"
+__version__ = "1.6.19"
 
 import sys
 import os
@@ -96,6 +97,25 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+def close_open_non_image_window(str):
+    """
+    close_open_non_image_window(str)
+
+    Close the specified non-image window
+    if it exists
+
+    Parameters
+    ==========
+    str:    String
+            The window to close
+    """
+    arry = WindowManager.getNonImageTitles()
+    for elem in arry:
+        if(elem == str):
+             IJ.selectWindow(str)
+             IJ.run("Close")
+
 
 def gaussian_blur_8_bks(imp, size):
     """
