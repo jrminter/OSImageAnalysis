@@ -30,10 +30,11 @@ from __future__ import division
 # 2019-05-19  JRM  1.6.17  Added gaussian_blur_8_bks
 # 2019-06-03  JRM  1.6.18  Spell checked and other formatting
 # 2019-06-14  JRM  1.6.19  Added close_open_non_image_window
+# 2019-06-16  JRM  1.6.20  Added calib_img_x_y_z
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-06-14$"
-__version__ = "1.6.19"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-06-19$"
+__version__ = "1.6.20"
 
 import sys
 import os
@@ -97,6 +98,40 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+
+def calib_img_x_y_z(imp, upp_x, upp_y, upp_z, units=-6):
+    """
+    calib_img_x_y_z(imp, units_per_px, units=-6)
+
+    Directly calibrate the ImagePlus in x,y, and z
+
+    Parameters
+    ----------
+    imp: ImagePlus
+        Image to calibrate
+    upp_x: float
+        The spacing between pixels in the width in  units
+    upp_y: float
+        The spacing between pixels in the height in  units
+    upp_z: float
+        The spacing between pixels in the depth in  units
+    units: int (-6)
+        The exponent w.r.t. meters. -6 = microns...
+
+    Returns
+    -------
+    imp:  ImagePlus
+        The calibrated image
+    """
+    scaUni = getUnitString(units)
+    cal = imp.getCalibration()
+    cal.setXUnit(scaUni)
+    cal.setYUnit(scaUni)
+    cal.pixelWidth = upp_x
+    cal.pixelHeight = upp_y
+    cal.pixelDepth = upp_z
+    return imp
 
 def close_open_non_image_window(str):
     """
