@@ -31,10 +31,11 @@ from __future__ import division
 # 2019-06-03  JRM  1.6.18  Spell checked and other formatting
 # 2019-06-14  JRM  1.6.19  Added close_open_non_image_window
 # 2019-06-16  JRM  1.6.20  Added calib_img_x_y_z
+# 2019-07=04  JRM  1.6.21  Added close_others
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-06-19$"
-__version__ = "1.6.20"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-07-04$"
+__version__ = "1.6.21"
 
 import sys
 import os
@@ -98,6 +99,19 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+def close_others():
+    """
+    close_others()
+
+    close all but the current window
+
+    Example
+    -------
+    import jmFijiGen as jmg
+    jmg.close_others()
+    """
+    IJ.runMacro("close(\"\\\\Others\")")
 
 
 def calib_img_x_y_z(imp, upp_x, upp_y, upp_z, units=-6):
