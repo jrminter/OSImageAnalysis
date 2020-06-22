@@ -31,11 +31,12 @@ from __future__ import division
 # 2019-06-03  JRM  1.6.18  Spell checked and other formatting
 # 2019-06-14  JRM  1.6.19  Added close_open_non_image_window
 # 2019-06-16  JRM  1.6.20  Added calib_img_x_y_z
-# 2019-07=04  JRM  1.6.21  Added close_others
+# 2019-07-04  JRM  1.6.21  Added close_others
+# 2019-07-09  JRM  1.6.22  Added auto_threshold
 
 
-__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-07-04$"
-__version__ = "1.6.21"
+__revision__ = "$Id: jmFijiGen.py John R. Minter 2019-07-09$"
+__version__ = "1.6.22"
 
 import sys
 import os
@@ -64,6 +65,8 @@ import java.util as ju
 
 import jarray
 
+from fiji.threshold import Auto_Threshold
+
 from ij import IJ, ImagePlus, WindowManager, Prefs, ImageStack
 
 from ij.io import FileInfo, FileOpener,  DirectoryChooser, FileSaver
@@ -77,7 +80,7 @@ from ij.plugin import MontageMaker
 from ij.plugin.filter import ParticleAnalyzer, Analyzer, EDM
 from ij.plugin.frame import RoiManager
 
-from ij.process import LUT, ImageProcessor, StackProcessor
+from ij.process import LUT, ImageProcessor, StackProcessor, ImageConverter
 from ij.process import ImageStatistics, AutoThresholder
 from ij.process.AutoThresholder import getThreshold
 from ij.process.AutoThresholder import Method 
@@ -99,6 +102,98 @@ and to avoid re-writing the same code - The Do not Repeat Yourself
 Place this file in FIJI_ROOT/jars/Lib/    call with
 import jmFijiGen as jmg
 """
+
+def auto_threshold(imp_in, str_thresh, bScale=False):
+    """
+    auto_threshold_otsu(imp_in, str_thresh="Otsu", bScale=True)
+
+    Compute an autothreshold for an image. Adapted from
+    http://wiki.cmci.info/documents/120206pyip_cooking/python_imagej_cookbook
+
+    Parameters
+    ----------
+    imp_in      ImagePlus
+        The image to threshold
+
+    str_thresh  String (Default: Default)
+        The threshold: Otsu, Huang, IsoData, Intermodes, Li,
+        MaxEntropy, Mean, MinError, Minimum, Moments, Percentile,
+        RenyiEntropy, Shanbhag, Triangle, Yen, or Default
+
+    bScale      Boolean (Default: False)
+
+    Return
+    ------
+    imp_out     ImagePlus
+        The binary image
+    thr_val     integer
+        The threshold value
+
+    Example
+    -------
+    import jmFijiGen as jmg
+
+    IJ.run("Close All")
+
+    git_home = os.getenv('GIT_HOME')
+    rel_dir = "/tips/ImageJ/tif/"
+    path = git_home + rel_dir
+    print(path)
+
+    img_path = path + "Nuclei.tif"
+    imp_ori = IJ.openImage(img_path)
+    imp_ori.show()
+    
+    ret = jmg.auto_threshold(imp_ori, "Otsu", bScale=False)
+    IJ.run(ret[0], "Apply LUT", "")
+    ret[0].show()
+    print(ret[1])
+    
+    """
+    ti = imp_in.getShortTitle()
+    imp = imp_in.duplicate()
+    hist = imp.getProcessor().getHistogram()
+    if (str_thresh == "Otsu"):
+        lowTH = Auto_Threshold.Otsu(hist)
+    elif (str_thresh == "Huang"):
+        lowTH = Auto_Threshold.Huang(hist)
+    elif (str_thresh == "Intermodes"):
+        lowTH = Auto_Threshold.Intermodes(hist)
+    elif (str_thresh == "IsoData"):
+        lowTH = Auto_Threshold.IsoData(hist)
+    elif (str_thresh == "Li"):
+        lowTH = Auto_Threshold.Li(hist)
+    elif (str_thresh == "MaxEntropy"):
+        lowTH = Auto_Threshold.MaxEntropy(hist)
+    elif (str_thresh == "Mean"):
+        lowTH = Auto_Threshold.Mean(hist)
+    elif (str_thresh == "MinError"):
+        lowTH = Auto_Threshold.MinError(hist)
+    elif (str_thresh == "Minimum"):
+        lowTH = Auto_Threshold.Minimum(hist)
+    elif (str_thresh == "Moments"):
+        lowTH = Auto_Threshold.Moments(hist)
+    elif (str_thresh == "Percentile"):
+        lowTH = Auto_Threshold.Percentile(hist)
+    elif (str_thresh == "RenyiEntropy"):
+        lowTH = Auto_Threshold.RenyiEntropy(hist)
+    elif (str_thresh == "Shanbhag"):
+        lowTH = Auto_Threshold.Shanbhag(hist)
+    elif (str_thresh == "Triangle"):
+        lowTH = Auto_Threshold.Triangle(hist)
+    elif (str_thresh == "Yen"):
+        lowTH = Auto_Threshold.Yen(hist)
+    else:
+        lowTH = Auto_Threshold.Default(hist)
+    
+    imp.getProcessor().threshold(lowTH)
+    imp.setDisplayRange(0, lowTH+1)
+    ImageConverter.setDoScaling(bScale)
+    IJ.run(imp, "8-bit", "")
+    imp.setDisplayRange(0, 255)
+    imp.setTitle(ti + "-bin-"+ str_thresh)
+    return([imp,lowTH])
+
 
 def close_others():
     """
